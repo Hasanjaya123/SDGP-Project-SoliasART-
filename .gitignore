@@ -1,9 +1,9 @@
 # Python
-backend/venv/
+backend/.venv/
 __pycache__/
 *.py[cod]      <-- (Optional) Blocks compiled python variants
 *.db           <-- (NEW) Blocks SQLite database files like 'test.db'
-.env           <-- (CRITICAL) Blocks your secrets/passwords
+**/.env        <-- (CRITICAL) Blocks your secrets/passwords in ALL directories
 
 # React / Node
 node_modules/
