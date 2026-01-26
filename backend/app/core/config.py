@@ -1,13 +1,18 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "SoliasArt"
-    API_V1_STR: str = "/api/v1"
-    
-    #  replace the actual database URL here later
-    DATABASE_URL: str = "sqlite:///./test.db"
+    DATABASE_URL: str
 
-    class Config:
-        env_file = ".env"
+
+    SUPABASE_URL: str | None = None
+    SUPABASE_KEY: str | None = None
+    JWT_SECRET: str | None = None
+
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        extra="ignore"
+    )
 
 settings = Settings()
