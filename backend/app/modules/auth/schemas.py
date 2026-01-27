@@ -7,14 +7,14 @@ class UserCreate(BaseModel):
     password: str
     first_name: str
     last_name: str
-    # NO role field here! They cannot choose.
 
 # OUTPUT: What we send back after signup
 class UserResponse(BaseModel):
     id: UUID
     email: EmailStr
     full_name: str
-    role: str  # We show them their role, but they didn't pick it.
+    role: str 
 
+# Allow read data from a class object
     class Config:
         from_attributes = True
