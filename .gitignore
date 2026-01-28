@@ -1,6 +1,7 @@
 # Security (Ignore this file everywhere)
 .env
 backend/.env
+backend/.venv
 
 # Python Logic
 backend/venv/
