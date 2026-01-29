@@ -433,7 +433,7 @@ const UploadArtPage = ({ setCurrentPage }) => {
               <button 
                   onClick={handleBack}
                   disabled={step === 1}
-                className="flex items-center gap-2 rounded-lg border border-transparent text-white hover:border-amber-500 hover:text-amber-500 font-bold text-xs px-4 py-2 transition-colors"
+                className="flex items-center gap-2 rounded-lg border border-transparent text-black dark:bg-white hover:border-amber-500 hover:text-amber-500 font-bold text-xs px-4 py-2 transition-colors"
               >
                 {React.cloneElement(ICONS.chevronLeft, { className: 'w-3.5 h-3.5' })}
                   Back
@@ -459,12 +459,12 @@ const UploadArtPage = ({ setCurrentPage }) => {
               </div>
 
               {/* Preview Card */}
-                <div className="bg-white dark:bg-black rounded-sm p-3 shadow-2xl ring-1 ring-black/5 flex flex-col items-center">
+                <div className="rounded-xl bg-gray-150 dark:bg-gray-800 p-3 shadow-2xl ring-1 ring-black/5 flex flex-col items-center">
                   <div 
                     className="relative border-[6px] border-black p-2 bg-white mb-4 flex items-center justify-center"
                       style={previewStyle}
                   >
-                    <div className="w-full h-full bg-gray-100 overflow-hidden relative flex items-center justify-center">
+                    <div className="w-full h-full bg-gray-100 dark:bg-gray-800 overflow-hidden relative flex items-center justify-center">
                         {formData.images.length > 0 ? (
                         <img 
                             alt="Artwork Preview" 
