@@ -296,102 +296,229 @@ const UploadArtPage = ({ setCurrentPage }) => {
   );
 
   const renderStepSpecs = () => (
+
     <div className="flex flex-col gap-8 animate-fade-in-up pb-32">
+    <div>
+      <h2 className="text-gray-900 dark:text-white text-[28px] font-bold leading-tight pb-2">Physical Specifications</h2>
+      <p className="text-gray-500 dark:text-gray-400 text-base font-normal leading-relaxed">
+        Accurate dimensions are critical for shipping calculations and our AR viewing experience.
+      </p>
+    </div>
+    <div className="flex items-start gap-4 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/50 text-gray-700 dark:text-gray-300">
+      <div className="p-2 bg-white dark:bg-blue-900 rounded-lg shadow-sm text-blue-600 dark:text-blue-300">
+        {React.cloneElement(ICONS.arScan, { className: 'w-6 h-6' })}
+      </div>
       <div>
-        <h2 className="text-gray-900 dark:text-white text-[22px] font-bold leading-tight pb-2">Physical Specifications</h2>
-        <p className="text-gray-500 dark:text-gray-400 text-sm font-normal leading-relaxed">
-          Accurate dimensions are critical for shipping calculations and our AR viewing experience.
+        <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Powers AR Feature</h4>
+        <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+          The dimensions you enter below will be used to generate the Augmented Reality view for buyers, allowing them to visualize the artwork on their wall at 100% scale.
         </p>
       </div>
-      <div className="flex items-start gap-3 p-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/50 text-gray-700 dark:text-gray-300">
-        <div className="p-1.5 bg-white dark:bg-blue-900 rounded-lg shadow-sm text-blue-600 dark:text-blue-300">
-          {React.cloneElement(ICONS.arScan, { className: 'w-5 h-5' })}
-        </div>
-        <div>
-          <h4 className="text-xs font-bold text-gray-900 dark:text-white mb-1">Powers AR Feature</h4>
-          <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-400">
-            The dimensions you enter below will be used to generate the Augmented Reality view for buyers.
-          </p>
-        </div>
-      </div>
-      <div className="flex flex-col gap-6">
-        <div>
-          <h3 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wide mb-3">Dimensions</h3>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="flex flex-col gap-2">
-              <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Height</label>
-              <div className="relative">
-                <input 
-                  className="w-full pl-3 pr-9 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all font-medium placeholder:text-gray-300" 
-                  placeholder="0.0" 
-                  type="number"
-                  value={formData.height}
-                  onChange={(e) => updateField('height', e.target.value)}
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-medium pointer-events-none">in</span>
-              </div>
+    </div>
+    <div className="flex flex-col gap-6">
+      <div>
+        <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wide mb-4">Dimensions</h3>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Height</label>
+            <div className="relative">
+              <input 
+                className="w-full pl-4 pr-10 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all font-medium placeholder:text-gray-300 dark:placeholder:text-gray-600" 
+                placeholder="0.0" 
+                type="number"
+                value={formData.height}
+                onChange={(e) => updateField('height', e.target.value)}
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium pointer-events-none">in</span>
             </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Width</label>
-              <div className="relative">
-                <input 
-                  className="w-full pl-3 pr-9 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all font-medium placeholder:text-gray-300" 
-                  placeholder="0.0" 
-                  type="number"
-                  value={formData.width}
-                  onChange={(e) => updateField('width', e.target.value)}
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-medium pointer-events-none">in</span>
-              </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Width</label>
+            <div className="relative">
+              <input 
+                className="w-full pl-4 pr-10 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all font-medium placeholder:text-gray-300 dark:placeholder:text-gray-600" 
+                placeholder="0.0" 
+                type="number"
+                value={formData.width}
+                onChange={(e) => updateField('width', e.target.value)}
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium pointer-events-none">in</span>
             </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Depth</label>
-              <div className="relative">
-                <input 
-                  className="w-full pl-3 pr-9 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all font-medium placeholder:text-gray-300" 
-                  placeholder="0.0" 
-                  type="number"
-                  value={formData.depth}
-                  onChange={(e) => updateField('depth', e.target.value)}
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-medium pointer-events-none">in</span>
-              </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Depth</label>
+            <div className="relative">
+              <input 
+                className="w-full pl-4 pr-10 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all font-medium placeholder:text-gray-300 dark:placeholder:text-gray-600" 
+                placeholder="0.0" 
+                type="number"
+                value={formData.depth}
+                onChange={(e) => updateField('depth', e.target.value)}
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium pointer-events-none">in</span>
             </div>
           </div>
         </div>
       </div>
+      <hr className="border-gray-100 dark:border-gray-800"/>
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wide">Framing Status</label>
+          <span className="text-xs text-gray-400 font-medium">Is the artwork sold with a frame?</span>
+        </div>
+        <div className="bg-gray-100 dark:bg-gray-800 p-1 rounded-xl flex">
+          <label className="flex-1 relative cursor-pointer group">
+            <input 
+              className="peer sr-only" 
+              name="framing" 
+              type="radio" 
+              value="unframed" 
+              checked={formData.framing === 'unframed'}
+              onChange={() => updateField('framing', 'unframed')}
+            />
+            <div className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-bold text-gray-500 dark:text-gray-400 transition-all duration-200 peer-checked:bg-white dark:peer-checked:bg-gray-700 peer-checked:text-gray-900 dark:peer-checked:text-white peer-checked:shadow-sm">
+              <span className="material-symbols-outlined text-[18px]">Unframed</span>
+            </div>
+
+          </label>
+          <label className="flex-1 relative cursor-pointer group">
+            <input 
+              className="peer sr-only" 
+              name="framing" 
+              type="radio" 
+              value="framed"
+              checked={formData.framing === 'framed'}
+              onChange={() => updateField('framing', 'framed')}
+            />
+            <div className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-bold text-gray-500 dark:text-gray-400 transition-all duration-200 peer-checked:bg-white dark:peer-checked:bg-gray-700 peer-checked:text-gray-900 dark:peer-checked:text-white peer-checked:shadow-sm">
+              <span className="material-symbols-outlined text-[18px]">Framed</span>
+            </div>
+
+          </label>
+        </div>
+        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-100 dark:border-gray-800 mt-2">
+          <p className="text-sm text-gray-500 dark:text-gray-400 flex gap-2 items-center">
+            {React.cloneElement(ICONS.info, { className: 'w-5 h-5 text-gray-400' })}
+            {formData.framing === 'unframed' ? 'Canvas will be shipped rolled in a tube for safety.' : 'Artwork will be shipped in a reinforced crate.'}
+          </p>
+        </div>
+      </div>
     </div>
+  </div>
   );
 
   const renderStepLogistics = () => (
     <div className="flex flex-col gap-8 animate-fade-in-up pb-32">
-      <section>
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-gray-400">{React.cloneElement(ICONS.creditCard, { className: 'w-5 h-5'})}</span>
-          <h2 className="text-gray-900 dark:text-white text-[20px] font-bold leading-tight">Pricing</h2>
+    <section>
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-gray-400">{React.cloneElement(ICONS.creditCard, { className: 'w-6 h-6'})}</span>
+        <h2 className="text-gray-900 dark:text-white text-[22px] font-bold leading-tight">Pricing</h2>
+      </div>
+      <div className="grid gap-6">
+        <div className="relative">
+          <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Price (LKR)</label>
+          <div className="relative mt-1 rounded-md shadow-sm">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <span className="text-gray-500 font-bold sm:text-sm">LKR</span>
+            </div>
+            <input 
+              className="block w-full rounded-lg border-gray-300 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white pl-12 focus:border-amber-500 focus:ring-amber-500 sm:text-sm py-3 font-semibold placeholder:font-normal" 
+              id="price" 
+              name="price" 
+              placeholder="125,000" 
+              type="number" 
+              value={formData.price}
+              onChange={(e) => updateField('price', e.target.value)}
+            />
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+              <span className="text-gray-400 sm:text-sm">.00</span>
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+            {React.cloneElement(ICONS.info, { className: 'w-4 h-4' })}
+            Platform fee (10%) will be deducted from this amount.
+          </p>
         </div>
-        <div className="grid gap-6">
-          <div className="relative">
-            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Price (LKR)</label>
-            <div className="relative mt-1 rounded-md shadow-sm">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <span className="text-gray-500 font-bold text-xs">LKR</span>
-              </div>
-              <input 
-                className="block w-full rounded-lg border-gray-300 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white pl-11 focus:border-amber-500 focus:ring-amber-500 text-sm py-2.5 font-semibold" 
-                id="price" 
-                placeholder="125,000" 
-                type="number" 
-                value={formData.price}
-                onChange={(e) => updateField('price', e.target.value)}
-              />
+      </div>
+    </section>
+    <div className="h-[1px] bg-gray-100 dark:bg-gray-800 w-full"></div>
+    <section>
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-gray-400">{React.cloneElement(ICONS.shippingTruck, { className: 'w-6 h-6'})}</span>
+        <h2 className="text-gray-900 dark:text-white text-[22px] font-bold leading-tight">Logistics</h2>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="col-span-1 md:col-span-2">
+          <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Shipping Origin</label>
+          <select 
+            className="block w-full rounded-lg border-gray-300 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:border-amber-500 focus:ring-amber-500 py-2.5"
+            value={formData.origin}
+            onChange={(e) => updateField('origin', e.target.value)}
+          >
+            <option>Colombo, Sri Lanka</option>
+            <option>Kandy, Sri Lanka</option>
+            <option>Galle, Sri Lanka</option>
+            <option>International</option>
+          </select>
+          <p className="mt-1 text-xs text-gray-400">The location from where the artwork will be shipped.</p>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Weight (Kg)</label>
+          <div className="relative mt-1 rounded-md shadow-sm">
+            <input 
+              className="block w-full rounded-lg border-gray-300 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:border-amber-500 focus:ring-amber-500 py-2.5 pr-10" 
+              placeholder="1.5" 
+              type="number"
+              value={formData.weight}
+              onChange={(e) => updateField('weight', e.target.value)}
+            />
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+              <span className="text-gray-400 sm:text-sm font-bold">Kg</span>
             </div>
           </div>
         </div>
-      </section>
-    </div>
-  );
+        <div className="hidden md:block"></div>
+        <div className="col-span-1 md:col-span-2 mt-2">
+          <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">Shipping Rates</label>
+          <div className="flex flex-col gap-3">
+            <label className={`relative flex items-center p-4 border rounded-lg cursor-pointer transition-all shadow-sm ring-1 ${formData.shippingRate === 'standard' ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20 ring-amber-200 dark:ring-amber-800' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 ring-transparent'}`}>
+              
+              <input 
+                type="radio" 
+                name="shipping-rate" 
+                className="h-4 w-4 border-gray-300 text-amber-500 focus:ring-amber-500" 
+                checked={formData.shippingRate === 'standard'}
+                onChange={() => updateField('shippingRate', 'standard')}
+              />
 
+              <div className="ml-3 block text-sm font-medium text-gray-900 dark:text-white w-full flex flex-col sm:flex-row sm:justify-between">
+                <span className="font-bold">Standard Delivery</span>
+                <span className="text-gray-600 dark:text-gray-400">LKR 450 <span className="text-gray-400 font-normal mx-1">•</span> 3-5 Business Days</span>
+              </div>
+
+            </label>
+            
+            <label className={`relative flex items-center p-4 border rounded-lg cursor-pointer transition-all shadow-sm ring-1 ${formData.shippingRate === 'express' ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20 ring-amber-200 dark:ring-amber-800' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 ring-transparent'}`}>
+              <input 
+                type="radio" 
+                name="shipping-rate" 
+                className="h-4 w-4 border-gray-300 text-amber-500 focus:ring-amber-500"
+                checked={formData.shippingRate === 'express'}
+                onChange={() => updateField('shippingRate', 'express')}
+              />
+              <div className="ml-3 block text-sm font-medium text-gray-900 dark:text-white w-full flex flex-col sm:flex-row sm:justify-between">
+                <span className="font-bold">Express Delivery</span>
+                <span className="text-gray-600 dark:text-gray-400">LKR 850 <span className="text-gray-400 font-normal mx-1">•</span> 1-2 Business Days</span>
+              </div>
+            </label>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+);
+  
   return (
     <div className="fixed inset-0 w-screen h-screen flex flex-col bg-gray-50 dark:bg-black font-sans text-[15px] text-gray-900 dark:text-gray-100 z-50 overflow-hidden">
       
@@ -459,36 +586,70 @@ const UploadArtPage = ({ setCurrentPage }) => {
               </div>
 
               {/* Preview Card */}
-                <div className="rounded-xl bg-gray-150 dark:bg-gray-800 p-3 shadow-2xl ring-1 ring-black/5 flex flex-col items-center">
+              <div className="bg-white dark:bg-black rounded-sm overflow-hidden p-3 shadow-2xl ring-1 ring-black/5 dark:ring-white/10 flex flex-col items-center transform transition-transform duration-500 hover:scale-[1.01]">
                   <div 
-                    className="relative border-[6px] border-black p-2 bg-white mb-4 flex items-center justify-center"
+                      className="relative border-[8px] border-black dark:border-gray-800 p-2 bg-white dark:bg-gray-900 mb-4 transition-all duration-500 ease-in-out flex items-center justify-center"
                       style={previewStyle}
                   >
-                    <div className="w-full h-full bg-gray-100 dark:bg-gray-800 overflow-hidden relative flex items-center justify-center">
-                        {formData.images.length > 0 ? (
-                        <img 
-                            alt="Artwork Preview" 
-                            className="w-full h-full object-cover" 
-                            src={formData.images[0].preview} 
-                        />
-                        ) : (
-                        <div className="text-gray-300 flex flex-col items-center">
-                      {React.cloneElement(ICONS.image, { className: 'w-9 h-9 mb-2' })}
-                      <span className="text-[10px] uppercase font-bold">No Image</span>
-                        </div>
-                        )}
-                    </div>
+                  <div className="w-full h-full bg-gray-100 dark:bg-gray-800 overflow-hidden relative group flex items-center justify-center">
+                      {formData.images.length > 0 ? (
+                      <img 
+                          alt="Artwork Preview" 
+                          className="w-full h-full object-cover" 
+                          src={formData.images[0].preview} 
+                      />
+                      ) : (
+                      <div className="text-gray-300 dark:text-gray-600 flex flex-col items-center">
+                          {React.cloneElement(ICONS.image, { className: 'w-12 h-12 mb-2' })}
+                          <span className="text-xs uppercase font-bold">No Image</span>
+                      </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
+                      {formData.height && (
+                      <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-[10px] font-bold uppercase flex items-center gap-1 backdrop-blur-sm">
+                          {React.cloneElement(ICONS.arScan, { className: 'w-3 h-3' })}
+                          AR Ready
+                      </div>
+                      )}
+                  </div>
                   </div>
 
                   <div className="flex flex-col items-center text-center w-full px-2 pb-2">
-                  <h4 className="text-lg font-black text-black dark:text-white uppercase tracking-tight mb-2">
-                        {formData.title || 'UNTITLED ARTWORK'}
-                    </h4>
-                  <span className="text-base font-extrabold text-black dark:text-white">
-                        {formData.price ? `LKR ${parseInt(formData.price).toLocaleString()}` : '--'}
-                    </span>
+
+                  <span className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 text-[10px] font-bold uppercase tracking-wider mb-2 rounded-sm">
+                      {formData.category || 'New Release'}
+                  </span>
+                  <p className="text-xs font-medium text-gray-800 dark:text-gray-400 mb-1">Samantha Perera</p>
+                  <h4 className="text-xl font-black text-black dark:text-white uppercase tracking-tight mb-2">
+                      {formData.title || 'UNTITLED ARTWORK'}
+                  </h4>
+
+                  <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400 text-xs font-medium mb-3">
+                      <div className="flex items-center gap-1">
+                      {React.cloneElement(ICONS.views, { className: 'w-4 h-4' })}
+                      <span>--</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                      {React.cloneElement(ICONS.heartOutline, { className: 'w-4 h-4' })}
+                      <span>--</span>
+                      </div>
+
+                  </div>
+
+                  <div className="flex flex-col items-center gap-0.5 mb-3 opacity-80">
+                      <span className="text-[10px] text-gray-400 font-medium">Current Price</span>
+                      <span className="text-lg font-extrabold text-black dark:text-white">
+                      {formData.price ? `LKR ${parseInt(formData.price).toLocaleString()}` : '--'}
+                      </span>
+                  </div>
+
+                  <a className="text-xs font-bold text-amber-500 hover:text-amber-600 transition-colors cursor-pointer flex items-center gap-1">
+                      View Details
+                  </a>
+
                   </div>
               </div>
+              {/* --------- */}
             </div>
         </div>
       </div>
