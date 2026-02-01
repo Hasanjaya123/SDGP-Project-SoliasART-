@@ -24,3 +24,6 @@ def read_root():
     return {"status": "SoliasArt Backend is Active"}
 
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
+
+
+
