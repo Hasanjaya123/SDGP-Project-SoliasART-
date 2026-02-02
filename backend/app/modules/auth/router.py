@@ -33,7 +33,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 # Endpoint to login user
-@router.post("/login, response_model=schemas.Token)")
+@router.post("/login", response_model=schemas.Token)
 def login(user_credentials: schemas.UserLogin, db: Session = Depends(get_db)):
 
     #query to find the suer by email
