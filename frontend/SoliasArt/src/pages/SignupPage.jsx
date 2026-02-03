@@ -3,6 +3,17 @@ import { FcGoogle } from 'react-icons/fc'; // Icon for the Google button
 
 const SignupPage = () => {
 
+    const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    agreeToTerms: false,
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   return (
     // This is the main container for the page
     <div className="flex min-h-screen w-full bg-white">
