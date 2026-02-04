@@ -23,6 +23,7 @@ app.add_middleware(
 def read_root():
     return {"status": "SoliasArt Backend is Active"}
 
+# add rout under Authentication tag
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 
 
