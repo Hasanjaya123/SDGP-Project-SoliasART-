@@ -28,6 +28,9 @@ const SignupPage = () => {
   // State for storing and displaying error messages
   const [error, setError] = useState(null);
 
+  // Tailwind CSS classes for input fields (reusable styling)
+  const inputClass = "w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 focus:border-yellow-600 focus:outline-none focus:ring-1 focus:ring-yellow-600 transition-colors";
+
   /**
    * handleChange: Updates form state when user types in input fields
    * @param {Event} e - The change event from input/checkbox elements
@@ -105,29 +108,137 @@ const SignupPage = () => {
   };
 
   return (
-    // Main container: flexbox layout with full screen height and white background
+    // This is the main container for the page
     <div className="flex min-h-screen w-full bg-white">
       
-      {/* Form Section: Takes up 100% on mobile, 50% on medium+ screens */}
-      <div className="flex w-full flex-col justify-center px-8 md:w-1/2">
+      {/*The Form */}
+       <div className="flex w-full flex-col justify-center px-8 py-12 md:w-1/2 lg:px-24">
         <div className="w-full max-w-md mx-auto">
-          <h2 className="md-8 text-3xl font-bold text-gray-800 mb-6">
-            Create Your Account</h2>
-          </div>
+            <h2 className="mb-8 text-3xl font-bold text-gray-900">
+                Get Started Now
+            </h2>
+            {error && (
+                <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-600 border border-red-200">
+                {error}
+                </div>
+            )}
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                <div className="flex flex-col">
+                    <label className="mb-1 text-sm font-semibold text-gray-700">Name</label>
+                    <input
+                        type="text"
+                        name="full_name"
+                        placeholder="Enter your name"
+                        className={inputClass}
+                        value={formData.full_name}
+                        onChange={handleChange}
+                        required
+                    />
+
+                </div>
+
+                <div className="flex flex-col">
+                    <label className="mb-1 text-sm font-semibold text-gray-700">Email address</label>
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        className={inputClass}
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
+
+
+                <div className="flex flex-col">
+                    <label className="mb-1 text-sm font-semibold text-gray-700">Password</label>
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        className={inputClass}
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
+                    {/* Confirm Password Input */}
+
+                <div>
+                  <label className="mb-1 block text-sm font-semibold text-gray-700">
+                    Confirm Password
+                  </label>
+                  <input
+                    type="password"
+                    name="confirmPassword"      // <--- MUST match state key
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="Confirm your password"
+                    className={inputClass}      // Re-using our style variable!
+                    required
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <input
+                        type="checkbox"
+                        name="agreeToTerms"
+                        id="terms"
+                        className="h-4 w-4 rounded border-gray-300 text-yellow-600 focus:ring-yellow-600 cursor-pointer accent-yellow-600"
+                        checked={formData.agreeToTerms}
+                        onChange={handleChange}
+                    />
+                    <label htmlFor="terms" className="text-sm text-gray-600 cursor-pointer select-none">
+                        I agree to the terms & policy
+                    </label>
+                </div>
+
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="mt-2 rounded-lg bg-[#C58940] py-3 font-bold text-white transition hover:bg-[#b07836] disabled:opacity-50"
+                >
+                    {loading ? 'Signing up...' : 'Signup'}
+                </button>
+            </form>
+
+            <div className="relative my-6 flex items-center">
+                <div className="flex-grow border-t border-gray-200"></div>
+                <span className="mx-4 text-sm text-gray-400">or</span>
+                <div className="flex-grow border-t border-gray-200"></div>
+            </div>
+
+            <button
+                type="button"
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white py-3 text-sm font-medium text-white hover:bg-gray-50 transition"
+            >
+                <FcGoogle className="text-xl" />
+                Sign in with Google
+            </button>
+
+            <p className="mt-8 text-center text-sm text-gray-600">
+                Have an account?{' '}
+                <a href="/login" className="font-semibold text-[#C58940] hover:underline">
+                Sign In
+                </a>
+            </p>
+        </div>
       </div>
 
-      {/* Image Section: Hidden on mobile, visible on medium+ screens (right half) */}
+      {/*The Image */}
       <div className="hidden w-1/2 md:block">
         <img 
-          src="./src/assets/Sign Up.jpg" 
-          alt="Decoration"
-          className="h-full w-full object-cover rounded-bl-[30px] rounded-tl-[30px]" 
+            src="./src/assets/Sign Up.jpg" 
+            alt="Decoration"
+            className="h-full w-full object-cover rounded-bl-[30px] rounded-tl-[30px]" 
         />
       </div>
 
     </div>
   );
 };
-
 
 export default SignupPage;
