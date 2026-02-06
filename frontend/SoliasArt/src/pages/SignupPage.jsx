@@ -70,16 +70,20 @@ const SignupPage = () => {
     setLoading(true); // Disable form to prevent multiple submissions
 
     try {
+      // Prepare data: Split full name into first and last name
+      const nameParts = formData.full_name.trim().split(' ');
+      const firstName = nameParts[0];
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '-';
+
       // Send signup request to backend API
       const response = await fetch('http://localhost:8000/auth/signup', {
         method: 'POST', // POST request to create new user
         headers: {
           'Content-Type': 'application/json',
         },
-        // Transform full name into first and last name for backend
         body: JSON.stringify({
-          first_name: formData.full_name.split(' ')[0],
-          last_name: formData.full_name.split(' ')[1] || '-',
+          first_name: firstName,
+          last_name: lastName,
           email: formData.email,
           password: formData.password,
         }),
@@ -89,18 +93,24 @@ const SignupPage = () => {
 
       // Check if request was successful
       if (!response.ok) {
-        throw new Error("Failed to sign up");
+        throw new Error(data.detail || "Failed to sign up");
       }
 
-      // Additional error check (redundant - could be removed)
-      if (!response.ok) throw new Error(data.detail);
-
-      // Display success message to user
-      alert("Success! Account created.");
+      // Display success message to user with their full name
+      alert(`Success! Account created for ${data.full_name}`);
+      
+      // Clear form after successful signup
+      setFormData({
+        full_name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        agreeToTerms: false,
+      });
 
     } catch (err) {
       // Catch and display any errors that occurred during signup
-      setError(err.message);
+      setError(err.message || "An unexpected error occurred");
     } finally {
       // Re-enable the form after request completes (success or error)
       setLoading(false);
