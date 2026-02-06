@@ -108,11 +108,11 @@ const SignupPage = () => {
   };
 
   return (
-    // This is the main container for the page
+    // This is the main container for the page - flex layout with form on left, fixed image on right
     <div className="flex min-h-screen w-full bg-white">
       
-      {/*The Form */}
-       <div className="flex w-full flex-col justify-center px-8 py-12 md:w-1/2 lg:px-24">
+      {/* The Form - scrollable on its own */}
+       <div className="flex w-full flex-col justify-center px-8 py-12 md:w-1/2 lg:px-24 overflow-y-auto">
         <div className="w-full max-w-md mx-auto">
             <h2 className="mb-8 text-3xl font-bold text-gray-900">
                 Get Started Now
@@ -228,8 +228,8 @@ const SignupPage = () => {
         </div>
       </div>
 
-      {/*The Image */}
-      <div className="hidden w-1/2 md:block">
+      {/* The Image - fixed on right side, doesn't scroll */}
+      <div className="hidden w-1/2 md:flex md:fixed md:right-0 md:top-0 md:h-screen md:items-center md:justify-center">
         <img 
             src="./src/assets/Sign Up.jpg" 
             alt="Decoration"
