@@ -122,7 +122,7 @@ const SignupPage = () => {
                 {error}
                 </div>
             )}
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5" name="signup" method="POST">
                 <div className="flex flex-col">
                     <label className="mb-1 text-sm font-semibold text-gray-700">Name</label>
                     <input
@@ -132,6 +132,7 @@ const SignupPage = () => {
                         className={inputClass}
                         value={formData.full_name}
                         onChange={handleChange}
+                        autoComplete="name"
                         required
                     />
 
@@ -146,6 +147,7 @@ const SignupPage = () => {
                         className={inputClass}
                         value={formData.email}
                         onChange={handleChange}
+                        autoComplete="email"
                         required
                     />
                 </div>
@@ -161,6 +163,7 @@ const SignupPage = () => {
                         className={inputClass}
                         value={formData.password}
                         onChange={handleChange}
+                        autoComplete="new-password"
                         required
                     />
                 </div>
@@ -176,6 +179,7 @@ const SignupPage = () => {
                     name="confirmPassword"      // <--- MUST match state key
                     value={formData.confirmPassword}
                     onChange={handleChange}
+                    autoComplete="new-password"
                     placeholder="Confirm your password"
                     className={inputClass}      // Re-using our style variable!
                     required
