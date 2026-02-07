@@ -247,7 +247,7 @@ const SignupPage = () => {
         <img 
             src="./src/assets/Sign Up.jpg" 
             alt="Decoration"
-            className="h-full w-full object-cover rounded-bl-[30px] rounded-tl-[30px]" 
+            className="h-full w-full object-cover rounded-bl-[20px] rounded-tl-[20px]" 
         />
       </div>
 
