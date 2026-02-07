@@ -4,7 +4,72 @@ import { FcGoogle } from 'react-icons/fc'; // Icon for the Google button
 
 const LoginPage = () => {
 
-    
+    // --- 1. STATE (The Brain) ---
+  // State for managing form input values for login
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    rememberMe: false, // New field for 'Remember for 30 days'
+  });
+
+  // State for tracking API request loading status
+  const [loading, setLoading] = useState(false);
+
+  // State for storing and displaying error messages
+  const [error, setError] = useState(null);
+
+  // --- 2. HANDLERS (The Logic) ---
+  /**
+   * handleChange: Updates form state when user types in input fields
+   * Same generic handler used in the signup form.
+   */
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+  /**
+   * handleSubmit: Form submission handler for login
+   * Calls the backend login API and handles responses.
+   */
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission
+    setError(null);     // Clear any previous errors
+    setLoading(true);   // Disable form button
+
+    try {
+      // Send login request to backend API
+      // Assuming your backend has a corresponding '/auth/login' endpoint
+      const response = await fetch('http://localhost:8000/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Send email, password, and rememberMe state
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      // Check if request was successful
+      if (!response.ok) {
+        throw new Error(data.detail || "Failed to login");
+      }
+
+      // Display success message (In a real app, you would redirect or store a token here)
+      alert(`Success! Logged in.`);
+
+    } catch (err) {
+      // Catch and display any errors that occurred during login
+      setError(err.message || "An unexpected error occurred");
+    } finally {
+      // Re-enable the form after request completes
+      setLoading(false);
+    }
+  };
 
     const inputClass = "w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 focus:border-yellow-600 focus:outline-none focus:ring-1 focus:ring-yellow-600 transition-colors";
     return (
