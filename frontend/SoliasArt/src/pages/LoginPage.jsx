@@ -179,7 +179,7 @@ const LoginPage = () => {
                 </div>
             </div>
             {/* RIGHT SIDE: The Image (Width 50%) */}
-                <div className="hidden w-1/2 md:block">
+                <div className="hidden w-1/2 md:flex md:fixed md:right-0 md:top-0 md:h-screen md:items-center md:justify-center">
                     <img 
                     src="./src/assets/Sign In.jpg" 
                     alt="Decoration" 
