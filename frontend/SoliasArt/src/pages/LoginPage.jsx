@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { FcGoogle } from 'react-icons/fc'; // Icon for the Google button
+import { useNavigate } from 'react-router-dom'; // for navigation
 
 
 const LoginPage = () => {
+
+    const navigate = useNavigate(); // Hook for programmatic navigation
 
     // --- 1. STATE (The Brain) ---
   // State for managing form input values for login
@@ -59,8 +62,11 @@ const LoginPage = () => {
         throw new Error(data.detail || "Failed to login");
       }
 
-      // Display success message (In a real app, you would redirect or store a token here)
-      alert(`Success! Logged in.`);
+      console.log("Login Successfull:", data);
+      //save the token in local storage
+      localStorage.setItem('token', data.access_token);
+
+      navigate('/feed'); // Redirect to feed page after successful login
 
     } catch (err) {
       // Catch and display any errors that occurred during login
