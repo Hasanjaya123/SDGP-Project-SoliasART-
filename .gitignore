@@ -1,7 +1,13 @@
-# Security (Ignore this file everywhere)
-.env
-backend/.env
-backend/.venv
+
+# Python
+backend/.venv/
+backend/venv/
+venv/
+__pycache__/
+*.py[cod]      <-- (Optional) Blocks compiled python variants
+*.db           <-- (NEW) Blocks SQLite database files like 'test.db'
+**/.env        <-- (CRITICAL) Blocks your secrets/passwords in ALL directories
+
 
 # Python Logic
 backend/venv/
