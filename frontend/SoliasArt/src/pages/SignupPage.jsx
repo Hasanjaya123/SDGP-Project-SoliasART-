@@ -15,7 +15,8 @@ const SignupPage = () => {
   // - confirmPassword: Password confirmation for validation
   // - agreeToTerms: Checkbox for terms and conditions agreement
   const [formData, setFormData] = useState({
-    full_name: '',
+    first_name: '',
+    last_name: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -70,10 +71,6 @@ const SignupPage = () => {
     setLoading(true); // Disable form to prevent multiple submissions
 
     try {
-      // Prepare data: Split full name into first and last name
-      const nameParts = formData.full_name.trim().split(' ');
-      const firstName = nameParts[0];
-      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '-';
 
       // Send signup request to backend API
       const response = await fetch('http://localhost:8000/auth/signup', {
@@ -82,8 +79,8 @@ const SignupPage = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          first_name: firstName,
-          last_name: lastName,
+          first_name: formData.first_name,
+          last_name: formData.last_name,
           email: formData.email,
           password: formData.password,
         }),
@@ -101,7 +98,8 @@ const SignupPage = () => {
       
       // Clear form after successful signup
       setFormData({
-        full_name: '',
+        first_name: '',
+        last_name: '',
         email: '',
         password: '',
         confirmPassword: '',
@@ -134,22 +132,36 @@ const SignupPage = () => {
             )}
             <form onSubmit={handleSubmit} className="flex flex-col gap-5" name="signup" method="POST">
                 <div className="flex flex-col">
-                    <label className="mb-1 text-sm font-semibold text-gray-700">Name</label>
+                    <label className="mb-1 text-sm font-semibold text-gray-700">First Name</label>
                     <input
                         type="text"
-                        name="full_name"
-                        placeholder="Enter your name"
+                        name="first_name"
+                        placeholder="Enter your first name"
                         className={inputClass}
-                        value={formData.full_name}
+                        value={formData.first_name}
                         onChange={handleChange}
-                        autoComplete="name"
+                        autoComplete="given-name"
                         required
                     />
 
                 </div>
 
                 <div className="flex flex-col">
-                    <label className="mb-1 text-sm font-semibold text-gray-700">Email address</label>
+                        <label className="mb-1 text-sm font-semibold text-gray-700">Last Name</label>
+                        <input
+                            type="text"
+                            name="last_name"
+                            placeholder="Enter your last name"
+                            className={inputClass}
+                            value={formData.last_name}
+                            onChange={handleChange}
+                            autoComplete="family-name" 
+                            required
+                        />
+                    </div>
+
+                <div className="flex flex-col">
+                    <label className="mb-1 text-sm font-semibold text-gray-700">Email Address</label>
                     <input
                         type="email"
                         name="email"
