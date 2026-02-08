@@ -1,22 +1,13 @@
-from pydantic import Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "SoliasArt"
-    DATABASE_URL: str
-    SUPABASE_URL: str | None = None
-    SUPABASE_KEY: str | None = None
-    SECRET_KEY: str = Field(alias="JWT_SECRET")
+    API_V1_STR: str = "/api/v1"
+    
+    #  replace the actual database URL here later
+    DATABASE_URL: str = "sqlite:///./test.db"
 
-    # "HS256" is the industry standard math formula for signing JWTs.
-    ALGORITHM: str = "HS256"
-    # Token active time
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    class Config:
+        env_file = ".env"
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        extra="ignore"
-    )
-
-#create object
 settings = Settings()
