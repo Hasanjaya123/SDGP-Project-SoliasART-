@@ -1,16 +1,23 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import SignupPage from './pages/SignupPage.jsx';
+import LoginPage from './pages/LoginPage.jsx';
+import './index.css';
 
 function App() {
   return (
-    <div className="v-screen flex items-center justify-center bg-gray-100">
-      <h1 className="text-4xl font-bold text-blue-600">
-        SoliasArt 
-      </h1>
-    </div>
-  )
+    <Router>
+      <Routes>
+        {/* Route to Signup page */}
+        <Route path="/signup" element={<SignupPage />} />
+        
+        {/* Route to Login page */}
+        <Route path="/login" element={<LoginPage />} />
+        
+        {/* Default route - redirect to signup */}
+        <Route path="/" element={<Navigate to="/signup" replace />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
