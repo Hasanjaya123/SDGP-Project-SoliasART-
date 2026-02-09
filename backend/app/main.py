@@ -17,3 +17,4 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     return {"status": "SoliasArt Backend is Active"}
+

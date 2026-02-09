@@ -1,7 +1,7 @@
 
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { ICONS } from '../constants';
+import { artworkService } from '../services/uploadApi'
 
 const INITIAL_DATA = {
   images: [],
@@ -20,12 +20,25 @@ const INITIAL_DATA = {
   shippingRate: 'standard',
 };
 
+
 const UploadArtPage = ({ setCurrentPage }) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(INITIAL_DATA);
   const [isDragOver, setIsDragOver] = useState(false);
 
   // --- Handlers ---
+
+  const handlePublish = async () => {
+    try {
+        // Optional: Add loading state here
+        await artworkService.uploadArtwork(formData);
+        alert("Artwork published successfully!");
+        // Redirect or reset form
+    } catch (error) {
+        alert("Failed to publish artwork. Please try again.");
+    }
+  };
+
 
   const updateField = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -114,6 +127,7 @@ const UploadArtPage = ({ setCurrentPage }) => {
     const progress = (step / 4) * 100;
 
     return (
+
       <div className="flex flex-col gap-4 mb-8">
         <div className="flex justify-between items-end">
           <h1 className="text-xl font-bold text-gray-900 dark:text-white">Upload Artwork</h1>
@@ -126,6 +140,7 @@ const UploadArtPage = ({ setCurrentPage }) => {
           ></div>
         </div>
         <div className="flex justify-between items-center w-full pt-2">
+
           {steps.map((s, idx) => {
 
             const isCompleted = step > s.num;
@@ -527,7 +542,7 @@ const UploadArtPage = ({ setCurrentPage }) => {
         <div className="flex items-center gap-4 text-gray-900 dark:text-white">
           <div className="size-7 flex items-center justify-center bg-amber-500 rounded-lg text-white">
             {React.cloneElement(ICONS.create, { className: 'w-4 h-4' })}
-            </div>
+          </div>
           <h2 className="text-base font-bold leading-tight tracking-tight">SoliasArt Studio</h2>
         </div>
         <div className="flex items-center gap-3">
@@ -536,10 +551,11 @@ const UploadArtPage = ({ setCurrentPage }) => {
                 onClick={() => setCurrentPage('home')}
             className="rounded-lg h-8 px-4 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-bold hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
-                Exit
+              Exit
             </button>
+
         </div>
-      </header>
+        </header>
 
       <div className="flex flex-1 overflow-hidden lg:flex-row flex-col">
         {/* Main Content Area */}
@@ -566,7 +582,7 @@ const UploadArtPage = ({ setCurrentPage }) => {
                   Back
               </button>
               <button 
-                  onClick={handleNext}
+                  onClick={step === 4 ? handlePublish : handleNext}
                 className="px-5 py-2 rounded-lg bg-amber-500 text-white font-bold text-xs hover:bg-amber-600 shadow-md flex items-center gap-2"
               >
                   {step === 4 ? 'Publish Artwork' : 'Next Step'}
