@@ -1,16 +1,10 @@
 from collections.abc import AsyncGenerator
 import uuid
-
 from sqlalchemy import Column, String, Text, DateTime, Integer, Numeric, TIMESTAMP, text, Boolean, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-from sqlalchemy.orm import DeclarativeBase, relationship
 from datetime import datetime,timezone
 from pgvector.sqlalchemy import Vector
-
-
-class Base(DeclarativeBase):
-    pass
+from app.core.database import Base
 
 
 class ArtWork(Base):
