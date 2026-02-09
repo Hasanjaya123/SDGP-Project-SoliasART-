@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
+from app.modules.ArtUpload.router import router as art_upload_router
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
@@ -18,3 +19,5 @@ app.add_middleware(
 def read_root():
     return {"status": "SoliasArt Backend is Active"}
 
+
+app.include_router(art_upload_router)

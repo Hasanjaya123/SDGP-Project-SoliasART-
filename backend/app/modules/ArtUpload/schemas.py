@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, field_validator
 from decimal import Decimal
 from typing import Optional
 from uuid import UUID
-from form import as_form
+from app.modules.ArtUpload.form import as_form
 
 # --- INPUT SCHEMA (Request) ---
 @as_form  # <--- Apply the helper here
@@ -23,7 +23,7 @@ class ArtUploadRequest(BaseModel):
     origin: str = "Colombo, Sri Lanka"
     shippingRate: str = "standard"
 
-    # --- VALIDATORS (Clean the data automatically) ---
+    #VALIDATORS (Clean the data automatically)
 
     @field_validator('year')
     @classmethod
@@ -50,7 +50,7 @@ class ArtUploadRequest(BaseModel):
         except ValueError:
             return 0.0
 
-# --- OUTPUT SCHEMA (Response) ---
+# OUTPUT SCHEMA (Response)
 class ArtWorkResponse(BaseModel):
     id: UUID
     title: str

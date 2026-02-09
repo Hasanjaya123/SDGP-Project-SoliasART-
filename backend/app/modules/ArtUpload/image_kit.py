@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from image_kit import ImageKit
+from imagekitio import ImageKit
 import os
 
 load_dotenv()

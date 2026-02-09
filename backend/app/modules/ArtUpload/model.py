@@ -29,4 +29,5 @@ class ArtWork(Base):
      
      image_url = Column(Text, nullable=False)
      embedding = Column(Vector(512))
-     artist_id = Column(UUID(as_uuid=True), ForeignKey("auth.users.id"))
+     #artist_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
+     

@@ -1,14 +1,21 @@
-from main import app
-from fastapi import FastAPI, HTTPException, File, UploadFile, Form, Depends
-from ArtUpload.schemas import ArtWorkResponse, ArtUploadRequest
-from ArtUpload.image_kit import imagekit, IMAGEKIT_URL_ENDPOINT
+from fastapi import APIRouter, HTTPException, File, UploadFile, Form, Depends
+from app.modules.ArtUpload.schemas import ArtWorkResponse, ArtUploadRequest
+from app.modules.ArtUpload.image_kit import imagekit, IMAGEKIT_URL_ENDPOINT
 from sqlalchemy.orm import Session
 from typing import List
-from core.database import get_db
+from app.core.database import get_db
 from fastapi.concurrency import run_in_threadpool
-from model import ArtWork
+from app.modules.ArtUpload.model import ArtWork
 
-@app.post("/user/dashboard/upload", response_model=ArtWorkResponse)
+#-----------Test-------------------------
+import numpy as np
+np.random.seed(42)
+consistent_embedding = np.random.uniform(-1, 1, 512).tolist()
+#-----------Test-------------------------
+
+router = APIRouter(prefix="/user/dashboard", tags=["ArtUpload"])
+
+@router.post("/upload", response_model=ArtWorkResponse)
 async def upload(
     form_data: ArtUploadRequest = Depends(ArtUploadRequest), 
     images: List[UploadFile] = File(...),
@@ -44,13 +51,13 @@ async def upload(
             is_framed=form_data.framing,    
             
             image_url=upload_result.url,
-            embedding="Test",
-            artist_id="00000000-0000-0000-0000-000000000000"
+            embedding=consistent_embedding,
+            #artist_id="00000000-0000-0000-0000-000000000000"
         )
 
         db.add(new_artwork)
-        await db.commit()
-        await db.refresh(new_artwork)
+        db.commit()
+        db.refresh(new_artwork)
 
         return new_artwork
         
@@ -58,6 +65,7 @@ async def upload(
         
     except Exception as e:
         db.rollback()
+        print(f"Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
     
 
