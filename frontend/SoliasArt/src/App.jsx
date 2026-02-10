@@ -1,12 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import SignupPage from './pages/SignupPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
-import './index.css';
 
 function App() {
   return (
     <Router>
       <Routes>
+
         {/* Route to Signup page */}
         <Route path="/signup" element={<SignupPage />} />
         
