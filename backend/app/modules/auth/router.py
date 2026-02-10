@@ -7,6 +7,7 @@ from jose import JWTError, jwt
 from app.core.config import settings
 from . import utils as email_utils  
 from app.core.config import settings
+from fastapi.responses import HTMLResponse
 
 router = APIRouter()
 
@@ -38,7 +39,12 @@ def create_user(user: schemas.UserCreate, background_tasks: BackgroundTasks, db:
     # Generate a token for email verification
     verification_token = utils.create_access_token(data={"sub": str(new_user.id), "type": "email_verification"})
     # Send verification email in the background
-    background_tasks.add_task(utils.send_verification_email, email=new_user.email, token=verification_token)
+    background_tasks.add_task(
+    email_utils.send_verification_email, 
+    new_user.email, 
+    new_user.first_name, 
+    verification_token
+)
 
     return new_user
 
@@ -78,28 +84,68 @@ def read_users_me(current_user: models.User = Depends(dependencies.get_current_u
     return current_user
 
 #endpoint to verify email
-@router.get("/verify/{token}")
+@router.get("/verify/{token}", response_class=HTMLResponse)
 def verify_email(token: str, db: Session = Depends(get_db)):
+ 
+    def create_page(icon, title, message, color="#1F4E79"):
+        return f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>{title}</title>
+            <style>
+                body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f4f4; margin: 0; }}
+                .card {{ background: white; padding: 50px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 100%; }}
+                .icon {{ font-size: 60px; margin-bottom: 20px; }}
+                h1 {{ color: {color}; margin-bottom: 10px; font-size: 28px; }}
+                p {{ color: #555; margin-bottom: 30px; line-height: 1.6; }}
+                .btn {{ display: inline-block; padding: 14px 30px; background-color: {color}; color: white; text-decoration: none; border-radius: 50px; font-weight: bold; transition: background 0.3s; }}
+                .btn:hover {{ opacity: 0.9; }}
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <div class="icon">{icon}</div>
+                <h1>{title}</h1>
+                <p>{message}</p>
+                <a href="http://localhost:5173/login" class="btn">Go to Login</a>
+            </div>
+        </body>
+        </html>
+        """
 
+    # 1. Decode Token
     try:
+        from app.core.config import settings 
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         user_id: str = payload.get("sub")
-
         if user_id is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        
+            return HTMLResponse(content=create_page("❌", "Invalid Token", "This verification link is invalid.", "#D32F2F"))
     except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
+        return HTMLResponse(content=create_page("⚠️", "Link Expired", "This verification link has expired or is invalid.", "#D32F2F"))
 
-    # Find the user
+    # 2. Find User
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        return HTMLResponse(content=create_page("❓", "User Not Found", "We could not find a user associated with this link.", "#D32F2F"))
 
+    # 3 Already Verified?
     if user.is_verified:
-        return {"message": "Account already verified"}
+       
+        return HTMLResponse(content=create_page(
+            icon="✅", 
+            title="Already Verified", 
+            message="Your account is already active. You can log in anytime!",
+            color="#1F4E79" 
+        ))
 
+    # Success: Mark as Verified
     user.is_verified = True
     db.commit()
 
-    return {"message": "Email verified successfully! You can now login."}
+    return HTMLResponse(content=create_page(
+        icon="🎉", 
+        title="Email Verified!", 
+        message="Welcome to SoliasArt! Your account has been successfully activated.",
+        color="#1F4E79" 
+    ))
