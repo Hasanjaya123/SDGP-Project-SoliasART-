@@ -3,6 +3,7 @@ import { FcGoogle } from 'react-icons/fc'; // Icon for the Google button
 import { useNavigate } from 'react-router-dom'; // for navigation
 
 
+
 const LoginPage = () => {
 
     const navigate = useNavigate(); // Hook for programmatic navigation
@@ -192,6 +193,7 @@ const LoginPage = () => {
                     className="h-full w-full object-cover rounded-bl-[20px] rounded-tl-[20px]"
                     />
             </div>
+         
         </div>
     );
 }
