@@ -1,4 +1,4 @@
-import SaveArtButton from '../comp/button.jsx'
+import SaveArtButton from '../comp/Buttonz.jsx'
 import Profile from '../comp/userProfile.jsx'
 
 function SaveArtPage(){
