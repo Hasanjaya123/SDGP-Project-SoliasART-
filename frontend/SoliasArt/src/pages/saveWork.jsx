@@ -6,11 +6,15 @@ import Footer from '../components/Footer.jsx'
 import SearchBar from '../comp/SearchBar.jsx'
 import { useState } from 'react'
 
+
+
+    
+
+
 function SaveArtPage(){
 
     const [activeTab, serActiveTab] = useState("Saved arts");
 
-    
     return(
         
         <div>
