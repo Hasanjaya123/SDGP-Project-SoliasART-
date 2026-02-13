@@ -1,8 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.modules.auth.router import router as auth_router
+from app.modules.AR.router import router as ar_router
 from app.core.database import Base, engine
+from PIL import Image
+import io
+import app.modules.AR.mesh_utils as mesh_utils  # <--- Import your new file here
 
 # Initialise the API application
 app = FastAPI(title=settings.PROJECT_NAME)
@@ -19,12 +23,12 @@ app.add_middleware(
     allow_headers=["*"],                # Allow all headers (Content-Type, Authorization, etc.)
 )
 
-@app.get("/")
+@app.post("/")
 def read_root():
     return {"status": "SoliasArt Backend is Active"}
 
 # add rout under Authentication tag
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 
-
+app.include_router(ar_router, prefix="/ar", tags=["Augmented Reality"])
 
