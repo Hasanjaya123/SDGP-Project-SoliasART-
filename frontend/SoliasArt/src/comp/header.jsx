@@ -30,3 +30,5 @@ function Header({ name, followingCount, searchPlaceholder }) {
     </header>
   );
 }
+
+export default Header;
