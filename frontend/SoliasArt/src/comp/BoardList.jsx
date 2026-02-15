@@ -1,21 +1,40 @@
 import BoardCard from'./BoardCard';
 import CreateCard from'./CreateCard';
 
-function BoardList({ boards, onCreate }) {
+function BoardList({ boards }) {
     return (
-        <section className='saved-boards'>
-            {boards.map((board) => (
-                <BoardCard 
-                key={board.id}
-                title={board.title}
-                pinCount={board.pinCount}
-                lastUpdated={board.lastUpdated}
-                image={board.image}
-                
-                
-                />
+        <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
+            {boards.map(board => (
+                <div
+                    key={board.id}
+                    className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition cursor-pointer"
+                >
+                    <img
+                    src={board.image}
+                    alt={board.title}
+                    className="w-full h-44 object-cover"
+                    />
+
+                    <div className='p-4'>
+                        <h3 className='font-semibold text-lg text-gray-900'>
+                            {board.title}
+                        </h3>
+                        <p className='text-sm text-gray-500 mt-1'>
+                            {board.pinCount} Arts · {board.lastUpdated}
+                        </p>
+                    </div>
+                </div>
+
+
+
             ))}
-            <CreateCard onCreate={onCreate} />
+            {/* Create Card */}
+            <div className="flex items-center justify-center bg-gray-100 rounded-2xl h-60 hover:bg-gray-200 transition cursor-pointer">
+                <span className="text-gray-600 font-medium">+ Create</span>
+            </div>
+
+
+
             </section>
 
             
