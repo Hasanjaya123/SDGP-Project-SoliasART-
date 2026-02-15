@@ -1,4 +1,4 @@
-import React, {userState} from 'react';
+import {useState} from 'react';
 import Header from '../comp/header.jsx';
 import TabNavigation from '../comp/TabNavigation.jsx'
 import ActionButtons from '../comp/ActionButtons.jsx'
@@ -64,7 +64,7 @@ function SaveArtPage(){
         <BoardList boards={savedBoards} onCreate={handleCreate} />
       )}
       {activeTab === 'Liked Arts' && <LikedArts likedArts={likedArts} />}
-      <Suggestions suggestions={boardSuggestions} />
+      {/* <Suggestions suggestions={boardSuggestions} /> */}
       <Footer profileUrl="https://www.artwebsite.com/janindu" />
     </div>
 
