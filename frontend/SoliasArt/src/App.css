@@ -1,0 +1,4 @@
+.tabs button.active {
+  font-weight: bold;
+  border-bottom: 2px solid #e60023;
+}

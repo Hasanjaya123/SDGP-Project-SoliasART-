@@ -4,7 +4,7 @@ import SignupPage from './pages/SignupPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import Test from './pages/test.jsx';
 
-import SaveArtPage from './pages/saveWork.jsx'
+import SaveArtPage from './pages/SaveWork.jsx'
 
 
 
@@ -25,7 +25,7 @@ function App() {
         {/* Test route for ArtDisplayCard */}
         <Route path="/test" element={<Test />} />
 
-        <Route path ="/aaveArt" element={<SaveArtPage />} />
+        <Route path ="/saveArt" element={<SaveArtPage />} />
         
         {/* Default route - redirect to signup */}
         <Route path="/" element={<Navigate to="/signup" replace />} />
