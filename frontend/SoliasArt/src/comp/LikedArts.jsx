@@ -2,12 +2,23 @@ import ArtCard from './ArtCard';
 
 function LikedArtS({LikedArtS}) {
     return (
-        <section className='liked-arts'>
-            <h2>Your Liked Arts</h2>
-            <div className='arts-grind'>
-                {LikedArtS.map(((art) => (
-                    <ArtCard key={art.id} title={art.title} image={art.image} />
+        <section className="mt-10">
+            <h2 className="text-xl font-semibold mb-6">
+                Your Liked Arts
+            </h2>
 
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {LikedArtS.map(((art) => (
+                     <div
+                        key={art.id}
+                        className="overflow-hidden rounded-xl hover:scale-105 transition cursor-pointer">
+                    
+                        <img
+                            src={art.image}
+                            alt={art.title}
+                            className="w-full h-48 object-cover"
+                        />
+                    </div>
                 )))}
             </div>
         </section>
