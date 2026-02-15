@@ -24,3 +24,5 @@ function BoardList({ boards, onCreate }) {
     );
 
 }
+
+export default BoardList;
