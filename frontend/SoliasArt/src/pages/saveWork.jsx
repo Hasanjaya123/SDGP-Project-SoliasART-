@@ -1,11 +1,10 @@
 import {useState} from 'react';
 import Header from '../comp/header.jsx';
-import TabNavigation from '../comp/TabNavigation.jsx'
-import ActionButtons from '../comp/ActionButtons.jsx'
-import Footer from '../components/Footer.jsx'
-import BoardList from '../comp/BoardList.jsx';
-import LikedArtS from '../comp/LikedArts.jsx';
-import Suggestions from '../comp/Suggestions.jsx';
+import TabNavigation from '../comp/TabNavigation';
+import ActionButtons from '../comp/ActionButtons';
+import BoardList from '../comp/BoardList';
+import LikedArts from '../comp/LikedArts';
+import Suggestions from '../comp/Suggestions';
 
 
 // Dummy data for now
@@ -32,45 +31,47 @@ const boardSuggestions = [
 
 function SaveArtPage(){
 
-    const [activeTab, serActiveTab] = useState("Saved arts");
+    const [activeTab, setActiveTab] = useState("Saved arts");
 
-    const handleTabChange= (tab) => {
-        setActiveTab(tab);
-    };
-
-    const handleGroup= () => {
-        console.log('Group clicked');
-    };
-
-    const handleCreate= () => {
-        console.log('Create Clicked');
-    };
-
+    
     return (
-        <div className="app-container">
+    <div className="min-h-screen bg-gray-50">
+      
       <Header
         name="Janindu"
         followingCount={0}
-        searchPlaceholder="Search your saved arts"
+        searchPlaceholder="Search your Pins"
       />
-      <h1>Your saved ideas</h1>
-      <TabNavigation
-        tabs={['Saved Arts', 'Liked Arts']}
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-      />
-      <ActionButtons onGroup={handleGroup} onCreate={handleCreate} />
-      {activeTab === 'Saved Arts' && (
-        <BoardList boards={savedBoards} onCreate={handleCreate} />
-      )}
-      {activeTab === 'Liked Arts' && <LikedArts likedArts={likedArts} />}
-      {/* <Suggestions suggestions={boardSuggestions} /> */}
-      <Footer profileUrl="https://www.artwebsite.com/janindu" />
+
+      <div className="max-w-6xl mx-auto px-6 mt-10">
+
+        <h1 className="text-4xl font-bold mb-6 text-gray-900">
+          Your saved ideas
+        </h1>
+
+        <TabNavigation
+          tabs={['Saved Arts', 'Liked Arts']}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+
+        <div className="flex justify-between items-center mt-6">
+          <ActionButtons />
+        </div>
+
+        {activeTab === 'Saved Arts' && (
+          <BoardList boards={savedBoards} />
+        )}
+
+        {activeTab === 'Liked Arts' && (
+          <LikedArts likedArts={likedArts} />
+        )}
+
+        {/* <Suggestions suggestions={boardSuggestions} /> */}
+
+      </div>
     </div>
-
-    );
-
-    
+  );
 }
 
 export default SaveArtPage
