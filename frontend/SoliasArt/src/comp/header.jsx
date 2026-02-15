@@ -6,7 +6,7 @@ function Header({ name, followingCount, searchPlaceholder }) {
         <input
           type="text"
           placeholder={searchPlaceholder}
-          className="w-full max-w-xl bg-gray-100 px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500"
+          className="w-full max-w-xl bg-gray-200 px-5 py-3 rounded-full text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200"
         />
 
         <div className="flex items-center gap-4 ml-6">
