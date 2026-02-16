@@ -7,7 +7,7 @@ function BoardList({ boards }) {
             {boards.map(board => (
                 <div
                     key={board.id}
-                    className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition cursor-pointer"
+                    className="bg-[#FEFDFB] rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer border border-[#E5DDD0] hover:border-[#C58940]"
                     >
 
                     {/* Image Grid Preview */}
@@ -23,11 +23,11 @@ function BoardList({ boards }) {
                     </div>
 
                     {/* Text Section */}
-                    <div className="p-4">
-                        <h3 className="font-semibold text-lg text-gray-900">
+                    <div className="p-4 bg-[#FAF8F4]">
+                        <h3 className="font-semibold text-lg text-[#2C2416]">
                         {board.title}
                         </h3>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-[#9B8B7A] mt-1">
                         {board.pinCount} Arts · {board.lastUpdated}
                         </p>
                     </div>
@@ -38,8 +38,12 @@ function BoardList({ boards }) {
 
             ))}
             {/* Create Card */}
-            <div className="flex items-center justify-center bg-gray-100 rounded-2xl h-60 hover:bg-gray-200 transition cursor-pointer">
-                <span className="text-gray-600 font-medium">+ Create</span>
+            <div className="flex items-center justify-center bg-[#F5E6D3] rounded-2xl h-60 hover:bg-[#F0EBE3] transition-all duration-300 cursor-pointer border-2 border-dashed border-[#C58940] group">
+                <div className="text-center">
+                <span className="text-[#8B6F47] font-semibold text-lg group-hover:text-[#C58940] transition">
+                    + Create Board
+                </span>
+                </div>
             </div>
 
 

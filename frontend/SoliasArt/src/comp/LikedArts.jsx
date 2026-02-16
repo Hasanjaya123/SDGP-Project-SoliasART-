@@ -1,6 +1,6 @@
 import ArtCard from './ArtCard';
 
-function LikedArtS({LikedArtS}) {
+function LikedArts({LikedArts}) {
     return (
         <section className="mt-10">
             <h2 className="text-xl font-semibold mb-6">
@@ -8,7 +8,7 @@ function LikedArtS({LikedArtS}) {
             </h2>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {LikedArtS.map(((art) => (
+                {LikedArts.map(((art) => (
                      <div
                         key={art.id}
                         className="overflow-hidden rounded-xl hover:scale-105 transition cursor-pointer">
@@ -27,4 +27,4 @@ function LikedArtS({LikedArtS}) {
     )
 }
 
-export default LikedArtS;
+export default LikedArts;
