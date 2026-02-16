@@ -20,8 +20,8 @@ const INITIAL_DATA = {
   shippingRate: 'standard',
 };
 
-
 const UploadArtPage = ({ setCurrentPage }) => {
+  
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(INITIAL_DATA);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -38,7 +38,6 @@ const UploadArtPage = ({ setCurrentPage }) => {
         alert("Failed to publish artwork. Please try again.");
     }
   };
-
 
   const updateField = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -87,6 +86,7 @@ const UploadArtPage = ({ setCurrentPage }) => {
   };
 
   const previewStyle = useMemo(() => {
+
     const h = parseFloat(formData.height);
     const w = parseFloat(formData.width);
     const hasDimensions = !isNaN(h) && !isNaN(w) && h > 0 && w > 0;
@@ -106,7 +106,9 @@ const UploadArtPage = ({ setCurrentPage }) => {
         height: 'auto', 
         aspectRatio: `${w}/${h}` 
       };
-    } else {
+    } 
+    
+    else {
       return { 
         height: '450px',
         width: 'auto',
@@ -474,6 +476,7 @@ const UploadArtPage = ({ setCurrentPage }) => {
             <option>Kandy, Sri Lanka</option>
             <option>Galle, Sri Lanka</option>
             <option>International</option>
+            
           </select>
           <p className="mt-1 text-xs text-gray-400">The location from where the artwork will be shipped.</p>
         </div>
