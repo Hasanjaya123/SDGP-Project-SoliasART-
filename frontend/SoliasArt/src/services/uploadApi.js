@@ -9,13 +9,12 @@ const api = axios.create({
 
 export const artworkService = {
   /**
-   * Uploads artwork data including multiple images to the backend.
    * @param {Object} formDataState - The state object from UploadArtPage (formData)
    */
   uploadArtwork: async (formDataState) => {
+    
     const formData = new FormData();
 
-    // 1. Append Text Fields
     // We iterate over keys to handle the simple strings
     const textFields = [
       'title', 'description', 'year', 'medium', 'category',
@@ -31,8 +30,9 @@ export const artworkService = {
     // 2. Append Images
     // Note: React state has [{ file, preview }, ...], we need just the .file property
     if (formDataState.images && formDataState.images.length > 0) {
+
       formDataState.images.forEach((imgObj) => {
-        // 'images' here matches the `images: List[UploadFile]` in FastAPI
+        
         formData.append('images', imgObj.file);
       });
     }
@@ -49,7 +49,7 @@ export const artworkService = {
 
     } catch (error) {
 
-      console.error("Upload failed:", error.response ? error.response.data : error.message);
+      console.error("Upload failed:", error.response?.data?.detail || error.message);
       throw error;
     }
   }
