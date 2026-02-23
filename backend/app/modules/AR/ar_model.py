@@ -9,6 +9,8 @@ class ARModel:
     height: int
     depth: int
     canvas: trimesh.base.Trimesh
+    image: str
+    glb_name: str
     
     def __init__(self):
         pass
@@ -52,19 +54,21 @@ class ARModel:
         
     def export_glb(self, image_path, glb_name):
         
-        img = Image.open(image_path)
+        self.image = image_path
+        self.glb_name = glb_name
+        
+        img = Image.open(self.image)
         material = trimesh.visual.material.SimpleMaterial(image=img)
         self.canvas.visual.material = material
         
         scene = trimesh.Scene(self.canvas)
-        scene.export(glb_name, file_type='glb')
+        scene.export(self.glb_name, file_type='glb')
     
     def show(self):
         
-        scene1 = trimesh.load("test.glb")
+        scene1 = trimesh.load(self.glb_name)
         scene1.show()
         
 
-        
         
     
