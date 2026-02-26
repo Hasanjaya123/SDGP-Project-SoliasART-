@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import Sidebar from '../components/Nav-bar'           
 import ArtDisplayCard from '../components/Art-card';   
-import Footer from '../components/Footer';     
+import Footer from '../components/Footer';
+import UserProfile from '../comp/UserProfile'; 
 
 // ─── Icons (defined FIRST so CardWithRealInfo can use them) ───
 const EyeIcon = () => (
@@ -96,6 +97,11 @@ function CardWithRealInfo({ artwork }) {
 
 // ─── Page ─────────────────────────────────────────────────────
 const SaveWork = () => {
+  const [activeTab, setActiveTab] = useState('collection');
+
+  const collectionArtworks = savedArtworks.slice(0, 5);
+  const likedArtworks      = savedArtworks.slice(3);
+  const displayedArtworks  = activeTab === 'collection' ? collectionArtworks : likedArtworks;
   return (
     <div className="dark min-h-screen bg-gray-950 flex flex-col">
 
@@ -120,22 +126,30 @@ const SaveWork = () => {
         <Sidebar />
 
         <div className="flex-1 pl-4 pr-8 py-8">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold tracking-tight text-white">
-              Your Saved Artworks
-            </h1>
-            <p className="mt-3 max-w-2xl mx-auto text-xl text-gray-400">
-              A personal collection of pieces you love. Revisit your favorites and decide on your next acquisition.
-            </p>
-          </div>
+
+          {/* ── Imported: UserProfile component ── */}
+          <UserProfile
+            name="Alex Rider"
+            role="Art Enthusiast"
+            avatar="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=200"
+            collectionCount={collectionArtworks.length}
+            likedCount={likedArtworks.length}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
+
+          {/* Section heading changes with tab */}
+          <h2 className="text-xl font-bold text-white text-center mb-8">
+            {activeTab === 'collection' ? 'My Art Collection' : 'Liked Artworks'}
+          </h2>
 
           <div className="flex flex-wrap gap-6 items-start justify-center">
-            {savedArtworks.map(artwork => (
+            {displayedArtworks.map(artwork => (
               <CardWithRealInfo key={artwork.id} artwork={artwork} />
             ))}
           </div>
-        </div>
 
+        </div>
       </div>
 
       <Footer />
