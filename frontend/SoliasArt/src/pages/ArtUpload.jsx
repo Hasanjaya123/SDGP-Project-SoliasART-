@@ -2,6 +2,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ICONS } from '../constants';
 import { artworkService } from '../services/uploadApi'
+import { useNavigate } from 'react-router-dom';
 
 const INITIAL_DATA = {
   images: [],
@@ -20,24 +21,35 @@ const INITIAL_DATA = {
   shippingRate: 'standard',
 };
 
-const UploadArtPage = ({ setCurrentPage }) => {
+const UploadArtPage = () => {
   
+  const navigate = useNavigate()
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(INITIAL_DATA);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false)
 
   // --- Handlers ---
 
   const handlePublish = async () => {
     try {
         // Optional: Add loading state here
+        setIsPublishing(true)
+        if (isPublishing) alert("Publishing...")
         await artworkService.uploadArtwork(formData);
         alert("Artwork published successfully!");
+        navigate("/home")
         // Redirect or reset form
     } catch (error) {
         alert("Failed to publish artwork. Please try again.");
     }
   };
+
+  const exit = () => {
+    const result = window.confirm("Do you really want to exit (Entered data will be deleted)")
+    if (result)  navigate("/home")
+    else return
+  }
 
   const updateField = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -551,7 +563,7 @@ const UploadArtPage = ({ setCurrentPage }) => {
         <div className="flex items-center gap-3">
             
             <button 
-                onClick={() => setCurrentPage('home')}
+                onClick={() => exit()}
             className="rounded-lg h-8 px-4 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white text-xs font-bold hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               Exit

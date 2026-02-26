@@ -26,21 +26,21 @@ async def upload(
     
     try:
         
-        for index, image in enumerate(images):
-            first_image_content = await image[index].read()
+        for image in images:
+            image_content = await image.read()
         
         
             upload_result = await run_in_threadpool(
 
                 imagekit.files.upload,      
-                file=first_image_content,
-                file_name=image[index].filename,
+                file=image_content,
+                file_name=image.filename,
                 folder="/ArtWorks",
                 tags=["python-app"],
                 is_private_file=False
             )
             
-            image_links.append(upload_result.url)
+            image_links.append(upload_result.url) 
         
         new_artwork = ArtWork(
             
