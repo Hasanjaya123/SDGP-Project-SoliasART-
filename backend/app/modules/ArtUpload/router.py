@@ -21,19 +21,26 @@ async def upload(
     images: List[UploadFile] = File(...),
     db: Session = Depends(get_db)
 ):
+    
+    image_links = []
+    
     try:
         
-        first_image_content = await images[0].read()
+        for index, image in enumerate(images):
+            first_image_content = await image[index].read()
         
-        upload_result = await run_in_threadpool(
+        
+            upload_result = await run_in_threadpool(
 
-            imagekit.files.upload,      
-            file=first_image_content,
-            file_name=images[0].filename,
-            folder="/ArtWorks",
-            tags=["python-app"],
-            is_private_file=False
-        )
+                imagekit.files.upload,      
+                file=first_image_content,
+                file_name=image[index].filename,
+                folder="/ArtWorks",
+                tags=["python-app"],
+                is_private_file=False
+            )
+            
+            image_links.append(upload_result.url)
         
         new_artwork = ArtWork(
             
@@ -50,7 +57,7 @@ async def upload(
             
             is_framed=form_data.framing,    
             
-            image_url=upload_result.url,
+            image_url=image_links,
             embedding=consistent_embedding,
             #artist_id="00000000-0000-0000-0000-000000000000"
         )

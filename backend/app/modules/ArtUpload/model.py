@@ -1,6 +1,6 @@
 from collections.abc import AsyncGenerator
 import uuid
-from sqlalchemy import Column, String, Text, DateTime, Integer, Numeric, TIMESTAMP, text, Boolean, ForeignKey
+from sqlalchemy import Column, String, Text, DateTime, Integer, Numeric, TIMESTAMP, text, Boolean, ForeignKey, ARRAY
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime,timezone
 from pgvector.sqlalchemy import Vector
@@ -27,7 +27,7 @@ class ArtWork(Base):
      depth_in = Column(Numeric(5,2), nullable=False)
      is_framed = Column(Boolean, server_default=text("false"), default=False)
      
-     image_url = Column(Text, nullable=False)
+     image_url = Column(ARRAY(String), nullable=False)
      embedding = Column(Vector(512))
      #artist_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
      
