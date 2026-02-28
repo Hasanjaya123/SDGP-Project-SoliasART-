@@ -9,7 +9,7 @@ class Artist(Base):
     
     id = Column(UUID(as_uuid=True),primary_key=True, server_default=text("gen_random_uuid()"))
     #change this after user model is created
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), on_ddelete="CASCADE")
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
     #Art id  change this after user model is created
     
     verified_artist = Column(Boolean, nullable=False, default=False)
@@ -27,6 +27,6 @@ class Artist(Base):
     dispatch_address = Column(String, nullable=False)
     phone = Column(String, nullable=False)
     agreed_to_terms = Column(Boolean, nullable=False, default=False)
-    profile_image = Column(String, nullable=False, default="https://shorturl.at/3ywNl")
+    profile_image = Column(String, nullable=True, default="https://shorturl.at/3ywNl")
     
-    from_user = relationship("users", foreign_keys=[user_id])
+    #from_user = relationship("users", foreign_keys=[user_id])
