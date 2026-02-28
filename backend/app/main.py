@@ -20,6 +20,7 @@ app.add_middleware(
     allow_credentials=True,             # Allow cookies/tokens
     allow_methods=["*"],                # Allow all types: GET, POST, PUT, DELETE
     allow_headers=["*"],                # Allow all headers (Content-Type, Authorization, etc.)
+    expose_headers=["Content-Disposition"]  # Expose this header to the frontend for file downloads
 )
 
 @app.post("/")
