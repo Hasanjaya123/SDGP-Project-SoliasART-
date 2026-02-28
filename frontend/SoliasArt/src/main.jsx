@@ -6,6 +6,7 @@ import App from './App.jsx'
 import UploadArtPage from './pages/ArtUpload.jsx'
 
 
+
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <App />
