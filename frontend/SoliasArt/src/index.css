@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+.material-symbols-outlined.filled {
+  font-variation-settings: 'FILL' 1;
+}
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
