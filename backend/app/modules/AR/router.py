@@ -1,29 +1,70 @@
-from fastapi import APIRouter, Response, UploadFile, File
-from app.modules.AR.mesh_utils import create_poster_mesh
-from app.core.database import get_db
-from PIL import Image
-import io
-import app.modules.AR.mesh_utils as mesh_utils  # <--- Import your new file here
+from fastapi import APIRouter, HTTPException, Depends, Response
+from sqlalchemy.orm import Session
+import httpx
+import os
+import uuid
 
-# Create the router instance
+from app.modules.AR.ar_model import ARModel
+from app.core.database import get_db
+from app.modules.ArtUpload.artwork import ArtWork 
+
 router = APIRouter()
 
+@router.get("/generate-ar/{artwork_id}")
+async def generate_ar_from_db(artwork_id: str, db: Session = Depends(get_db)):
+    # Fetch from DB
+    artwork = db.query(ArtWork).filter(ArtWork.id == artwork_id).first()
+    
+    if not artwork:
+        raise HTTPException(status_code=404, detail="Artwork not found")
+    
+    # Check if image URLs are available
+    if not artwork.image_url or len(artwork.image_url) == 0:
+        raise HTTPException(status_code=400, detail="No images available")
 
-@router.post("/generate-ar")
-async def generate_ar(file: UploadFile = File(...)):
-    #read image file
-    content = await file.read()
-    image = Image.open(io.BytesIO(content))
+    # Get the first image URL which reserved for AR model  
+    primary_image_url = artwork.image_url[0]
 
-    #create 3d mesh from image
-    mesh = mesh_utils.create_poster_mesh(image)
+    # Setup Temp Files
+    unique_id = str(uuid.uuid4())
+    temp_img = f"temp_{unique_id}.jpg"
+    temp_glb = f"temp_{unique_id}.glb"
 
-    #export mesh to glb format
-    glb_data = mesh.export(file_type='glb')
+    try:
+        # Download
+        async with httpx.AsyncClient(follow_redirects=True) as client:
+            resp = await client.get(primary_image_url)
+            resp.raise_for_status()
+            with open(temp_img, "wb") as f:
+                f.write(resp.content)
 
-    #return the glb file as a response
-    return Response(
-        content=glb_data,
-        media_type='model/gltf-binary',
-        headers={'Content-Disposition': 'attachment; filename="poster.glb"'}
-    )
+        # Run Engine
+        ar = ARModel()
+        # Ensure we convert Decimal to float for 3D math
+        ar.create_canvas(
+            float(artwork.width_in), 
+            float(artwork.height_in), 
+            float(artwork.depth_in)
+        )
+        ar.create_uv_mapping()
+        ar.export_glb(temp_img, temp_glb)
+
+        with open(temp_glb, "rb") as f:
+            glb_data = f.read()
+
+        # Adding the Content-Disposition header triggers the download button in Swagger
+        return Response(
+            content=glb_data, 
+            media_type="model/gltf-binary",
+            headers={
+                "Content-Disposition": f"attachment; filename=artwork_{artwork_id}.glb"
+            }
+        )
+
+    except Exception as e:
+        print(f"ERROR during AR generation: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+    finally:
+        if os.path.exists(temp_img): os.remove(temp_img)
+        if os.path.exists(temp_glb): os.remove(temp_glb)

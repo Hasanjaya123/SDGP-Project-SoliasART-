@@ -6,7 +6,6 @@ from app.modules.AR.router import router as ar_router
 from app.core.database import Base, engine
 from PIL import Image
 import io
-import app.modules.AR.mesh_utils as mesh_utils  # <--- Import your new file here
 
 # Initialise the API application
 app = FastAPI(title=settings.PROJECT_NAME)
