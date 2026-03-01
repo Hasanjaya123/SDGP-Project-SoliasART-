@@ -191,12 +191,10 @@ const ArtSearch = () => {
             </div>
 
             {filtered.length > 0 ? (
-              <div className="flex flex-wrap" style={{ margin: "-4px" }}>
+              <div className="flex flex-wrap gap-4 items-start justify-center">
                 {filtered.map((art) => (
                   <div
                     key={art.id}
-                    className="w-1/2 sm:w-1/3 lg:w-1/4"
-                    style={{ padding: "4px" }}
                   >
                     <ArtDisplayCard image={art.images[0]} formData={art} />
                   </div>
