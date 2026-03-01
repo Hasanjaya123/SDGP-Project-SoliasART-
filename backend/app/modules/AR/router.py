@@ -6,7 +6,7 @@ import uuid
 
 from app.modules.AR.ar_model import ARModel
 from app.core.database import get_db
-from app.modules.ArtUpload.artwork import ArtWork 
+from app.modules.ArtUpload.model import ArtWork 
 
 router = APIRouter()
 
