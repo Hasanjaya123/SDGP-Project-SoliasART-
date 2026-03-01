@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import SignupPage from './pages/SignupPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import Test from './pages/test.jsx';
+import ArtSearch from './pages/ArtSearch.jsx';
 
 function App() {
   return (
@@ -16,6 +17,8 @@ function App() {
 
         {/* Test route for ArtDisplayCard */}
         <Route path="/test" element={<Test />} />
+
+        <Route path="/search" element={<ArtSearch />} />
         
         {/* Default route - redirect to signup */}
         <Route path="/" element={<Navigate to="/signup" replace />} />
