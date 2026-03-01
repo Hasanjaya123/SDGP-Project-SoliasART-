@@ -1,12 +1,13 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import ArtDisplayCard from "../components/Art-card";
 import SearchBar from "../components/SearchBar";
 import UploadButton from "../components/UploadButton";
 import CartButton from "../components/CartButton";
 import Sidebar from "../components/Nav-bar";
 import Footer from "../components/Footer";
+import soliasartlogo from "../assets/soliasartlogo.png"
 
-// Genshin Impact / ZZZ themed artwork data using picsum as placeholder images
+// artwork data using picsum as placeholder images
 const ARTWORKS = [
   {
     id: 1,
@@ -92,6 +93,31 @@ const ARTWORKS = [
 
 const ArtSearch = () => {
   const [query, setQuery] = useState("");
+  const [isDark, setIsDark] = useState(true);
+
+  // ── Apply / remove the "dark" class on <html> so ALL dark: variants work ──
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDark]);
+
+  // ── Intercept "Toggle Theme" clicks bubbling up from Nav-bar ──
+  // Walk up the DOM from the clicked element — the icon <span> or text <span>
+  // are the likely targets, so we climb until we find the nav row containing
+  // "Toggle Theme" or we exit the sidebar wrapper entirely.
+  const handleSidebarClick = (e) => {
+    let node = e.target;
+    while (node && node !== e.currentTarget) {
+      if (node.textContent && node.textContent.trim() === "Toggle Theme") {
+        setIsDark((d) => !d);
+        return;
+      }
+      node = node.parentElement;
+    }
+  };
 
   const filtered = useMemo(() => {
     if (!query.trim()) return ARTWORKS;
@@ -105,67 +131,115 @@ const ArtSearch = () => {
   }, [query]);
 
   return (
-    <div className="flex min-h-screen bg-gray-950 font-sans">
+    /*
+      Root wrapper:
+      - `dark` class is toggled on <html> via useEffect above, so dark: variants
+        fire globally — including inside Nav-bar.jsx without editing it.
+      - We use a flex-col wrapper so the footer can span full width at the bottom.
+    */
+    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-950 font-sans transition-colors duration-300">
 
-      {/* ── Left Sidebar (Nav-bar.jsx — unmodified) ── */}
-      <Sidebar />
+      {/* ── Top section: sidebar + main side by side ── */}
+      <div className="flex flex-1 min-h-0">
 
-      {/* ── Right column: top bar + content + footer ── */}
-      <div className="flex flex-col flex-1 min-w-0">
+        {/*
+          Sidebar wrapper:
+          - onClick delegation catches "Toggle Theme" without editing Nav-bar
+          - [&_div]:dark:bg-gray-900  overrides the hardcoded bg-white inside Nav-bar
+          - [&_div]:dark:border-gray-800 overrides border-gray-200
+          - [&_span]:dark:text-gray-400 overrides text-gray-500 on links
+          - [&_h4]:dark:text-white / [&_p]:dark:text-gray-400 for user profile text
+          - [&_.hover\:bg-yellow-50]:dark:hover:bg-gray-800 overrides hover bg
+        */}
+        <div
+          onClick={handleSidebarClick}
+          className="
+            flex-shrink-0
+            [&>div]:dark:bg-gray-900
+            [&>div]:dark:border-gray-800
+            [&_nav_div]:dark:text-gray-400
+            [&_nav_div:hover]:dark:text-amber-500
+            [&_nav_div:hover]:dark:bg-gray-800
+            [&_.border-t]:dark:border-gray-700
+            [&_h4]:dark:text-white
+            [&_p]:dark:text-gray-400
+            [&_.text-\[\#0F2C59\]]:dark:text-white
+          "
+        >
+          <Sidebar />
+        </div>
 
-        {/* Top Navigation Bar */}
-        <header className="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-md border-b border-gray-800 shadow-sm">
-          <div className="px-6 py-3 flex items-center gap-3">
-            <div className="flex-shrink-0 mr-2 hidden lg:block">
-              <span className="text-lg font-black text-amber-500 tracking-tight uppercase">ArtVault</span>
+        {/* ── Right column: header + main content ── */}
+        <div className="flex flex-col flex-1 min-w-0">
+
+          {/* Sticky top bar */}
+          <header className="sticky top-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm transition-colors duration-300">
+            <div className="px-6 py-3 flex items-center gap-3">
+
+              {/* Logo PNG — replaces the old "ArtVault" text */}
+              <div className="flex-shrink-0 mr-2">
+                <img
+                  src={soliasartlogo}
+                  alt="SoliasART"
+                  className="h-8 w-auto object-contain"
+                />
+              </div>
+
+              <div className="flex-1 flex justify-center">
+                <SearchBar onSearch={setQuery} />
+              </div>
+
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <UploadButton />
+                <CartButton count={0} />
+              </div>
+            </div>
+          </header>
+
+          {/* Main content */}
+          <main className="flex-1 px-6 py-8 bg-white dark:bg-gray-950 transition-colors duration-300">
+            <div className="mb-6">
+              <h1 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight">
+                {query ? `Results for "${query}"` : "All Masterpieces"}
+              </h1>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {filtered.length} artwork{filtered.length !== 1 ? "s" : ""} found
+              </p>
             </div>
 
-            <div className="flex-1 flex justify-center">
-              <SearchBar onSearch={setQuery} />
-            </div>
+            {filtered.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {filtered.map((art) => (
+                  <div
+                    key={art.id}
+                    className="bg-gray-50 dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden hover:shadow-md hover:border-gray-300 dark:hover:border-gray-700 transition-all"
+                  >
+                    <ArtDisplayCard image={art.images[0]} formData={art} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-24 text-center">
+                <div className="text-5xl mb-4">🔍</div>
+                <h3 className="text-lg font-black text-gray-700 dark:text-gray-300 uppercase tracking-tight mb-1">
+                  No results found
+                </h3>
+                <p className="text-sm text-gray-400">
+                  Try "genshin", "zzz", "raiden", "venti", or "ellen"
+                </p>
+              </div>
+            )}
+          </main>
 
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <UploadButton />
-              <CartButton count={0} />
-            </div>
-          </div>
-        </header>
-
-        {/* Main Content */}
-        <main className="flex-1 px-6 py-8">
-          <div className="mb-6">
-            <h1 className="text-2xl font-black text-white uppercase tracking-tight">
-              {query ? `Results for "${query}"` : "All Masterpieces"}
-            </h1>
-            <p className="text-xs text-gray-400 mt-0.5">
-              {filtered.length} artwork{filtered.length !== 1 ? "s" : ""} found
-            </p>
-          </div>
-
-          {filtered.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {filtered.map((art) => (
-                <div
-                  key={art.id}
-                  className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 overflow-hidden hover:shadow-md hover:border-gray-700 transition-all"
-                >
-                  <ArtDisplayCard image={art.images[0]} formData={art} />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-24 text-center">
-              <div className="text-5xl mb-4">🔍</div>
-              <h3 className="text-lg font-black text-gray-300 uppercase tracking-tight mb-1">No results found</h3>
-              <p className="text-sm text-gray-400">Try "genshin", "zzz", "raiden", "venti", or "ellen"</p>
-            </div>
-          )}
-        </main>
-
-        {/* ── Footer (Footer.jsx — unmodified) ── */}
-        <Footer />
-
+        </div>
       </div>
+
+      {/*
+        Footer is OUTSIDE the flex row — sits below both sidebar and main content.
+        This guarantees it stretches the full page width (sidebar + content combined).
+      */}
+      <Footer />
+
     </div>
   );
 };
