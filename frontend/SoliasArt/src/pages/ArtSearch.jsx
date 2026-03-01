@@ -3,6 +3,8 @@ import ArtDisplayCard from "../components/Art-card";
 import SearchBar from "../components/SearchBar";
 import UploadButton from "../components/UploadButton";
 import CartButton from "../components/CartButton";
+import Sidebar from "../components/Nav-bar";
+import Footer from "../components/Footer";
 
 // Genshin Impact / ZZZ themed artwork data using picsum as placeholder images
 const ARTWORKS = [
@@ -103,63 +105,67 @@ const ArtSearch = () => {
   }, [query]);
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-950 font-sans">
-      {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-40 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
-          {/* Logo */}
-          <div className="flex-shrink-0 mr-2">
-            <span className="text-lg font-black text-amber-500 tracking-tight uppercase">ArtVault</span>
+    <div className="flex min-h-screen bg-gray-950 font-sans">
+
+      {/* ── Left Sidebar (Nav-bar.jsx — unmodified) ── */}
+      <Sidebar />
+
+      {/* ── Right column: top bar + content + footer ── */}
+      <div className="flex flex-col flex-1 min-w-0">
+
+        {/* Top Navigation Bar */}
+        <header className="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-md border-b border-gray-800 shadow-sm">
+          <div className="px-6 py-3 flex items-center gap-3">
+            <div className="flex-shrink-0 mr-2 hidden lg:block">
+              <span className="text-lg font-black text-amber-500 tracking-tight uppercase">ArtVault</span>
+            </div>
+
+            <div className="flex-1 flex justify-center">
+              <SearchBar onSearch={setQuery} />
+            </div>
+
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <UploadButton />
+              <CartButton count={0} />
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="flex-1 px-6 py-8">
+          <div className="mb-6">
+            <h1 className="text-2xl font-black text-white uppercase tracking-tight">
+              {query ? `Results for "${query}"` : "All Masterpieces"}
+            </h1>
+            <p className="text-xs text-gray-400 mt-0.5">
+              {filtered.length} artwork{filtered.length !== 1 ? "s" : ""} found
+            </p>
           </div>
 
-          {/* Search bar — takes up available center space */}
-          <div className="flex-1 flex justify-center">
-            <SearchBar onSearch={setQuery} />
-          </div>
+          {filtered.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {filtered.map((art) => (
+                <div
+                  key={art.id}
+                  className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 overflow-hidden hover:shadow-md hover:border-gray-700 transition-all"
+                >
+                  <ArtDisplayCard image={art.images[0]} formData={art} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-24 text-center">
+              <div className="text-5xl mb-4">🔍</div>
+              <h3 className="text-lg font-black text-gray-300 uppercase tracking-tight mb-1">No results found</h3>
+              <p className="text-sm text-gray-400">Try "genshin", "zzz", "raiden", "venti", or "ellen"</p>
+            </div>
+          )}
+        </main>
 
-          {/* Right actions */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <UploadButton />
-            <CartButton count={0} />
-          </div>
-        </div>
-      </header>
+        {/* ── Footer (Footer.jsx — unmodified) ── */}
+        <Footer />
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        {/* Section heading */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight">
-            {query ? `Results for "${query}"` : "All Masterpieces"}
-          </h1>
-          <p className="text-xs text-gray-400 mt-0.5">
-            {filtered.length} artwork{filtered.length !== 1 ? "s" : ""} found
-          </p>
-        </div>
-
-        {/* Grid */}
-        {filtered.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filtered.map((art) => (
-              <div
-                key={art.id}
-                className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-md transition-shadow"
-              >
-                <ArtDisplayCard
-                  image={art.images[0]}
-                  formData={art}
-                />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="text-5xl mb-4">🔍</div>
-            <h3 className="text-lg font-black text-gray-700 dark:text-gray-300 uppercase tracking-tight mb-1">No results found</h3>
-            <p className="text-sm text-gray-400">Try searching for "genshin", "zzz", "raiden", or "neon"</p>
-          </div>
-        )}
-      </main>
+      </div>
     </div>
   );
 };
