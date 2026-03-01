@@ -94,6 +94,7 @@ const ARTWORKS = [
 const ArtSearch = () => {
   const [query, setQuery] = useState("");
   const [isDark, setIsDark] = useState(true);
+  const [previewImage, setPreviewImage] = useState(null); // object URL from UploadButton
 
   // ── Apply / remove the "dark" class on <html> so ALL dark: variants work ──
   useEffect(() => {
@@ -103,21 +104,6 @@ const ArtSearch = () => {
       document.documentElement.classList.remove("dark");
     }
   }, [isDark]);
-
-  // ── Intercept "Toggle Theme" clicks bubbling up from Nav-bar ──
-  // Walk up the DOM from the clicked element — the icon <span> or text <span>
-  // are the likely targets, so we climb until we find the nav row containing
-  // "Toggle Theme" or we exit the sidebar wrapper entirely.
-  const handleSidebarClick = (e) => {
-    let node = e.target;
-    while (node && node !== e.currentTarget) {
-      if (node.textContent && node.textContent.trim() === "Toggle Theme") {
-        setIsDark((d) => !d);
-        return;
-      }
-      node = node.parentElement;
-    }
-  };
 
   const filtered = useMemo(() => {
     if (!query.trim()) return ARTWORKS;
@@ -142,17 +128,7 @@ const ArtSearch = () => {
       {/* ── Top section: sidebar + main side by side ── */}
       <div className="flex flex-1 min-h-0">
 
-        {/*
-          Sidebar wrapper:
-          - onClick delegation catches "Toggle Theme" without editing Nav-bar
-          - [&_div]:dark:bg-gray-900  overrides the hardcoded bg-white inside Nav-bar
-          - [&_div]:dark:border-gray-800 overrides border-gray-200
-          - [&_span]:dark:text-gray-400 overrides text-gray-500 on links
-          - [&_h4]:dark:text-white / [&_p]:dark:text-gray-400 for user profile text
-          - [&_.hover\:bg-yellow-50]:dark:hover:bg-gray-800 overrides hover bg
-        */}
         <div
-          onClick={handleSidebarClick}
           className="
             flex-shrink-0
             [&>div]:dark:bg-gray-900
@@ -177,7 +153,7 @@ const ArtSearch = () => {
             <div className="px-6 py-3 flex items-center gap-3">
 
               {/* Logo PNG — replaces the old "ArtVault" text */}
-              <div className="flex-shrink-0 mr-2">
+               <div className="flex-shrink-0 mr-2">
                 <img
                   src={soliasartlogo}
                   alt="SoliasART"
@@ -186,11 +162,18 @@ const ArtSearch = () => {
               </div>
 
               <div className="flex-1 flex justify-center">
-                <SearchBar onSearch={setQuery} />
+                <SearchBar
+                  onSearch={setQuery}
+                  previewImage={previewImage}
+                  onClearImage={() => {
+                    if (previewImage) URL.revokeObjectURL(previewImage);
+                    setPreviewImage(null);
+                  }}
+                />
               </div>
 
               <div className="flex items-center gap-2 flex-shrink-0">
-                <UploadButton />
+                <UploadButton onImageUpload={(url) => setPreviewImage(url)} />
                 <CartButton count={0} />
               </div>
             </div>
@@ -208,11 +191,12 @@ const ArtSearch = () => {
             </div>
 
             {filtered.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="flex flex-wrap" style={{ margin: "-4px" }}>
                 {filtered.map((art) => (
                   <div
                     key={art.id}
-                    className="bg-gray-50 dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden hover:shadow-md hover:border-gray-300 dark:hover:border-gray-700 transition-all"
+                    className="w-1/2 sm:w-1/3 lg:w-1/4"
+                    style={{ padding: "4px" }}
                   >
                     <ArtDisplayCard image={art.images[0]} formData={art} />
                   </div>

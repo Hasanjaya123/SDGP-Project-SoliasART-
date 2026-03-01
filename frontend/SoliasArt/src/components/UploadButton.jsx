@@ -1,19 +1,17 @@
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 
-
 const UploadIcon = () => (
   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
   </svg>
 );
 
-const UploadButton = () => {
+const UploadButton = ({ onImageUpload }) => {
   const [open, setOpen] = useState(false);
   const [dragging, setDragging] = useState(false);
-  const [uploaded, setUploaded] = useState([]);
+  const [uploaded, setUploaded] = useState([]); // [{ name, url }]
   const fileRef = useRef();
-
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -28,20 +26,24 @@ const UploadButton = () => {
   const handleDrop = (e) => {
     e.preventDefault();
     setDragging(false);
-    const files = Array.from(e.dataTransfer.files);
-    setUploaded((prev) => [...prev, ...files.map((f) => f.name)]);
+    const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith("image/"));
+    const newFiles = files.map((f) => ({ name: f.name, url: URL.createObjectURL(f) }));
+    setUploaded((prev) => [...prev, ...newFiles]);
+    if (newFiles.length > 0 && onImageUpload) onImageUpload(newFiles[0].url);
   };
 
   const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    setUploaded((prev) => [...prev, ...files.map((f) => f.name)]);
+    const files = Array.from(e.target.files).filter((f) => f.type.startsWith("image/"));
+    const newFiles = files.map((f) => ({ name: f.name, url: URL.createObjectURL(f) }));
+    setUploaded((prev) => [...prev, ...newFiles]);
+    if (newFiles.length > 0 && onImageUpload) onImageUpload(newFiles[0].url);
   };
 
   const handleClose = () => {
+    uploaded.forEach((f) => URL.revokeObjectURL(f.url));
     setOpen(false);
     setUploaded([]);
   };
-
 
   const modal = open ? (
     <div
@@ -87,17 +89,26 @@ const UploadButton = () => {
           <input ref={fileRef} type="file" multiple accept="image/*" className="hidden" onChange={handleFileChange} />
         </div>
 
-        {/* Queued files */}
+        {/* Image previews */}
         {uploaded.length > 0 && (
           <div className="mt-4">
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Queued Files</p>
-            <ul className="space-y-1 max-h-28 overflow-y-auto">
-              {uploaded.map((name, i) => (
-                <li key={i} className="text-xs text-gray-300 bg-gray-800 rounded px-3 py-1.5 font-medium truncate">
-                  ✓ {name}
-                </li>
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+              {uploaded.length} file{uploaded.length > 1 ? "s" : ""} queued
+            </p>
+            <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto">
+              {uploaded.map((file, i) => (
+                <div key={i} className="relative group aspect-square rounded-lg overflow-hidden bg-gray-800">
+                  <img
+                    src={file.url}
+                    alt={file.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-1">
+                    <span className="text-[9px] text-white font-medium truncate w-full">{file.name}</span>
+                  </div>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         )}
 
