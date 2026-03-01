@@ -18,7 +18,7 @@ const HeartIcon = () => (
   </svg>
 );
 
-// ─── Data ─────────────────────────────────────────────────────
+// ─── Data
 const savedArtworks = [
   {
     id: 1,
@@ -127,7 +127,7 @@ const SaveWork = () => {
 
         <div className="flex-1 pl-4 pr-8 py-8">
 
-          {/* ── Imported: UserProfile component ── */}
+          {/* Imported: UserProfile component ── */}
           <UserProfile
             name="Alex Rider"
             role="Art Enthusiast"
