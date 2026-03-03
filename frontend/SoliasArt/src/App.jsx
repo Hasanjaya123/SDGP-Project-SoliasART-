@@ -7,7 +7,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
 import './index.css';
 import Test from './pages/test.jsx';
-
+import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
 
 function App() {
   return (
@@ -30,6 +30,9 @@ function App() {
 
         {/* Artist on boarding page */}
         <Route path="/settings/convert/artist" element={<ArtistOnboardingPage />} />
+
+        <Route path="/user/artist/profile" element={<ArtistProfilePage />} />
+
     </Routes>    
     </>
          
