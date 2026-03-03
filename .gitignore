@@ -1,11 +1,27 @@
 # Python
 backend/.venv/
-__pycache__/
+backend/venv/
+venv/
+
+# Ignore backend AR cache and temp files
+backend/storage/
+backend/temp_*.jpg
+
+_pycache_/
 *.py[cod]      <-- (Optional) Blocks compiled python variants
 *.db           <-- (NEW) Blocks SQLite database files like 'test.db'
 **/.env        <-- (CRITICAL) Blocks your secrets/passwords in ALL directories
 
-# React / Node
+
+# Python Logic
+backend/venv/
+_pycache_/
+*.py[cod]
+*.db
+
+# Node / React
 node_modules/
 dist/
-.DS_Store      <-- (Optional) Blocks annoying Mac system files
+.DS_Store
+
+backend/.env
