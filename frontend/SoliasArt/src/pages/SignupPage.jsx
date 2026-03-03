@@ -264,6 +264,8 @@ const SignupPage = () => {
       </div>
 
     </div>
+
+    
   );
 };
 
