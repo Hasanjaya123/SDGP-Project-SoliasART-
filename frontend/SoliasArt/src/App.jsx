@@ -4,7 +4,7 @@ import UploadArtPage from './pages/ArtUpload'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import SignupPage from './pages/SignupPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
-import { ArtistOnboardingPage } from './pages/ArtistOnboardingPage.jsx';
+import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
 import './index.css';
 import Test from './pages/test.jsx';
 
