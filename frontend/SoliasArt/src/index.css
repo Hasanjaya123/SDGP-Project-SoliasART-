@@ -1,8 +1,11 @@
 @import "tailwindcss";
 
-<<<<<<< HEAD
 
-=======
+.material-symbols-outlined.filled {
+  font-variation-settings: 'FILL' 1;
+}
+
+
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -77,4 +80,4 @@ input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 30px white inset !important;
   -webkit-text-fill-color: #111827 !important;
 }
->>>>>>> d9e130e8560c9aefbd3c606b58940eb8838cfd2b
+
