@@ -1,68 +1,47 @@
-from fastapi import HTTPException, APIRouter, Depends, File, UploadFile
-from sqlalchemy.orm import Session
-from typing import List
-from app.core.database import get_db
-from fastapi.concurrency import run_in_threadpool
-from app.modules.ArtistProfile.schemas import ArtistUploadRequest
-from app.modules.ArtistProfile.model import Artist
-from app.core.image_kit import imagekit
+# backend/main.py
+from fastapi import HTTPException, APIRouter
+from app.core.supabase import supabase
 
+router = APIRouter(prefix="/artists", tags=["ArtistProfile"])
 
-router = APIRouter(prefix="/user/settings", tags=["ConvertToArtist"])
-
-
-@router.post("/convert")
-async def convert_to_artist_profile(
-    form_data: ArtistUploadRequest = Depends(ArtistUploadRequest),
-    image: UploadFile = File(...),
-    db: Session = Depends(get_db)
-    ):
-    
+@router.get("/profile/{artist_id}")
+async def get_full_artist_profile(artist_id: str):
+    """
+    Fetches everything needed for the ArtistProfilePage in one single request.
+    """
     try:
+        # 1. GET ARTIST PROFILE
+        # We fetch the specific user by their ID.
+        profile_res = supabase.table("artists").select("*").eq("id", artist_id).execute()
         
-        image_content = await image.read()
+        if not profile_res.data:
+            raise HTTPException(status_code=404, detail="Artist not found")
+            
+        raw_artist = profile_res.data[0]
+
+        artworks_res = supabase.table("artwork").select("id, title, price, image_url, width_in, height_in, medium").eq("artist_id", artist_id).execute()
         
-        upload_result = await run_in_threadpool(
-            
-            imagekit.files.upload,
-            
-            file = image_content,
-            file_name = image.filename,
-            folder="/Profile-Pictures",
-            tags=["python-app"],
-            is_private_file=True
-            
-        )
-        
-        new_artist_profile = Artist(
-            
-            verified_artist = form_data.verified_artist,
-            display_name = form_data.display_name,
-            artist_bio = form_data.artist_bio,
-            other_social_media_username = form_data.other_social_media_username,
-            other_social_nedia_link = form_data.other_social_nedia_link,
-            primary_medium = form_data.primary_medium,
-            artistic_styles = form_data.artistic_styles,
-            years_experience = form_data.years_experience,
-            legal_name = form_data.legal_name,
-            bank_name = form_data.bank_name,
-            branch_name = form_data.branch_name,
-            account_number  = form_data.account_number,
-            dispatch_address = form_data.dispatch_address,
-            phone = form_data.phone,
-            agreed_to_terms = form_data.agreed_to_terms,
-            profile_image = upload_result.url
-            
-        )
-        
-        db.add(new_artist_profile)
-        db.commit()
-        db.refresh(new_artist_profile)
-        
-        return new_artist_profile
-    
+        #posts_res = supabase.table("posts").select("*").eq("artist_id", artist_id).order("created_at", desc=True).execute()
+
+        # We map the database columns (snake_case) to match your React props (camelCase)
+        return {
+            "artist": {
+                "id": raw_artist.get("id"),
+                "name": raw_artist.get("display_name", "Unknown Artist"),
+                "bio": raw_artist.get("artist_bio", ""),
+                "profileImageUrl": raw_artist.get("profile_image_url", "https://via.placeholder.com/150"),
+                "isVerified": raw_artist.get("verified_artist", False),
+                "specialty": raw_artist.get("primary_medium", ""),
+                "location": raw_artist.get("dispatch_address", "Sri Lanka"),
+                "yearsExperience": raw_artist.get("years_experience", ""),
+                "styles": raw_artist.get("artistic_styles", []), 
+                "followers": raw_artist.get("followers", 0),
+                "recognition": [],
+            },
+            "artworks": artworks_res.data,
+            "posts": []
+        }
+
     except Exception as e:
-        
-        db.rollback()
-        print(f"Roll back: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Error fetching profile: {e}")
+        raise HTTPException(status_code=500, detail="Could not load profile data")

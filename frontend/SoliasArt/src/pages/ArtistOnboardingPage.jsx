@@ -1,6 +1,11 @@
 
 import React, { useState, useRef } from 'react';
+<<<<<<< HEAD
+import { useNavigate, useParams } from 'react-router-dom';
+import { artworkService } from '../services/uploadApi'
+=======
 import { useNavigate } from 'react-router-dom';
+>>>>>>> b4e12515bc13de601d2e5d6241b63e4af2cc0822
 
 const INITIAL_DATA = {
   displayName: 'Samantha Perera',
@@ -18,26 +23,108 @@ const INITIAL_DATA = {
   dispatchAddress: '',
   phone: '',
   agreedToTerms: false,
+<<<<<<< HEAD
+  identityDocument: null,
+  profileImageFile: null,
+=======
+>>>>>>> b4e12515bc13de601d2e5d6241b63e4af2cc0822
   profileImage: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA7-ZJJFCCvTZsCGJ_0taTKw6GTcQsOkKTWcsceeHvkwjDLUIMTNjsfTlGWTLvFKOGxEiG7FVuXC9RcEL9lt7TdsBeaEpmeKTM-GdPcavgTnQyIllRETJKCwWl1zwG3cuJI2M9jXc4_BM_T8QEtX6r14jxOYnT5tDTKzR_e_O4BFqSgwcpWjdHnVqh1c0pQC6XukgqsWksuV7vnqDK5e-Tf88mT3P27QhLUpnPwMJoM70xuatixWeVY3N962m2OJATTVgM9OOCuVZk'
 };
 
 const ArtistOnboardingPage = () => {
+<<<<<<< HEAD
+  
+  const { userId } = useParams()
+=======
 
+>>>>>>> b4e12515bc13de601d2e5d6241b63e4af2cc0822
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(INITIAL_DATA);
   const fileInputRef = useRef(null);
+<<<<<<< HEAD
+  const idFileInputRef = useRef(null);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [isDraggingId, setIsDraggingId] = useState(false);
 
   // --- Handlers ---
 
+
+  const handlePublish = async () => {
+    try {
+        
+        setIsPublishing(true)
+        if (isPublishing) alert("Converting...")
+        await artworkService.uploadArtist(formData, userId);
+        alert("You have created Artist Acount successfully!");
+        navigate("/user/artist/profile")
+        // Redirect or reset form
+    } catch (error) {
+        alert("Failed to convert to an Artist. Please try again.");
+    }
+  };
+
+=======
+
+  // --- Handlers ---
+
+>>>>>>> b4e12515bc13de601d2e5d6241b63e4af2cc0822
   const handleImageUpload = (event) => {
     const file = event.target.files?.[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       updateField('profileImage', imageUrl);
+<<<<<<< HEAD
+      updateField('profileImageFile', file);
     }
   };
 
+  const handleIdDocumentUpload = (file) => {
+    if (!file) return;
+    const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Please upload a PDF, JPG, or PNG file.');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File size must be less than 10MB.');
+      return;
+    }
+    updateField('identityDocument', file);
+  };
+
+  const handleIdFileChange = (event) => {
+    const file = event.target.files?.[0];
+    handleIdDocumentUpload(file);
+  };
+
+  const handleIdDragOver = (e) => {
+    e.preventDefault();
+    setIsDraggingId(true);
+  };
+
+  const handleIdDragLeave = (e) => {
+    e.preventDefault();
+    setIsDraggingId(false);
+  };
+
+  const handleIdDrop = (e) => {
+    e.preventDefault();
+    setIsDraggingId(false);
+    const file = e.dataTransfer.files?.[0];
+    handleIdDocumentUpload(file);
+  };
+
+  const removeIdDocument = () => {
+    updateField('identityDocument', null);
+    if (idFileInputRef.current) idFileInputRef.current.value = '';
+  };
+
+=======
+    }
+  };
+
+>>>>>>> b4e12515bc13de601d2e5d6241b63e4af2cc0822
   const exit = () => {
     const result = window.confirm("Do you really want to exit? (Entered data will be deleted)");
     if (result) navigate("/home");
@@ -460,6 +547,56 @@ const ArtistOnboardingPage = () => {
             <span className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-zinc-800 px-2 py-1 rounded">Required</span>
           </div>
           
+<<<<<<< HEAD
+          {formData.identityDocument ? (
+            <div className="border-2 border-solid border-emerald-300 dark:border-emerald-700 rounded-xl p-5 flex items-center gap-4 bg-emerald-50/50 dark:bg-emerald-900/10">
+              <div className="size-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-emerald-600 dark:text-emerald-400">description</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-slate-900 dark:text-white font-bold text-sm truncate">{formData.identityDocument.name}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-xs">{(formData.identityDocument.size / 1024).toFixed(1)} KB &middot; {formData.identityDocument.type.split('/')[1]?.toUpperCase()}</p>
+              </div>
+              <button
+                onClick={removeIdDocument}
+                className="flex items-center justify-center size-8 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-500 transition-colors"
+                title="Remove document"
+              >
+                <span className="material-symbols-outlined text-[18px]">delete</span>
+              </button>
+            </div>
+          ) : (
+            <div
+              onClick={() => idFileInputRef.current?.click()}
+              onDragOver={handleIdDragOver}
+              onDragLeave={handleIdDragLeave}
+              onDrop={handleIdDrop}
+              className={`border-2 border-dashed rounded-xl p-5 flex flex-col items-center justify-center transition-colors cursor-pointer group ${
+                isDraggingId
+                  ? 'border-[#FFC247] bg-yellow-50/50 dark:bg-yellow-900/10'
+                  : 'border-slate-300 dark:border-zinc-700 bg-slate-50/50 dark:bg-zinc-800/30 hover:bg-slate-50 dark:hover:bg-zinc-800 hover:border-[#FFC247]'
+              }`}
+            >
+              <div className="size-10 rounded-full bg-white dark:bg-zinc-700 shadow-sm flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 group-hover:text-[#FFC247]">cloud_upload</span>
+              </div>
+              <p className="text-slate-900 dark:text-white font-medium text-sm mb-1"><span className="font-bold">Click to upload</span> or drag and drop</p>
+              <p className="text-slate-500 dark:text-slate-400 text-xs mb-3">National ID Card (NIC), Passport, or Driving License</p>
+              <div className="flex gap-2">
+                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-zinc-700 px-2 py-1 rounded bg-white dark:bg-zinc-800">PDF</span>
+                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-zinc-700 px-2 py-1 rounded bg-white dark:bg-zinc-800">JPG</span>
+                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-zinc-700 px-2 py-1 rounded bg-white dark:bg-zinc-800">PNG</span>
+              </div>
+            </div>
+          )}
+          <input
+            type="file"
+            ref={idFileInputRef}
+            className="hidden"
+            accept="image/jpeg,image/png,application/pdf"
+            onChange={handleIdFileChange}
+          />
+=======
           <div className="border-2 border-dashed border-slate-300 dark:border-zinc-700 rounded-xl p-5 flex flex-col items-center justify-center bg-slate-50/50 dark:bg-zinc-800/30 hover:bg-slate-50 dark:hover:bg-zinc-800 hover:border-[#FFC247] transition-colors cursor-pointer group">
             <div className="size-10 rounded-full bg-white dark:bg-zinc-700 shadow-sm flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 group-hover:text-[#FFC247]">cloud_upload</span>
@@ -472,6 +609,7 @@ const ArtistOnboardingPage = () => {
               <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-zinc-700 px-2 py-1 rounded bg-white dark:bg-zinc-800">PNG</span>
             </div>
           </div>
+>>>>>>> b4e12515bc13de601d2e5d6241b63e4af2cc0822
         </div>
 
         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-3 flex gap-2 items-start">
@@ -562,7 +700,11 @@ const ArtistOnboardingPage = () => {
                   Save Draft
                 </button>
                 <button 
+<<<<<<< HEAD
+                    onClick={step === 4 ? handlePublish : handleNext}
+=======
                     onClick={handleNext}
+>>>>>>> b4e12515bc13de601d2e5d6241b63e4af2cc0822
                     className="px-6 py-2.5 rounded-lg bg-[#FFC247] text-slate-900 font-bold text-sm hover:bg-yellow-400 shadow-md shadow-yellow-500/20 transition-all flex items-center gap-2"
                 >
                     {step === 1 ? 'Next: Art Style' : step === 2 ? 'Next: Commerce' : step === 3 ? 'Next: Verification' : 'Submit Application'}
