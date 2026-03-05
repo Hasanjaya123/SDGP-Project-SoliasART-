@@ -1,11 +1,12 @@
 from fastapi import APIRouter, HTTPException, File, UploadFile, Form, Depends
 from app.modules.ArtUpload.schemas import ArtWorkResponse, ArtUploadRequest
-from app.modules.ArtUpload.image_kit import imagekit, IMAGEKIT_URL_ENDPOINT
+from backend.app.core.image_kit import imagekit, IMAGEKIT_URL_ENDPOINT
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
 from fastapi.concurrency import run_in_threadpool
 from app.modules.ArtUpload.model import ArtWork
+from app.core.supabase import supabase
 
 #-----------Test-------------------------
 import numpy as np
@@ -15,8 +16,9 @@ consistent_embedding = np.random.uniform(-1, 1, 512).tolist()
 
 router = APIRouter(prefix="/user/dashboard", tags=["ArtUpload"])
 
-@router.post("/upload", response_model=ArtWorkResponse)
+@router.post("/upload/{artist_id}", response_model=ArtWorkResponse)
 async def upload(
+    artist__id: str,
     form_data: ArtUploadRequest = Depends(ArtUploadRequest), 
     images: List[UploadFile] = File(...),
     db: Session = Depends(get_db)
@@ -25,6 +27,14 @@ async def upload(
     image_links = []
     
     try:
+        
+        profile_response = supabase.table('artists').select('*').eq('id', artist__id).execute()
+        
+        
+        if (len(profile_response.data) == 0):
+            raise HTTPException(statis_code=404, details="Artist not found")
+        
+        artist_data = profile_response.data[0]
         
         for image in images:
             image_content = await image.read()
@@ -59,7 +69,7 @@ async def upload(
             
             image_url=image_links,
             embedding=consistent_embedding,
-            #artist_id="00000000-0000-0000-0000-000000000000"
+            artist_id= artist__id
         )
 
         db.add(new_artwork)
@@ -67,8 +77,6 @@ async def upload(
         db.refresh(new_artwork)
 
         return new_artwork
-        
-
         
     except Exception as e:
         db.rollback()
