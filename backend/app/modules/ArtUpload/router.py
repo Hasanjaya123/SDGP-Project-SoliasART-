@@ -1,12 +1,19 @@
 from fastapi import APIRouter, HTTPException, File, UploadFile, Form, Depends
 from app.modules.ArtUpload.schemas import ArtWorkResponse, ArtUploadRequest
+<<<<<<< HEAD
 from app.core.image_kit import imagekit
+=======
+from app.modules.ArtUpload.image_kit import imagekit, IMAGEKIT_URL_ENDPOINT
+>>>>>>> ef4a89d282a7cb8ff227e06a3615fee5aa22e986
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
 from fastapi.concurrency import run_in_threadpool
 from app.modules.ArtUpload.model import ArtWork
+<<<<<<< HEAD
 from app.core.supabase import supabase
+=======
+>>>>>>> ef4a89d282a7cb8ff227e06a3615fee5aa22e986
 
 #-----------Test-------------------------
 import numpy as np
@@ -16,9 +23,14 @@ consistent_embedding = np.random.uniform(-1, 1, 512).tolist()
 
 router = APIRouter(prefix="/user/dashboard", tags=["ArtUpload"])
 
+<<<<<<< HEAD
 @router.post("/upload/{artist__id}", response_model=ArtWorkResponse)
 async def upload(
     artist__id: str,
+=======
+@router.post("/upload", response_model=ArtWorkResponse)
+async def upload(
+>>>>>>> ef4a89d282a7cb8ff227e06a3615fee5aa22e986
     form_data: ArtUploadRequest = Depends(ArtUploadRequest), 
     images: List[UploadFile] = File(...),
     db: Session = Depends(get_db)
@@ -28,6 +40,7 @@ async def upload(
     
     try:
         
+<<<<<<< HEAD
         profile_response = supabase.table('artists').select('*').eq('id', artist__id).execute()
         
         
@@ -36,6 +49,8 @@ async def upload(
         
         artist_data = profile_response.data[0]
         
+=======
+>>>>>>> ef4a89d282a7cb8ff227e06a3615fee5aa22e986
         for image in images:
             image_content = await image.read()
         
@@ -69,7 +84,11 @@ async def upload(
             
             image_url=image_links,
             embedding=consistent_embedding,
+<<<<<<< HEAD
             artist_id= artist__id
+=======
+            #artist_id="00000000-0000-0000-0000-000000000000"
+>>>>>>> ef4a89d282a7cb8ff227e06a3615fee5aa22e986
         )
 
         db.add(new_artwork)
@@ -78,6 +97,11 @@ async def upload(
 
         return new_artwork
         
+<<<<<<< HEAD
+=======
+
+        
+>>>>>>> ef4a89d282a7cb8ff227e06a3615fee5aa22e986
     except Exception as e:
         db.rollback()
         print(f"Error: {e}")
