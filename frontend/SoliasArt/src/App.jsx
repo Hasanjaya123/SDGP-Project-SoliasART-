@@ -29,15 +29,9 @@ function App() {
         <Route path='/user/dashboard/upload/:artistId' element={<UploadArtPage />}></Route>
 
         {/* Artist on boarding page */}
-<<<<<<< HEAD
         <Route path="/settings/convert/:userId" element={<ArtistOnboardingPage />} />
 
         <Route path="/user/artist/profile/:artistId" element={<ArtistProfilePage />} />
-=======
-        <Route path="/settings/convert/artist" element={<ArtistOnboardingPage />} />
-
-        <Route path="/user/artist/profile" element={<ArtistProfilePage />} />
->>>>>>> b4e12515bc13de601d2e5d6241b63e4af2cc0822
 
     </Routes>    
     </>

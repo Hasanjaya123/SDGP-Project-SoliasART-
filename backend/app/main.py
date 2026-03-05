@@ -3,12 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.modules.ArtUpload.router import router as art_upload_router
 from app.modules.auth.router import router as auth_router
-<<<<<<< HEAD
 from app.modules.ArtistProfile.router import router as artist_profile_router
 from app.modules.ArtistOnboarding.router import router as artist_router
-=======
-from app.modules.ArtistProfile.router import router as artist_router
->>>>>>> b4e12515bc13de601d2e5d6241b63e4af2cc0822
 from app.core.database import Base, engine
 
 # Initialise the API application
@@ -35,10 +31,6 @@ app.include_router(art_upload_router)
 # add router under Authentication tag
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 app.include_router(artist_router)
-<<<<<<< HEAD
 app.include_router(artist_profile_router)
-=======
-
->>>>>>> b4e12515bc13de601d2e5d6241b63e4af2cc0822
 
 
