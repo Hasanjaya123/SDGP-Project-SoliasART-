@@ -1,6 +1,7 @@
 from app.core.database import Base
 from sqlalchemy import Column, String, Text, UUID, text, ARRAY, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
+from app.modules.auth.models import User
 
 
 class Artist(Base):
@@ -27,6 +28,7 @@ class Artist(Base):
     dispatch_address = Column(String, nullable=False)
     phone = Column(String, nullable=False)
     agreed_to_terms = Column(Boolean, nullable=False, default=False)
-    profile_image = Column(String, nullable=True, default="https://shorturl.at/3ywNl")
+    profile_image_url = Column(String, nullable=True, default="https://shorturl.at/3ywNl")
+    identy_card_image_url = Column(String, nullable=False)
     
     #from_user = relationship("users", foreign_keys=[user_id])

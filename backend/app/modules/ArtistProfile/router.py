@@ -6,36 +6,61 @@ from fastapi.concurrency import run_in_threadpool
 from app.modules.ArtistProfile.schemas import ArtistUploadRequest
 from app.modules.ArtistProfile.model import Artist
 from app.core.image_kit import imagekit
+from app.core.supabase import supabase
 
 
 router = APIRouter(prefix="/user/settings", tags=["ConvertToArtist"])
 
 
-@router.post("/convert")
+@router.post("/convert/{user_id}")
 async def convert_to_artist_profile(
+    user_id: str,
     form_data: ArtistUploadRequest = Depends(ArtistUploadRequest),
-    image: UploadFile = File(...),
+    profile_image: UploadFile = File(...),
+    identy_card: UploadFile = File(...),
     db: Session = Depends(get_db)
     ):
     
     try:
         
-        image_content = await image.read()
+        profile_response = supabase.table('users').select('*').eq('id', user_id).execute()
         
-        upload_result = await run_in_threadpool(
+        
+        if (len(profile_response.data) == 0):
+            raise HTTPException(statis_code=404, details="Artist not found")
+        
+        
+        profile_image_content = await profile_image.read()
+        
+        profile_image_result = await run_in_threadpool(
             
             imagekit.files.upload,
             
-            file = image_content,
-            file_name = image.filename,
+            file = profile_image_content,
+            file_name = profile_image.filename,
             folder="/Profile-Pictures",
             tags=["python-app"],
-            is_private_file=True
+            is_private_file=False
+            
+        )
+        
+        identy_card_content = await identy_card.read()
+        
+        identy_card_result = await run_in_threadpool(
+            
+            imagekit.files.upload,
+            
+            file = identy_card_content,
+            file_name = identy_card.filename,
+            folder="/Identity-Documents",
+            tags=["python-app"],
+            is_private_file=False
             
         )
         
         new_artist_profile = Artist(
             
+            user_id = user_id,
             verified_artist = form_data.verified_artist,
             display_name = form_data.display_name,
             artist_bio = form_data.artist_bio,
@@ -51,7 +76,8 @@ async def convert_to_artist_profile(
             dispatch_address = form_data.dispatch_address,
             phone = form_data.phone,
             agreed_to_terms = form_data.agreed_to_terms,
-            profile_image = upload_result.url
+            profile_image_url = profile_image_result.url,
+            identy_card_image_url = identy_card_result.url
             
         )
         
