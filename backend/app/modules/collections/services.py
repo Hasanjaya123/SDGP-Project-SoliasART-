@@ -3,6 +3,14 @@ from app.core.database import supabase
 from app.modules.collections.schemas import CollectionCreate, CollectionResponse, CollectionDetailResponse, ArtworkInCollection
 from uuid import UUID
 
+def get_db():
+    if not supabase:
+        raise HTTPException(
+            status_code=500,
+            detail="Database not configured. Supabase credentials missing."
+        )
+    return supabase
+
 def get_all_collections():
     # Fetch collections with their basic info. 
     # To get total artworks and value efficiently, a database view or trigger is best.
@@ -10,15 +18,17 @@ def get_all_collections():
     # or we calculate it. Let's assume it has total_artworks, total_value, preview_images fields
     # to make the "Curated Collections" page load fast.
     try:
-        response = supabase.table('collections').select('*').execute()
+        db = get_db()
+        response = db.table('collections').select('*').execute()
         return response.data
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch collections: {str(e)}")
 
 def get_collection_by_id(collection_id: UUID):
     try:
+        db = get_db()
         # Fetch the main collection data
-        collection_res = supabase.table('collections').select('*').eq('id', str(collection_id)).single().execute()
+        collection_res = db.table('collections').select('*').eq('id', str(collection_id)).single().execute()
         collection_data = collection_res.data
         if not collection_data:
             raise HTTPException(status_code=404, detail="Collection not found")
@@ -27,7 +37,7 @@ def get_collection_by_id(collection_id: UUID):
         # Assuming a junction table: collection_artworks (collection_id, artwork_id)
         # and an artworks table (id, title, artist_name, price, image_url, likes, views)
         # Using Supabase foreign table syntax:
-        artworks_res = supabase.table('collection_artworks')\
+        artworks_res = db.table('collection_artworks')\
             .select('artworks(id, title, artist_name, price, image_url, likes, views)')\
             .eq('collection_id', str(collection_id))\
             .execute()
@@ -53,7 +63,7 @@ def create_collection(data: CollectionCreate):
         preview_images = []
         
         if data.artwork_ids:
-            artworks_res = supabase.table('artworks').select('price, image_url').in_('id', [str(id) for id in data.artwork_ids]).execute()
+            artworks_res = db.table('artworks').select('price, image_url').in_('id', [str(id) for id in data.artwork_ids]).execute()
             for art in artworks_res.data:
                 total_value += art.get('price', 0.0)
                 if len(preview_images) < 4:
@@ -70,7 +80,7 @@ def create_collection(data: CollectionCreate):
             "preview_images": preview_images
         }
         
-        insert_res = supabase.table('collections').insert(new_collection).execute()
+        insert_res = db.table('collections').insert(new_collection).execute()
         collection = insert_res.data[0]
         
         # Insert artwork relationships
@@ -81,7 +91,7 @@ def create_collection(data: CollectionCreate):
                     "collection_id": collection['id'],
                     "artwork_id": str(item_id)
                 })
-            supabase.table('collection_artworks').insert(collection_artworks).execute()
+            db.table('collection_artworks').insert(collection_artworks).execute()
         
         return collection
     except Exception as e:
@@ -96,7 +106,7 @@ def process_collection_purchase(collection_id: UUID, user_id: UUID):
             "buyer_id": str(user_id),
             "status": "completed"
         }
-        res = supabase.table('collection_purchases').insert(purchase_data).execute()
+        res = db.table('collection_purchases').insert(purchase_data).execute()
         return {"status": "success", "message": "Collection purchased successfully", "purchase_id": res.data[0]['id']}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process purchase: {str(e)}")

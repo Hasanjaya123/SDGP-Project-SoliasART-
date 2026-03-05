@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 from uuid import UUID
 from datetime import datetime
@@ -28,8 +28,7 @@ class CollectionResponse(CollectionBase):
     preview_images: List[str] = [] 
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class CollectionDetailResponse(CollectionResponse):
     artworks: List[ArtworkInCollection]
