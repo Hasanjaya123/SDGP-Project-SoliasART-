@@ -26,7 +26,7 @@ function App() {
         {/* Default route - redirect to signup */}
         <Route path="/" element={<Navigate to="/signup" replace />} />
 
-        <Route path='/user/dashboard/upload :artistId' element={<UploadArtPage />}></Route>
+        <Route path='/user/dashboard/upload/:artistId' element={<UploadArtPage />}></Route>
 
         {/* Artist on boarding page */}
         <Route path="/settings/convert/artist" element={<ArtistOnboardingPage />} />

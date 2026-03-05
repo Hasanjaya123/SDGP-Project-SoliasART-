@@ -29,10 +29,7 @@ def read_root():
 app.include_router(art_upload_router)
 # add router under Authentication tag
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
-<<<<<<< HEAD
-=======
 app.include_router(artist_router)
 
 
 
->>>>>>> ef4a89d282a7cb8ff227e06a3615fee5aa22e986

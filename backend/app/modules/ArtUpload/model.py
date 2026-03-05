@@ -5,6 +5,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime,timezone
 from pgvector.sqlalchemy import Vector
 from app.core.database import Base
+from app.modules.ArtistProfile.model import Artist
 
 
 class ArtWork(Base):
@@ -29,9 +30,5 @@ class ArtWork(Base):
      
      image_url = Column(ARRAY(String), nullable=False)
      embedding = Column(Vector(512))
-<<<<<<< HEAD
      artist_id = Column(UUID(as_uuid=True), ForeignKey("artists.id"))
-=======
-     #artist_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
->>>>>>> ef4a89d282a7cb8ff227e06a3615fee5aa22e986
      
