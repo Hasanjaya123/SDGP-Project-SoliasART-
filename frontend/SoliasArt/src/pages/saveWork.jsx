@@ -1,8 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Sidebar from '../components/Nav-bar'           
 import ArtDisplayCard from '../components/Art-card';   
 import Footer from '../components/Footer';
-import UserProfile from '../comp/UserProfile'; 
+import UserProfile from '../comp/UserProfile';
+
+const API_BASE = "http://localhost:8000";
+
+
+// ─── Seeded random so numbers stay stable across re-renders ───
+// Uses the artwork UUID chars to produce a consistent number each time.
+function seededRandom(seed, min, max) {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash << 5) - hash + seed.charCodeAt(i);
+    hash |= 0;
+  }
+  const norm = (Math.abs(hash) % 1000) / 1000; // 0–0.999
+  return Math.floor(norm * (max - min + 1)) + min;
+}
+
 
 // ─── Icons (defined FIRST so CardWithRealInfo can use them) ───
 const EyeIcon = () => (
@@ -18,94 +34,92 @@ const HeartIcon = () => (
   </svg>
 );
 
-// ─── Data
-const savedArtworks = [
-  {
-    id: 1,
-    artist: 'Nisha Jayawardena', views: 2301, likes: 540,
-    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600',
-    formData: { title: 'Coastal Serenity',  category: 'New Release', price: 156000, height: 400, width: 300, images: ['https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600'] },
-  },
-  {
-    id: 2,
-    artist: 'Nisha Jayawardena', views: 2800, likes: 680,
-    image: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=600',
-    formData: { title: 'Golden Hour Sands', category: 'New Release', price: 180000, height: 400, width: 300, images: ['https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=600'] },
-  },
-  {
-    id: 3,
-    artist: 'Malith De Silva', views: 3100, likes: 870,
-    image: 'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=600',
-    formData: { title: 'Ocean Waves',       category: 'Featured',    price: 210000, height: 400, width: 300, images: ['https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=600'] },
-  },
-  {
-    id: 4,
-    artist: 'Dinusha Weerasinghe', views: 1200, likes: 290,
-    image: 'https://images.unsplash.com/photo-1511497584788-876760111969?w=600',
-    formData: { title: 'Forest Path',       category: 'Landscape',   price: 115000, height: 500, width: 350, images: ['https://images.unsplash.com/photo-1511497584788-876760111969?w=600'] },
-  },
-  {
-    id: 5,
-    artist: 'Ashan Perera', views: 980, likes: 145,
-    image: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=600',
-    formData: { title: 'City Lights',       category: 'Urban',       price: 72000,  height: 400, width: 300, images: ['https://images.unsplash.com/photo-1514565131-fce0801e5785?w=600'] },
-  },
-  {
-    id: 6,
-    artist: 'Kavya Ranasinghe', views: 1540, likes: 320,
-    image: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=600',
-    formData: { title: 'Desert Dunes',      category: 'Featured',    price: 98000,  height: 400, width: 500, images: ['https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=600'] },
-  },
-  {
-    id: 7,
-    artist: 'Nisha Jayawardena', views: 4200, likes: 1100,
-    image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600',
-    formData: { title: 'Mountain Silence',  category: 'Landscape',   price: 295000, height: 600, width: 400, images: ['https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600'] },
-  },
-  {
-    id: 8,
-    artist: 'Malith De Silva', views: 760, likes: 88,
-    image: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=600',
-    formData: { title: 'Abstract Bloom',    category: 'New Release', price: 45000,  height: 400, width: 300, images: ['https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=600'] },
-  },
-];
 
-// ─── Card wrapper — overlays real artist/views/likes over hardcoded values ───
+
+// ─── Card wrapper ─────────────────────────────────────────────
 function CardWithRealInfo({ artwork }) {
+  // Pick first image from the array returned by the API
+  const image = artwork.image_url?.[0] || '';
+
+  const formData = {
+    title:    artwork.title    || 'UNTITLED ARTWORK',
+    category: artwork.medium   || 'New Release',
+    price:    artwork.price    || 0,
+    height:   artwork.height_in ? artwork.height_in * 25.4 : 400, // inches → mm approx
+    width:    artwork.width_in  ? artwork.width_in  * 25.4 : 300,
+    images:   artwork.image_url || [],
+  };
+
   return (
     <div className="relative">
-      <ArtDisplayCard
-        image={artwork.image}
-        formData={artwork.formData}
-      />
-      {/* Covers ArtDisplayCard's hardcoded "No name" and "--" rows */}
+      <ArtDisplayCard image={image} formData={formData} />
+      {/* Overlay real artist name + stats over ArtDisplayCard's hardcoded placeholders */}
       <div
         className="absolute left-0 right-0 flex flex-col items-center gap-1 pointer-events-none"
         style={{ bottom: '68px' }}
       >
         <p className="text-[11px] font-medium text-gray-400 bg-gray-950 w-full text-center py-0.5">
-          {artwork.artist}
+          {artwork.artist_name || 'Unknown Artist'}
         </p>
         <div className="flex items-center justify-center gap-3 text-gray-400 text-[11px] font-medium bg-gray-950 w-full py-0.5">
-          <span className="flex items-center gap-1"><EyeIcon />{artwork.views.toLocaleString()}</span>
-          <span className="flex items-center gap-1"><HeartIcon />{artwork.likes.toLocaleString()}</span>
+          <span className="flex items-center gap-1">
+            <EyeIcon />{seededRandom(artwork.id + 'v', 300, 5000).toLocaleString()}
+          </span>
+          <span className="flex items-center gap-1">
+            <HeartIcon />{seededRandom(artwork.id + 'l', 80, 1200).toLocaleString()}
+          </span>
         </div>
       </div>
     </div>
   );
 }
 
+// ─── Loading skeleton ─────────────────────────────────────────
+function SkeletonCard() {
+  return (
+    <div className="w-[220px] animate-pulse">
+      <div className="bg-gray-800 rounded h-[320px] mb-3" />
+      <div className="bg-gray-800 rounded h-3 w-2/3 mx-auto mb-2" />
+      <div className="bg-gray-800 rounded h-3 w-1/2 mx-auto" />
+    </div>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────
 const SaveWork = () => {
-  const [activeTab, setActiveTab] = useState('collection');
+  const [activeTab, setActiveTab]       = useState('collection');
+  const [artworks, setArtworks]         = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [error, setError]               = useState(null);
 
-  const collectionArtworks = savedArtworks.slice(0, 5);
-  const likedArtworks      = savedArtworks.slice(3);
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+
+    fetch(`${API_BASE}/savework/artworks?limit=20`)
+      .then(res => {
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        setArtworks(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
+  // For demo: split the fetched artworks into two tabs
+  const half = Math.ceil(artworks.length / 2);
+  const collectionArtworks = artworks.slice(0, Math.max(half, 5));
+  const likedArtworks      = artworks.slice(Math.max(half - 3, 0));
   const displayedArtworks  = activeTab === 'collection' ? collectionArtworks : likedArtworks;
+
   return (
     <div className="dark min-h-screen bg-gray-950 flex flex-col">
 
-      {/* Override Nav-bar's white bg + border from SaveWork without touching Nav-bar.jsx */}
       <style>{`
         .sidebar-override > div:first-child {
           background-color: #0a0a0f !important;
@@ -122,12 +136,10 @@ const SaveWork = () => {
       `}</style>
 
       <div className="flex flex-1 sidebar-override">
-
         <Sidebar />
 
         <div className="flex-1 pl-4 pr-8 py-8">
 
-          {/* Imported: UserProfile component ── */}
           <UserProfile
             name="Alex Rider"
             role="Art Enthusiast"
@@ -138,16 +150,36 @@ const SaveWork = () => {
             onTabChange={setActiveTab}
           />
 
-          {/* Section heading changes with tab */}
           <h2 className="text-xl font-bold text-white text-center mb-8">
             {activeTab === 'collection' ? 'My Art Collection' : 'Liked Artworks'}
           </h2>
 
-          <div className="flex flex-wrap gap-6 items-start justify-center">
-            {displayedArtworks.map(artwork => (
-              <CardWithRealInfo key={artwork.id} artwork={artwork} />
-            ))}
-          </div>
+          {/* Error state */}
+          {error && (
+            <div className="text-center text-red-400 text-sm mb-6">
+              Could not load artworks: {error}
+            </div>
+          )}
+
+          {/* Loading skeletons */}
+          {loading && (
+            <div className="flex flex-wrap gap-6 items-start justify-center">
+              {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+            </div>
+          )}
+
+          {/* Artwork grid */}
+          {!loading && !error && (
+            <div className="flex flex-wrap gap-6 items-start justify-center">
+              {displayedArtworks.length === 0 ? (
+                <p className="text-gray-500 text-sm">No artworks found.</p>
+              ) : (
+                displayedArtworks.map(artwork => (
+                  <CardWithRealInfo key={artwork.id} artwork={artwork} />
+                ))
+              )}
+            </div>
+          )}
 
         </div>
       </div>

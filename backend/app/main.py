@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.modules.auth.router import router as auth_router
 from app.core.database import Base, engine
+from app.modules.savework.router import router as savework_router  
 
 # Initialise the API application
 app = FastAPI(title=settings.PROJECT_NAME)
@@ -25,6 +26,7 @@ def read_root():
 
 # add rout under Authentication tag
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
+app.include_router(savework_router, prefix="/savework", tags=["SaveWork"])  
 
 
 
