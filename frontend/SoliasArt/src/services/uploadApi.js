@@ -11,7 +11,7 @@ export const artworkService = {
   /**
    * @param {Object} formDataState - The state object from UploadArtPage (formData)
    */
-  uploadArtwork: async (formDataState) => {
+  uploadArtwork: async (formDataState, artistId) => {
     
     const formData = new FormData();
 
@@ -38,7 +38,7 @@ export const artworkService = {
     }
 
     try {
-      const response = await api.post('/user/dashboard/upload', formData, {
+      const response = await api.post(`/user/dashboard/upload/${artistId}`, formData, {
         headers: {
           // axios automatically sets boundary for multipart/form-data 
           // when data is an instance of FormData

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, File, UploadFile, Form, Depends
 from app.modules.ArtUpload.schemas import ArtWorkResponse, ArtUploadRequest
-from backend.app.core.image_kit import imagekit, IMAGEKIT_URL_ENDPOINT
+from app.core.image_kit import imagekit
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
@@ -16,7 +16,7 @@ consistent_embedding = np.random.uniform(-1, 1, 512).tolist()
 
 router = APIRouter(prefix="/user/dashboard", tags=["ArtUpload"])
 
-@router.post("/upload/{artist_id}", response_model=ArtWorkResponse)
+@router.post("/upload/{artist__id}", response_model=ArtWorkResponse)
 async def upload(
     artist__id: str,
     form_data: ArtUploadRequest = Depends(ArtUploadRequest), 
