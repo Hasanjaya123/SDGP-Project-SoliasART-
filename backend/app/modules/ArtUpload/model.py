@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime,timezone
 from pgvector.sqlalchemy import Vector
 from app.core.database import Base
-from app.modules.ArtistProfile.model import Artist
+from app.modules.ArtistOnboarding.model import Artist
 
 
 class ArtWork(Base):

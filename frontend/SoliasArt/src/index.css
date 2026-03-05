@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+/* fade-in-up animation used by artwork cards and onboarding steps */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
 
 .material-symbols-outlined.filled {
   font-variation-settings: 'FILL' 1;

@@ -31,7 +31,7 @@ function App() {
         {/* Artist on boarding page */}
         <Route path="/settings/convert/:userId" element={<ArtistOnboardingPage />} />
 
-        <Route path="/user/artist/profile" element={<ArtistProfilePage />} />
+        <Route path="/user/artist/profile/:artistId" element={<ArtistProfilePage />} />
 
     </Routes>    
     </>

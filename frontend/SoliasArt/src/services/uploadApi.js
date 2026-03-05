@@ -7,6 +7,13 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
+export const artistProfileService = {
+  getProfile: async (artistId) => {
+    const response = await api.get(`/artists/profile/${artistId}`);
+    return response.data;
+  },
+};
+
 export const artworkService = {
   /**
    * @param {Object} formDataState - The state object from UploadArtPage (formData)

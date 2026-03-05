@@ -30,5 +30,6 @@ class Artist(Base):
     agreed_to_terms = Column(Boolean, nullable=False, default=False)
     profile_image_url = Column(String, nullable=True, default="https://shorturl.at/3ywNl")
     identy_card_image_url = Column(String, nullable=False)
+    followers = Column(String, nullable=True, default="0")
     
     #from_user = relationship("users", foreign_keys=[user_id])
