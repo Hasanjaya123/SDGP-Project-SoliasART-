@@ -12,6 +12,23 @@ export const artistProfileService = {
     const response = await api.get(`/artists/profile/${artistId}`);
     return response.data;
   },
+
+  uploadPost: async (artistId, postData) => {
+    const formData = new FormData();
+
+    // Optional text fields
+    if (postData.title)       formData.append('title', postData.title);
+    if (postData.description) formData.append('description', postData.description);
+
+    // Optional image – the backend accepts a list named 'images'
+    if (postData.imageFile)   formData.append('images', postData.imageFile);
+
+    const response = await api.post(`/artists/posts/${artistId}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+
+    return response.data;
+  },
 };
 
 export const artworkService = {
