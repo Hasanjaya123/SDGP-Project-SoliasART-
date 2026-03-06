@@ -21,7 +21,7 @@ export const artistProfileService = {
     if (postData.description?.trim()) formData.append('description', postData.description.trim());
 
     // Optional image – the backend accepts a list named 'images'
-    if (postData.imageFile) formData.append('imageFile', postData.imageFile);
+    if (postData.imageFile) formData.append('images', postData.imageFile);
 
     const response = await api.post(`/artists/posts/${artistId}`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },

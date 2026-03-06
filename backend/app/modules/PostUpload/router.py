@@ -34,6 +34,12 @@ async def upload_post(
     Images are uploaded to ImageKit under the /Posts folder and the
     returned URLs are stored in the `post` table.
     """
+
+    # Debug - print what was received
+    form = await request.form()
+    print(f"DEBUG received fields: {list(form.keys())}")
+    print(f"DEBUG title: {form_data.title}, description: {form_data.description}")
+    print(f"DEBUG images param: {images}")
     
 
     # 1. Verify artist exists
@@ -70,7 +76,18 @@ async def upload_post(
                 is_private_file=False,
             )
 
-            image_links.append(upload_result.url)
+            # Handle both SDK response formats
+            print(f"ImageKit response: {upload_result}")
+            url = (
+                upload_result.url
+                or upload_result.response.get("url")
+                if hasattr(upload_result, "response")
+                else upload_result.url
+            )
+            if url:
+                image_links.append(url)
+            else:
+                print(f"Warning: could not extract URL from ImageKit response")
 
     # 4. Persist to the `post` table via SQLAlchemy
     new_post = Post(
