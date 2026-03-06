@@ -22,14 +22,14 @@ const ArtworkDetailsCard = ({ artwork, artist, onArClick }) => {
       </div>
 
       {/* Title */}
-      <h1 className="text-3xl lg:text-4xl font-black uppercase tracking-tight text-gray-900 dark:text-white mb-4">
+      <h1 className="!text-2xl lg:!text-4xl font-black uppercase tracking-tight text-gray-900 dark:text-white mb-2">
         {artwork.title}
       </h1>
       
       {/* Artist Profile */}
       <Link 
         to={`/artist/${artist.name.toLowerCase().replace(/\s+/g, '-')}`} 
-        className="flex items-center gap-4 mb-6 p-3 bg-gray-200 dark:bg-gray-900/40 rounded-lg border border-gray-100 dark:border-gray-800 w-max pr-6 hover:bg-gray-300 dark:hover:bg-gray-800 transition-colors group cursor-pointer"
+        className="flex items-center gap-4 mb-2  rounded-lg dark:border-gray-800 w-max pr-6  transition-colors group cursor-pointer"
       >
         <img 
           src={artist.profileImageUrl} 
@@ -54,14 +54,6 @@ const ArtworkDetailsCard = ({ artwork, artist, onArClick }) => {
         <span className="text-amber-500 tracking-widest text-sm">★★★★★</span>
       </div>
 
-      {/* Price */}
-      <div className="mb-8 flex flex-col gap-1">
-        <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wide">Current Price</span>
-        <p className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
-          LKR {artwork.price.toLocaleString()}
-        </p>
-      </div>
-
       {/* Specs Grid */}
       <div className="grid grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300 mb-8 bg-gray-200 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-100 dark:border-gray-800">
         <div className="flex flex-col gap-1"><strong className="text-[10px] text-gray-400 uppercase tracking-wider">Medium</strong> <span className="font-medium">{artwork.medium}</span></div>
@@ -71,8 +63,16 @@ const ArtworkDetailsCard = ({ artwork, artist, onArClick }) => {
 
       {/* Description */}
       <div className="mb-8 flex-grow">
-        <h3 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wide mb-2">The Story</h3>
+        <h3 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wide mb-2">Description</h3>
         <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">{artwork.description}</p>
+      </div>
+
+      {/* Price */}
+      <div className="mb-8 flex flex-col gap-1">
+        <span className="text-xs text-gray-900 uppercase font-bold tracking-wide">Price</span>
+        <p className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+          LKR {artwork.price.toLocaleString()}
+        </p>
       </div>
 
       {/* Buttons */}

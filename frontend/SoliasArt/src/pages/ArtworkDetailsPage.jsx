@@ -45,7 +45,7 @@ const ArtworkDetailsPage = () => {
           
           {/* LEFT: GALLERY COMPONENT */}
           <div className="lg:col-span-7">
-            <div className="sticky top-24">
+            <div className= "top-24">
               <ArtworkGallery 
                 images={MOCK_ARTWORK.imageUrls} 
                 title={MOCK_ARTWORK.title} 
