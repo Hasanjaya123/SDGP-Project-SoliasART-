@@ -17,11 +17,11 @@ export const artistProfileService = {
     const formData = new FormData();
 
     // Optional text fields
-    if (postData.title)       formData.append('title', postData.title);
-    if (postData.description) formData.append('description', postData.description);
+    if (postData.title?.trim())       formData.append('title', postData.title.trim());
+    if (postData.description?.trim()) formData.append('description', postData.description.trim());
 
     // Optional image – the backend accepts a list named 'images'
-    if (postData.imageFile)   formData.append('images', postData.imageFile);
+    if (postData.imageFile) formData.append('imageFile', postData.imageFile);
 
     const response = await api.post(`/artists/posts/${artistId}`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
