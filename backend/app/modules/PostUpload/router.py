@@ -34,6 +34,7 @@ async def upload_post(
     Images are uploaded to ImageKit under the /Posts folder and the
     returned URLs are stored in the `post` table.
     """
+    
 
     # 1. Verify artist exists
     profile_response = (
