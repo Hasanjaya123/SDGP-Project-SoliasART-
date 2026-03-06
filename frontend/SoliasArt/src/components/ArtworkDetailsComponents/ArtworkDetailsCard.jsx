@@ -37,7 +37,7 @@ const ArtworkDetailsCard = ({ artwork, artist, onArClick }) => {
           className="h-12 w-12 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-sm" 
         />
         <div className="flex flex-col">
-          {/* Added classic underline on hover */}
+          
           <span className="text-sm font-bold text-gray-900 dark:text-white group-hover:underline underline-offset-2">
             {artist.name}
           </span>

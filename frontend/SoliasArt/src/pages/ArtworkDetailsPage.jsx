@@ -4,38 +4,86 @@ import ArtworkGallery from '../components/ArtworkDetailsComponents/ArtworkGaller
 import ArtworkDetailsCard from '../components/ArtworkDetailsComponents/ArtworkDetailsCard';
 
 // --- MOCK DATA ---
-const MOCK_ARTWORK = {
-  id: "123",
-  title: "Coastal Serenity",
-  price: 156000,
-  imageUrls: ["https://picsum.photos/800/1000", "https://picsum.photos/800/1001", "https://picsum.photos/800/1002"],
-  category: "Landscape",
-  medium: "Oil on Canvas",
-  dimensions: "40 x 30 in",
-  year: "2023",
-  description: "The gentle morning light breaking over the calm waters near Galle Fort. This piece captures the serene atmosphere of the southern coast of Sri Lanka.",
-  views: 2301,
-  likes: 540
-};
+// const MOCK_ARTWORK = {
+//   id: "123",
+//   title: "Coastal Serenity",
+//   price: 156000,
+//   imageUrls: ["https://picsum.photos/800/1000", "https://picsum.photos/800/1001", "https://picsum.photos/800/1002"],
+//   category: "Landscape",
+//   medium: "Oil on Canvas",
+//   dimensions: "40 x 30 in",
+//   year: "2023",
+//   description: "The gentle morning light breaking over the calm waters near Galle Fort. This piece captures the serene atmosphere of the southern coast of Sri Lanka.",
+//   views: 2301,
+//   likes: 540
+// };
 
-const MOCK_ARTIST = {
-  name: "Nisha Jayawardena",
-  location: "Galle, Sri Lanka",
-  profileImageUrl: "https://i.pravatar.cc/150?u=nisha",
-  bio: "A contemporary artist focusing on the intersection of nature and emotion. Exhibited in multiple galleries across South Asia."
-};
+// const MOCK_ARTIST = {
+//   name: "Nisha Jayawardena",
+//   location: "Galle, Sri Lanka",
+//   profileImageUrl: "https://i.pravatar.cc/150?u=nisha",
+//   bio: "A contemporary artist focusing on the intersection of nature and emotion. Exhibited in multiple galleries across South Asia."
+// };
 
 const ArtworkDetailsPage = () => {
   const { id } = useParams();
+
+  const [artwork, setArtwork] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   
   // AR Modal State
+  // const [isArModalOpen, setArModalOpen] = useState(false);
+  // const arUrl = `${window.location.origin}/ar-preview/${MOCK_ARTWORK.id}`;
+  // const qrCodeUrl = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${encodeURIComponent(arUrl)}`;
+
   const [isArModalOpen, setArModalOpen] = useState(false);
-  const arUrl = `${window.location.origin}/ar-preview/${MOCK_ARTWORK.id}`;
-  const qrCodeUrl = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${encodeURIComponent(arUrl)}`;
 
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    const fetchArtwork = async () => {
+      try {
+        setLoading(true);
+        // Replace this URL with your actual backend API endpoint
+        const response = await fetch(`http://localhost:8000/api/artworks/${id}`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch artwork details');
+        }
+
+        const data = await response.json();
+        setArtwork(data); // Save the fetched data to state
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchArtwork();
   }, [id]);
+
+  // 3. Loading and Error Screens (Must be BEFORE we use 'artwork' variables)
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pb-24 pt-12 md:pt-16">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1F4E79]"></div>
+      </div>
+    );
+  }
+
+  if (error || !artwork) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pb-24 pt-12 text-red-500 font-bold">
+        Error: {error || "Artwork not found"}
+      </div>
+    );
+  }
+
+  // 4. Safely calculate AR URLs now that 'artwork' definitely exists
+  const arUrl = `${window.location.origin}/ar-preview/${artwork.id}`;
+  const qrCodeUrl = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${encodeURIComponent(arUrl)}`;
 
   return (
     <div className="pb-24 pt-12 md:pt-16">
@@ -43,21 +91,21 @@ const ArtworkDetailsPage = () => {
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
           
-          {/* LEFT: GALLERY COMPONENT */}
+          {/* Leftside Gallery Component */}
           <div className="lg:col-span-7">
             <div className= "top-24">
               <ArtworkGallery 
-                images={MOCK_ARTWORK.imageUrls} 
-                title={MOCK_ARTWORK.title} 
+                images={artwork.imageUrls} 
+                title={artwork.title} 
               />
             </div>
           </div>
 
-          {/* RIGHT: DETAILS CARD COMPONENT */}
+          {/* Rightside details component */}
           <div className="lg:col-span-5">
             <ArtworkDetailsCard 
-              artwork={MOCK_ARTWORK} 
-              artist={MOCK_ARTIST} 
+              artwork={artwork} 
+              artist={artwork.artist} 
               onArClick={() => setArModalOpen(true)} 
             />
           </div>
@@ -65,7 +113,7 @@ const ArtworkDetailsPage = () => {
         </div>
       </div>
 
-      {/* AR MODAL */}
+      {/* AR model */}
       {isArModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
           <div className="bg-white dark:bg-gray-900 rounded-xl max-w-md w-full p-6 relative shadow-2xl transform transition-all">
