@@ -5,7 +5,7 @@ from uuid import UUID
 from app.modules.ArtUpload.form import as_form
 
 # --- INPUT SCHEMA (Request) ---
-@as_form  # <--- Apply the helper here
+@as_form 
 class ArtUploadRequest(BaseModel):
     title: str
     description: str
@@ -23,7 +23,7 @@ class ArtUploadRequest(BaseModel):
     origin: str = "Colombo, Sri Lanka"
     shippingRate: str = "standard"
 
-    #VALIDATORS (Clean the data automatically)
+    #VALIDATORS (Cleans the data automatically)
 
     @field_validator('year')
     @classmethod
