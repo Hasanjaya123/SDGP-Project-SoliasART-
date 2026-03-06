@@ -19,7 +19,7 @@ router = APIRouter(prefix="/artists", tags=["PostUpload"])
 )
 async def upload_post(
     artist_id: str,
-    form_data: PostUploadRequest = Depends(PostUploadRequest),
+    form_data: PostUploadRequest = Depends(),
     images: Optional[List[UploadFile]] = File(None),
     db: Session = Depends(get_db),
 ):

@@ -47,7 +47,8 @@ const CreatePostModal = ({ artist, artistId, onClose, onPostCreated }) => {
       onPostCreated(newPost);
       onClose();
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to create post. Please try again.');
+      const detail = err.response?.data?.detail;
+      setError(typeof detail === 'string' ? detail : 'Failed to create post. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

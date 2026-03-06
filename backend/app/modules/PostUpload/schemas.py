@@ -2,15 +2,18 @@ from pydantic import BaseModel
 from typing import Optional, List
 from uuid import UUID
 from datetime import datetime
-from app.modules.ArtUpload.form import as_form  # reuse the shared as_form decorator
-
+from fastapi import Form
 
 # --- INPUT SCHEMA (Request) ---
 # Receives title + description as form fields; images arrive as separate File uploads.
-@as_form
-class PostUploadRequest(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
+class PostUploadRequest:
+    def __init__(
+        self,
+        title: Optional[str] = Form(None),
+        description: Optional[str] = Form(None),
+    ):
+        self.title = title
+        self.description = description
 
 
 # --- OUTPUT SCHEMA (Response) ---
