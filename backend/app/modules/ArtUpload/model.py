@@ -1,10 +1,11 @@
-from collections.abc import AsyncGenerator
+﻿from collections.abc import AsyncGenerator
 import uuid
 from sqlalchemy import Column, String, Text, DateTime, Integer, Numeric, TIMESTAMP, text, Boolean, ForeignKey, ARRAY
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime,timezone
 from pgvector.sqlalchemy import Vector
 from app.core.database import Base
+from app.modules.ArtistOnboarding.model import Artist
 
 
 class ArtWork(Base):
@@ -29,5 +30,5 @@ class ArtWork(Base):
      
      image_url = Column(ARRAY(String), nullable=False)
      embedding = Column(Vector(512))
-     #artist_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
+     artist_id = Column(UUID(as_uuid=True), ForeignKey("artists.id"))
      

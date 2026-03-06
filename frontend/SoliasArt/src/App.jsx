@@ -4,8 +4,11 @@ import UploadArtPage from './pages/ArtUpload'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import SignupPage from './pages/SignupPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
+import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
+import './index.css';
 import Test from './pages/test.jsx';
 import ArtSearch from './pages/ArtSearch.jsx';
+import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
 
 function App() {
   return (
@@ -26,11 +29,17 @@ function App() {
         {/* Default route - redirect to signup */}
         <Route path="/" element={<Navigate to="/signup" replace />} />
 
-        <Route path='/user/dashboard/upload' element={<UploadArtPage />}></Route>
-    </Routes>
-    
+        <Route path='/user/dashboard/upload/:artistId' element={<UploadArtPage />}></Route>
+
+        {/* Artist on boarding page */}
+        <Route path="/settings/convert/:userId" element={<ArtistOnboardingPage />} />
+
+        <Route path="/user/artist/profile/:artistId" element={<ArtistProfilePage />} />
+
+    </Routes>    
     </>
-  )
+         
+  );
 
 }
 
