@@ -6,95 +6,32 @@ import CartButton from "../components/CartButton";
 import Sidebar from "../components/Nav-bar";
 import Footer from "../components/Footer";
 import soliasartlogo from "../assets/soliasartlogo.png"
+import {artworkService} from "../services/uploadApi";
+import { useParams } from 'react-router-dom'
 
-// artwork data using picsum as placeholder images
-const ARTWORKS = [
-  {
-    id: 1,
-    title: "Lumine's Odyssey",
-    category: "Genshin Impact",
-    price: "125000",
-    height: "4",
-    width: "3",
-    images: ["https://picsum.photos/seed/lumine/400/530"],
-    tags: ["genshin", "lumine", "traveler", "fantasy"],
-  },
-  {
-    id: 2,
-    title: "Raiden Shogun",
-    category: "Genshin Impact",
-    price: "185000",
-    height: "4",
-    width: "3",
-    images: ["https://picsum.photos/seed/raiden/400/530"],
-    tags: ["genshin", "raiden", "electro", "shogun"],
-  },
-  {
-    id: 3,
-    title: "Hollow City Neon",
-    category: "Zenless Zone Zero",
-    price: "95000",
-    height: "4",
-    width: "3",
-    images: ["https://picsum.photos/seed/zzzneon/400/530"],
-    tags: ["zzz", "zenless", "neon", "city"],
-  },
-  {
-    id: 4,
-    title: "Belle & Wise",
-    category: "Zenless Zone Zero",
-    price: "110000",
-    height: "4",
-    width: "3",
-    images: ["https://picsum.photos/seed/belle/400/530"],
-    tags: ["zzz", "belle", "wise", "proxy"],
-  },
-  {
-    id: 5,
-    title: "Zhongli's Era",
-    category: "Genshin Impact",
-    price: "200000",
-    height: "5",
-    width: "4",
-    images: ["https://picsum.photos/seed/zhongli/400/500"],
-    tags: ["genshin", "zhongli", "geo", "archon"],
-  },
-  {
-    id: 6,
-    title: "Mondstadt Winds",
-    category: "Genshin Impact",
-    price: "75000",
-    height: "4",
-    width: "3",
-    images: ["https://picsum.photos/seed/mondstadt/400/530"],
-    tags: ["genshin", "mondstadt", "venti", "wind"],
-  },
-  {
-    id: 7,
-    title: "Ellen Joe Drift",
-    category: "Zenless Zone Zero",
-    price: "145000",
-    height: "4",
-    width: "3",
-    images: ["https://picsum.photos/seed/ellen/400/530"],
-    tags: ["zzz", "ellen", "ice", "shark"],
-  },
-  {
-    id: 8,
-    title: "Teyvat Dusk",
-    category: "Genshin Impact",
-    price: "165000",
-    height: "3",
-    width: "4",
-    images: ["https://picsum.photos/seed/teyvat/530/400"],
-    tags: ["genshin", "teyvat", "landscape", "sunset"],
-  },
-];
 
 const ArtSearch = () => {
   const [query, setQuery] = useState("");
   const [isDark, setIsDark] = useState(true);
-  const [previewImage, setPreviewImage] = useState(null); // object URL from UploadButton
+  const [previewImage, setPreviewImage] = useState(null); 
+  const { userId } = useParams()
+
+  const [ARTWORKS, setArtworks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!userId) return;
+    setLoading(true);
+    setError(null);
+
+    artworkService
+      .getArtWorks(userId)
+      .then((data) => setArtworks(data))
+      .catch((err) => setError(err.response?.data?.detail || "Failed to load artworks."))
+      .finally(() => setLoading(false));
+
+  }, [userId]);
 
   // ── Apply / remove the "dark" class on <html> so ALL dark: variants work ──
   useEffect(() => {
@@ -110,11 +47,10 @@ const ArtSearch = () => {
     const q = query.toLowerCase();
     return ARTWORKS.filter(
       (art) =>
-        art.title.toLowerCase().includes(q) ||
-        art.category.toLowerCase().includes(q) ||
-        art.tags.some((t) => t.includes(q))
+        art.title?.toLowerCase().includes(q) ||
+        art.medium?.toLowerCase().includes(q)
     );
-  }, [query]);
+  }, [query, ARTWORKS]);
 
   return (
     /*
@@ -130,6 +66,7 @@ const ArtSearch = () => {
 
         <div
           className="
+            fixed top-0 left-0 h-screen z-50
             flex-shrink-0
             [&>div]:dark:bg-gray-900
             [&>div]:dark:border-gray-800
@@ -146,7 +83,7 @@ const ArtSearch = () => {
         </div>
 
         {/* ── Right column: header + main content ── */}
-        <div className="flex flex-col flex-1 min-w-0">
+        <div className="flex flex-col flex-1 min-w-0 ml-64">
 
           {/* Sticky top bar */}
           <header className="sticky top-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm transition-colors duration-300">
@@ -181,6 +118,16 @@ const ArtSearch = () => {
 
           {/* Main content */}
           <main className="flex-1 px-6 py-8 bg-white dark:bg-gray-950 transition-colors duration-300">
+            {loading ? (
+              <div className="flex items-center justify-center py-24">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FFC247]"></div>
+              </div>
+            ) : error ? (
+              <div className="flex flex-col items-center justify-center py-24 text-center">
+                <p className="text-lg text-red-500">{error}</p>
+              </div>
+            ) : (
+              <>
             <div className="mb-6">
               <h1 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight">
                 {query ? `Results for "${query}"` : "All Masterpieces"}
@@ -196,7 +143,14 @@ const ArtSearch = () => {
                   <div
                     key={art.id}
                   >
-                    <ArtDisplayCard image={art.images[0]} formData={art} />
+                    <ArtDisplayCard image={art.image_url?.[0]} formData={{
+                      title: art.title,
+                      price: art.price,
+                      category: art.medium || '',
+                      height: art.height_in || '',
+                      width: art.width_in || '',
+                      images: art.image_url ? [art.image_url] : [],
+                    }} />
                   </div>
                 ))}
               </div>
@@ -210,6 +164,8 @@ const ArtSearch = () => {
                   Try "genshin", "zzz", "raiden", "venti", or "ellen"
                 </p>
               </div>
+            )}
+              </>
             )}
           </main>
 

@@ -24,7 +24,7 @@ function App() {
         {/* Test route for ArtDisplayCard */}
         <Route path="/test" element={<Test />} />
 
-        <Route path="/search" element={<ArtSearch />} />
+        <Route path="/search/:userId" element={<ArtSearch />} />
         
         {/* Default route - redirect to signup */}
         <Route path="/" element={<Navigate to="/signup" replace />} />

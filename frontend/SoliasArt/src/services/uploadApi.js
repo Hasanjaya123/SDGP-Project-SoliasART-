@@ -61,6 +61,20 @@ export const artworkService = {
     }
   },
 
+  getArtWorks: async (userId) => {
+    try{
+
+      const response = await api.get(`/explore/${userId}`)
+
+      return response.data
+
+    } catch (error) {
+      console.log("failed to load artworks", error.response?.data?.detail || error.message)
+      throw error
+
+    }
+  },
+
   uploadArtist: async (formDataState, userId) => {
 
     const formData = new FormData();
