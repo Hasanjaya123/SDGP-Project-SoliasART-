@@ -1,8 +1,13 @@
-
+import { useState } from 'react'
+import './App.css'
+import UploadArtPage from './pages/ArtUpload'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import SignupPage from './pages/SignupPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
+import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
+import './index.css';
 import Test from './pages/test.jsx';
+import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
 
 import SaveWork from './pages/SaveWork.jsx';
 
@@ -12,10 +17,9 @@ import SaveWork from './pages/SaveWork.jsx';
 function App() {
   
   return (
-
-    <Router>
-      <Routes>
-
+    <>
+    <Routes>
+        <Route path="/home"></Route>
         {/* Route to Signup page */}
         <Route path="/signup" element={<SignupPage />} />
         
@@ -30,20 +34,18 @@ function App() {
         
         {/* Default route - redirect to signup */}
         <Route path="/" element={<Navigate to="/signup" replace />} />
-      </Routes>
-    </Router>
-  );
-    
-    
-    
-    
-  
 
-    
-    
-    
-    
-  
+        <Route path='/user/dashboard/upload/:artistId' element={<UploadArtPage />}></Route>
+
+        {/* Artist on boarding page */}
+        <Route path="/settings/convert/:userId" element={<ArtistOnboardingPage />} />
+
+        <Route path="/user/artist/profile/:artistId" element={<ArtistProfilePage />} />
+
+    </Routes>    
+    </>
+         
+  );
 }
 
 export default App;
