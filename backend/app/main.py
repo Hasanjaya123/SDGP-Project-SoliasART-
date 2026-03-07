@@ -33,8 +33,8 @@ app.include_router(art_upload_router)
 # add router under Authentication tag
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 app.include_router(artist_router)
-app.include_router(artist_profile_router)
 app.include_router(post_upload_router)
+app.include_router(artist_profile_router)
 
 
 

@@ -2,19 +2,13 @@ from pydantic import BaseModel
 from typing import Optional, List
 from uuid import UUID
 from datetime import datetime
-from fastapi import Form
+from app.modules.PostUpload.form import as_form
 
 # --- INPUT SCHEMA (Request) ---
-# Receives title + description as form fields; images arrive as separate File uploads.
-class PostUploadRequest:
-    def __init__(
-        self,
-        title: Optional[str] = Form(None),
-        description: Optional[str] = Form(None),
-    ):
-        self.title = title
-        self.description = description
-
+@as_form
+class PostUploadRequest(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
 
 # --- OUTPUT SCHEMA (Response) ---
 class PostResponse(BaseModel):
@@ -27,4 +21,4 @@ class PostResponse(BaseModel):
     likes: str
 
     class Config:
-        from_attributes = True  # lets Pydantic read SQLAlchemy model instances
+        from_attributes = True
