@@ -14,10 +14,21 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export default function ARViewer() {
+  const [artworkid, setArtworkid] = useState("");
   return (
     <div>
       <h1>AR Generator</h1>
-      <p>I will generate a QR code here that you can scan with your phone to view the artwork in AR.</p>
+      <p>Enter the artwork ID to generate a QR code for AR viewing.</p>
+      <input
+        type="text"
+        placeholder="Enter Artwork ID"
+        value={artworkid}
+        onChange={(e) => setArtworkid(e.target.value)}
+      />
+      <button disabled={artworkid.trim() === ""}>Generate QR Code</button>
+      
+      <p>You typed: {artworkid}</p>
+
     </div>
   )
 }
