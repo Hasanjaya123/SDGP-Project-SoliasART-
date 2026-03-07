@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ICONS } from '../constants';
 import { artistProfileService } from '../services/uploadApi';
 import ArtDisplayCard from '../components/Art-card';
@@ -127,11 +127,12 @@ const formatFollowerCount = (count) =>
 // --- Main Page Component ---
 
 export const ArtistProfilePage = ({
-  setCurrentPage = () => {},
+
   currentUser = { followingIds: [] },
   onToggleFollow = () => {},
 }) => {
   const { artistId } = useParams();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('portfolio');
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
 
@@ -183,8 +184,10 @@ export const ArtistProfilePage = ({
   }, [artistId, onToggleFollow]);
 
   const handleArtworkClick = useCallback(
-    (id) => setCurrentPage('artworkDetail', id),
-    [setCurrentPage]
+    (id) => {
+      navigate(`/artwork/${id}`); 
+    },
+    [navigate]
   );
 
   const openModal = useCallback(() => setIsChatModalOpen(true), []);

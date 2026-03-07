@@ -28,7 +28,7 @@ const ArtworkDetailsCard = ({ artwork, artist, onArClick }) => {
       
       {/* Artist Profile */}
       <Link 
-        to={`/artist/${artist.name.toLowerCase().replace(/\s+/g, '-')}`} 
+        to={`/user/artist/profile/${artist.id}`}
         className="flex items-center gap-4 mb-2  rounded-lg dark:border-gray-800 w-max pr-6  transition-colors group cursor-pointer"
       >
         <img 
@@ -51,7 +51,7 @@ const ArtworkDetailsCard = ({ artwork, artist, onArClick }) => {
       <div className="flex items-center gap-4 text-xs font-bold text-gray-500 dark:text-gray-400 mb-8">
         <span className="flex items-center gap-1.5"><FiEye className="w-4 h-4" /> {artwork.views.toLocaleString()} Views</span>
         <span className="flex items-center gap-1.5"><FiHeart className="w-4 h-4" /> {artwork.likes.toLocaleString()} Likes</span>
-        <span className="text-amber-500 tracking-widest text-sm">★★★★★</span>
+      
       </div>
 
       {/* Specs Grid */}
