@@ -3,39 +3,12 @@ import { useParams } from 'react-router-dom';
 import ArtworkGallery from '../components/ArtworkDetailsComponents/ArtworkGallery';
 import ArtworkDetailsCard from '../components/ArtworkDetailsComponents/ArtworkDetailsCard';
 
-// --- MOCK DATA ---
-// const MOCK_ARTWORK = {
-//   id: "123",
-//   title: "Coastal Serenity",
-//   price: 156000,
-//   imageUrls: ["https://picsum.photos/800/1000", "https://picsum.photos/800/1001", "https://picsum.photos/800/1002"],
-//   category: "Landscape",
-//   medium: "Oil on Canvas",
-//   dimensions: "40 x 30 in",
-//   year: "2023",
-//   description: "The gentle morning light breaking over the calm waters near Galle Fort. This piece captures the serene atmosphere of the southern coast of Sri Lanka.",
-//   views: 2301,
-//   likes: 540
-// };
-
-// const MOCK_ARTIST = {
-//   name: "Nisha Jayawardena",
-//   location: "Galle, Sri Lanka",
-//   profileImageUrl: "https://i.pravatar.cc/150?u=nisha",
-//   bio: "A contemporary artist focusing on the intersection of nature and emotion. Exhibited in multiple galleries across South Asia."
-// };
-
 const ArtworkDetailsPage = () => {
   const { id } = useParams();
 
   const [artwork, setArtwork] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  // AR Modal State
-  // const [isArModalOpen, setArModalOpen] = useState(false);
-  // const arUrl = `${window.location.origin}/ar-preview/${MOCK_ARTWORK.id}`;
-  // const qrCodeUrl = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${encodeURIComponent(arUrl)}`;
 
   const [isArModalOpen, setArModalOpen] = useState(false);
 
@@ -45,7 +18,7 @@ const ArtworkDetailsPage = () => {
     const fetchArtwork = async () => {
       try {
         setLoading(true);
-        // Replace this URL with your actual backend API endpoint
+        // fetch artwork details from backend API using the 'id' from URL params
         const response = await fetch(`http://localhost:8000/api/artworks/${id}`);
         
         if (!response.ok) {
@@ -64,7 +37,7 @@ const ArtworkDetailsPage = () => {
     fetchArtwork();
   }, [id]);
 
-  // 3. Loading and Error Screens (Must be BEFORE we use 'artwork' variables)
+  // Page states: loading, error, or display artwork details
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center pb-24 pt-12 md:pt-16">
@@ -81,7 +54,7 @@ const ArtworkDetailsPage = () => {
     );
   }
 
-  // 4. Safely calculate AR URLs now that 'artwork' definitely exists
+  // Generate the AR preview URL and corresponding QR code URL
   const arUrl = `${window.location.origin}/ar-preview/${artwork.id}`;
   const qrCodeUrl = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${encodeURIComponent(arUrl)}`;
 
@@ -97,6 +70,9 @@ const ArtworkDetailsPage = () => {
               <ArtworkGallery 
                 images={artwork.imageUrls} 
                 title={artwork.title} 
+                artworkId={artwork.id}           
+                initialLikes={artwork.likes}         
+                ccurrentUserId={"temp-user-id"}
               />
             </div>
           </div>

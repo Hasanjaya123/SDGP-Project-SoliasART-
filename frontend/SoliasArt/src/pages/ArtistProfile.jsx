@@ -183,6 +183,7 @@ export const ArtistProfilePage = ({
     onToggleFollow(artistId);
   }, [artistId, onToggleFollow]);
 
+  // When an artwork card is clicked, navigate to that artwork's details page
   const handleArtworkClick = useCallback(
     (id) => {
       navigate(`/artwork/${id}`); 
@@ -193,7 +194,7 @@ export const ArtistProfilePage = ({
   const openModal = useCallback(() => setIsChatModalOpen(true), []);
   const closeModal = useCallback(() => setIsChatModalOpen(false), []);
 
-  // --- Loading & Error states ---
+  // Loading & Error states
   if (loading) {
     return (
       <div className="flex min-h-screen">
@@ -228,12 +229,11 @@ export const ArtistProfilePage = ({
 
   return (
     <div className="flex min-h-screen">
-      {/* Fixed Sidebar */}
+      {/* Sidebar */}
       <div className="fixed top-0 left-0 h-screen z-50">
         <Sidebar />
       </div>
 
-      {/* Main Content â€” offset by sidebar width (w-64 = 16rem) */}
       <div className="ml-64 flex-1">
         <div className="min-h-screen bg-white dark:bg-black font-sans transition-colors duration-300">
 

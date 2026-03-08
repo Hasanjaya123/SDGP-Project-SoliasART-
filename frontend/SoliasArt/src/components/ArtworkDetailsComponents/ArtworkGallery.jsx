@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import LikeButton from '../LikeBtn';
 
-const ArtworkGallery = ({ images, title }) => {
+const ArtworkGallery = ({ images, title, artworkId, initialLikes, currentUserId, isLiked, onToggleLike}) => {
   const [mainImage, setMainImage] = useState(images[0]);
 
   return (
@@ -8,15 +9,29 @@ const ArtworkGallery = ({ images, title }) => {
       
       {/* Main Image Display */}
       <div className="w-full flex justify-center items-center">
+       
+        <div className="relative group inline-block">
         <img 
           src={mainImage} 
           alt={title} 
         //   Styling of the main image
           className="max-h-[75vh] w-auto h-auto max-w-full object-contain shadow-[0_20px_50px_rgba(0,0,0,0.5)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-500" 
         />
+
+        {/* Like btn on top of the image */}
+          <div className="absolute top-2 right-0 z-10">
+            <LikeButton 
+              artworkId={artworkId} 
+              initialLikes={initialLikes} 
+              currentUserId={currentUserId} 
+              isLiked={isLiked} 
+              onClick={onToggleLike}
+            />
+          </div>
+        </div>
       </div>
 
-      {/* Thumbnail Carousel (only show if there are multiple images) */}
+      {/* Thumbnail Carousel (extra images of the same artwork) */}
       {images.length > 1 && (
         <div className="flex gap-4 overflow-x-auto py-4 px-2 scrollbar-hide justify-center">
           {images.map((img, index) => (

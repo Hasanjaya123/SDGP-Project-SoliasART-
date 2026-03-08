@@ -31,7 +31,6 @@ function App() {
         {/* Default route - redirect to signup */}
         <Route path="/" element={<Navigate to="/signup" replace />} />
 
-
         {/* Route for Art Upload page (for artists) - can be accessed after login */}
         <Route path='/user/dashboard/upload' element={<UploadArtPage />}></Route>
 
@@ -44,7 +43,7 @@ function App() {
 
         {/* Pages within the main layout (pages which have sidebar and footer) */}
         <Route element={<Layout />}>
-          
+          {/* Artwork details page */}
           <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
           
         </Route>

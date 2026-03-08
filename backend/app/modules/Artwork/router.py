@@ -1,15 +1,18 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-
 from app.modules.ArtUpload.model import ArtWork
-# Replace 'path.to.artist.model' with the actual folder where your Artist model lives!
-# from app.path.to.artist.model import Artist 
+from app.modules.ArtistOnboarding.model import Artist 
 
 router = APIRouter()
 
 @router.get("/{artwork_id}")
+# Increment the view count and return the artwork details
 async def get_artwork_details(artwork_id: str, db: Session = Depends(get_db)):
+    db.query(ArtWork).filter(ArtWork.id == artwork_id).update(
+        {ArtWork.view_count: ArtWork.view_count + 1}
+    )
+    db.commit()
     
     #  Get the artwork
     artwork = db.query(ArtWork).filter(ArtWork.id == artwork_id).first()
@@ -39,9 +42,9 @@ async def get_artwork_details(artwork_id: str, db: Session = Depends(get_db)):
         
         #  Injecting the REAL artist data from your 'artists' table!
         "artist": {
-            # Safely fetching data just in case an artist was deleted
+            "id": str(artist.id) if artist else None,
             "name": artist.display_name if artist else "Unknown Artist",
             "location": artist.dispatch_address if artist else "Unknown Location",
-            "profileImageUrl": artist.profile_image_url if artist else "https://i.pravatar.cc/150?u=placeholder"
+            "profileImageUrl": artist.profile_image_url if artist else "https://shorturl.at/3ywNl"
         }
     }

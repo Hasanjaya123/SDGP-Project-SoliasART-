@@ -31,4 +31,5 @@ class ArtWork(Base):
      image_url = Column(ARRAY(String), nullable=False)
      embedding = Column(Vector(512))
      artist_id = Column(UUID(as_uuid=True), ForeignKey("artists.id"))
+     view_count = Column(Integer, default=0)
      

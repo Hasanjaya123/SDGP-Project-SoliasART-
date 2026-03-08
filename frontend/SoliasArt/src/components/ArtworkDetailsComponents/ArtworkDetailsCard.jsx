@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import { Link } from 'react-router-dom';
+
 //import icons
-import { FiEye, FiHeart } from 'react-icons/fi'; 
-import { FaHeart } from 'react-icons/fa'; 
+import { FiEye, FiHeart, FiBookmark } from 'react-icons/fi'; 
+import { FaHeart, FaBookmark } from 'react-icons/fa'; 
 import { MdOutlineViewInAr } from 'react-icons/md';
 
-const ArtworkDetailsCard = ({ artwork, artist, onArClick }) => {
+const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick }) => {
   const [isSaved, setIsSaved] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
 
   const handleAddToCart = () => alert("Added to cart!");
   const handleBuyNow = () => alert("Proceeding to checkout!");
@@ -50,7 +53,7 @@ const ArtworkDetailsCard = ({ artwork, artist, onArClick }) => {
       {/* Stats */}
       <div className="flex items-center gap-4 text-xs font-bold text-gray-500 dark:text-gray-400 mb-8">
         <span className="flex items-center gap-1.5"><FiEye className="w-4 h-4" /> {artwork.views.toLocaleString()} Views</span>
-        <span className="flex items-center gap-1.5"><FiHeart className="w-4 h-4" /> {artwork.likes.toLocaleString()} Likes</span>
+        <span className="flex items-center gap-1.5"><FiHeart className="w-4 h-4" /> {liveLikesCount?.toLocaleString() || artwork.likes.toLocaleString()} Likes</span>
       
       </div>
 
@@ -93,7 +96,7 @@ const ArtworkDetailsCard = ({ artwork, artist, onArClick }) => {
             
             {/*Save button */}
             <button onClick={() => setIsSaved(!isSaved)} className="w-full py-3.5 bg-gray-200 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-white text-sm font-bold rounded-lg hover:bg-gray-300 dark:hover:bg-black transition-all flex items-center justify-center gap-2 hover:!border-gray-200 dark:hover:!border-gray-800 focus:!outline-none">
-                {isSaved ? <FaHeart className="w-4 h-4 text-red-500" /> : <FiHeart className="w-4 h-4" />} {isSaved ? 'Saved' : 'Save'}
+                {isSaved ? <FaBookmark className="w-4 h-4 text-slate-800 dark:text-white" /> : <FiBookmark className="w-4 h-4" />} {isSaved ? 'Saved' : 'Save'}
             </button>
             
             {/* AR button */}
