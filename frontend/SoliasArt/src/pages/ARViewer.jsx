@@ -35,7 +35,7 @@ export default function ARViewer() {
   const [qrReady, setQrReady] = useState(false); // becomes true show QR code
 
   const backendGlbUrl = artworkid.trim() 
-  ? '${BACKEND_URL}/ar/generate-ar/${artworkid.trim()}' 
+  ? `${BACKEND_URL}/ar/generate-ar/${artworkid.trim()}` 
   : null;
 
   const mobilePreviewUrl = backendGlbUrl
@@ -68,7 +68,6 @@ export default function ARViewer() {
 
       await res.blob(); // we don't actually care about the GLB data, just want to trigger the backend processing and caching
 
-      alert("Success! GLB file fetched and cached by server")
       setQrReady(true); // show QR code once backend has cached the GLB
 
     } catch (e) {
