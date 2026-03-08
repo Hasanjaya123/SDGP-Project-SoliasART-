@@ -13,7 +13,7 @@ app = FastAPI(title=settings.PROJECT_NAME)
 
 Base.metadata.create_all(bind=engine)
 
-origins = ["http://localhost:5173", "http://localhost:3000"]
+origins = ["http://localhost:5173", "http://localhost:3000", "http://192.168.8.106:5173"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,7 +21,7 @@ app.add_middleware(
     allow_credentials=True,             # Allow cookies/tokens
     allow_methods=["*"],                # Allow all types: GET, POST, PUT, DELETE
     allow_headers=["*"],                # Allow all headers (Content-Type, Authorization, etc.)
-    expose_headers=["Content-Disposition"]  # Expose this header to the frontend for file downloads
+    expose_headers=["Content-Disposition", "X-Cache"]  # Expose this header to the frontend for file downloads
 )
 
 @app.post("/")
