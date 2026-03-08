@@ -32,4 +32,5 @@ class ArtWork(Base):
      embedding = Column(Vector(512))
      artist_id = Column(UUID(as_uuid=True), ForeignKey("artists.id"))
      view_count = Column(Integer, default=0)
+     likes = Column(Integer, default=0, server_default="0")
      

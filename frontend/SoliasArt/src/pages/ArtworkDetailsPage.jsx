@@ -4,13 +4,14 @@ import ArtworkGallery from '../components/ArtworkDetailsComponents/ArtworkGaller
 import ArtworkDetailsCard from '../components/ArtworkDetailsComponents/ArtworkDetailsCard';
 
 const ArtworkDetailsPage = () => {
-  const { id } = useParams();
 
+  const { id } = useParams();
   const [artwork, setArtwork] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [isArModalOpen, setArModalOpen] = useState(false);
+  const [liveLikesCount, setLiveLikesCount] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -36,6 +37,31 @@ const ArtworkDetailsPage = () => {
 
     fetchArtwork();
   }, [id]);
+
+  const handleToggleLike = async () => {
+    // 1. Optimistic UI Update (Change it instantly on screen)
+    const wasLiked = isLiked;
+    setLiveLikesCount(prev => wasLiked ? prev - 1 : prev + 1);
+    setIsLiked(!wasLiked);
+
+    try {
+      // 2. The API Call
+      const response = await fetch(`http://localhost:8000/api/artworks/${id}/like`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: "temp-user-id" }) // Matches your LikeRequest schema
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update like');
+      }
+    } catch (err) {
+      // 3. Revert if the backend fails (e.g., your 422 error)
+      setLiveLikesCount(prev => wasLiked ? prev + 1 : prev - 1);
+      setIsLiked(wasLiked);
+      console.error("Backend error:", err);
+    }
+  };
 
   // Page states: loading, error, or display artwork details
   if (loading) {
@@ -72,7 +98,7 @@ const ArtworkDetailsPage = () => {
                 title={artwork.title} 
                 artworkId={artwork.id}           
                 initialLikes={artwork.likes}         
-                ccurrentUserId={"temp-user-id"}
+                currentUserId={"temp-user-id"}
               />
             </div>
           </div>
