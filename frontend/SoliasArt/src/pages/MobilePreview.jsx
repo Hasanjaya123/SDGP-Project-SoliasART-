@@ -1,62 +1,123 @@
 import { useState, useEffect } from "react"
 
+function ModelViewer({ src }) {
+    const [ready, setReady] = useState(false) // tracks if script loaded
+
+    useEffect(() => {
+        if (customElements.get("model-viewer")) {
+            setReady(true) // already loaded from before
+            return
+        }
+        const script = document.createElement("script")
+        script.type = "module"
+        script.src = "https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"
+        script.onload = () => setReady(true) // only set ready AFTER script loads
+        document.head.appendChild(script)
+    }, [])
+
+    // Don't render model-viewer until script is ready
+    if (!ready) return <p style={{ color: "white", padding: "20px" }}>Loading viewer...</p>
+
+    return (
+        // eslint-disable-next-line
+        <model-viewer
+            src={src}
+            ar
+            ar-modes="webxr scene-viewer quick-look"
+            ar-placement="wall"
+            auto-rotate
+            camera-controls
+            shadow-intensity="1"
+            environment-image="neutral"
+            style={{ width: "100%", height: "70vh" }}
+        >
+            <button slot="ar-button">View in AR</button>
+        </model-viewer>
+    )
+}
+
 export default function MobilePreview() {
 
     // memory boxes
     const [localUrl, setLocalUrl] = useState(null); // blob url for 3D viewer
     const [loading, setLoading] = useState(true); // true while fetching GLB from backend
     const [error, setError] = useState(null); // stores error text if something fails
+    const [modelUrl, setModelUrl] = useState(null); // original HTTP URL for model-viewer and AR
 
     useEffect(() => {
         const param = new URLSearchParams(window.location.search);
         const rawGlbUrl = param.get("glb")
 
-        if(!rawGlbUrl){
+        if (!rawGlbUrl) {
             setError("No GLB URL provided in query parameters.");
             setLoading(false);
             return;
         }
 
-        let decoratedUrl;
+        // decode the URL
+        let decodedUrl;
         try {
-            decoratedUrl = decodeURIComponent(rawGlbUrl);
-            new URL(decoratedUrl); // validate URL format
+            decodedUrl = decodeURIComponent(rawGlbUrl);
+            new URL(decodedUrl); // validate URL format
         } catch (e) {
             setError("Invalid QR code link");
             setLoading(false);
             return;
         }
 
+        // fetch the GLB file from the backend to confirm it's cached and get a blob URL for the 3D viewer
         const fetchGlb = async () => {
             try {
-                const res = await fetch(decoratedUrl, {
+                const res = await fetch(decodedUrl, {
                     headers: {
                         "ngrok-skip-browser-warning": "true" // needed when using ngrok
+                    }
+                });
+                if (!res.ok) {
+                    const body = await res.json().catch(() => ({}));
+                    throw new Error(body.detail || `Error ${res.status}`);
+                }
+
+                const blob = await res.blob();
+                setLocalUrl(URL.createObjectURL(blob));
+
+                // Use the original HTTP URL for model-viewer so AR viewers can access it
+                setModelUrl(decodedUrl);
+
+            } catch (e) {
+                setError(e.message);
+            } finally {
+                setLoading(false);
             }
-    })
-            if(!res.ok) {
-                const body = await res.json().catch(() => ({}));
-                throw new Error(body.detail || `Error ${res.status}`);
-            }
-            
-            const blob = await res.blob();
-            setLocalUrl(URL.createObjectURL(blob));
-        } catch (e) {
-            setError(e.message);
-        }finally {
-            setLoading(false);
         }
-    }
         fetchGlb();
     }, [])
 
-    if(loading) return <p>Loading 3D model...</p>
-    if(error) return <p style={{color: "red"}}>Error: {error}</p>
+
+    if (loading) {
+        return (
+            <div style={{ textAlign: "center", paddingTop: "40%" }}>
+                <p>Loading 3D model...</p>
+            </div>
+        )
+    }
+
+    if (error) {
+        return (
+            <div style={{ textAlign: "center", padding: "20px" }}>
+                <h2>Oops</h2>
+                <p style={{ color: "red" }}>{error}</p>
+            </div>
+        )
+    }
 
     return (
         <div>
-        <h1>3D Model loaded!</h1>
-        <p>Blob URL: {localUrl}</p>
+            <p>AR Preview</p>
+            <h1>3D Preview</h1>
+            <p>Drag to rotate the model</p>
+
+            {modelUrl && <ModelViewer src={modelUrl} />}
         </div>
     )
 }
