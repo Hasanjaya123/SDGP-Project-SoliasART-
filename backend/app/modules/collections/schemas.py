@@ -47,6 +47,22 @@ class CollectionResponse(CollectionBase):
     created_at: datetime
     artwork_ids: List[str] = [] # added from DB mapping
     
+    @computed_field
+    def name(self) -> str:
+        return self.title
+
+    @computed_field
+    def curator(self) -> str:
+        return self.curator_name
+
+    @computed_field
+    def coverImageUrl(self) -> Optional[str]:
+        return self.preview_images[0] if self.preview_images else None
+
+    @computed_field
+    def artworkIds(self) -> List[str]:
+        return self.artwork_ids
+
     model_config = ConfigDict(from_attributes=True)
 
 class CollectionDetailResponse(CollectionResponse):
