@@ -29,3 +29,11 @@ def create_collection(collection_in: schemas.CollectionCreate):
     Create a new curated collection.
     """
     return services.create_collection(collection_in)
+
+@router.post("/{collection_id}/buy")
+def buy_collection(collection_id: UUID, user_id: UUID): 
+    """
+    Process the purchase of an entire collection. 
+    Accepts user_id manually for now pending auth integration.
+    """
+    return services.process_collection_purchase(collection_id, user_id)
