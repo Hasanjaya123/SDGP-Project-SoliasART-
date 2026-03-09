@@ -5,6 +5,7 @@ from app.modules.ArtUpload.router import router as art_upload_router
 from app.modules.auth.router import router as auth_router
 from app.modules.ArtistProfile.router import router as artist_profile_router
 from app.modules.ArtistOnboarding.router import router as artist_router
+from app.modules.Artwork.router import router as artworks_router
 from app.core.database import Base, engine
 
 # Initialise the API application
@@ -26,11 +27,11 @@ app.add_middleware(
 def read_root():
     return {"status": "SoliasArt Backend is Active"}
 
-
+# add routers for each module
 app.include_router(art_upload_router)
-# add router under Authentication tag
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 app.include_router(artist_router)
 app.include_router(artist_profile_router)
+app.include_router(artworks_router, prefix="/api/artworks", tags=["Artworks Gallery"])
 
 
