@@ -39,13 +39,13 @@ const ArtworkDetailsPage = () => {
   }, [id]);
 
   const handleToggleLike = async () => {
-    // 1. Optimistic UI Update (Change it instantly on screen)
+    // Change it instantly on screen
     const wasLiked = isLiked;
     setLiveLikesCount(prev => wasLiked ? prev - 1 : prev + 1);
     setIsLiked(!wasLiked);
 
     try {
-      // 2. The API Call
+      // The API Call
       const response = await fetch(`http://localhost:8000/api/artworks/${id}/like`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -39,11 +39,11 @@ async def get_artwork_details(artwork_id: str, db: Session = Depends(get_db)):
         # Using your newly added real view_count!
         "views": artwork.view_count if artwork.view_count is not None else 0,
         
-        # Still using defaults for these two until you add them to the DB
+        # Likes and default category
         "likes": artwork.likes if artwork.likes is not None else 0,
         "category": "New Release", 
         
-        #  Injecting the REAL artist data from your 'artists' table!
+        #  Injecting the real artist data from 'artists' table
         "artist": {
             "id": str(artist.id) if artist else None,
             "name": artist.display_name if artist else "Unknown Artist",

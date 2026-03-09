@@ -4,6 +4,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from app.core.database import Base
 
+# Table to track likes
 class UserLike(Base):
     __tablename__ = "user_likes"
     
