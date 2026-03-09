@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import CartItem from '../components/CartComponents/CartItem'; 
 import OrderSummary from '../components/CartComponents/OrderSummery'; 
+import { motion, AnimatePresence } from 'framer-motion';
 
 // mock data
 const initialCartItems = [
@@ -56,13 +57,27 @@ const CartPage = () => {
             
             {/* left - cartitem component */}
             <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl space-y-6">
-              {cartItems.map((item) => (
-                <CartItem 
-                  key={item.id} 
-                  item={item} 
-                  onRemove={handleRemoveItem} 
-                />
+                {/* to add animation */}
+                <AnimatePresence>
+                    {cartItems.map((item) => (
+                        <motion.div
+                            key={item.id}
+                            layout // below items slide up smoothly.
+                            initial={{ opacity: 0, y: 20 }} 
+                            animate={{ opacity: 1, y: 0 }}  
+                            exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }} 
+                            transition={{ duration: 0.3 }}
+                        >
+                            <CartItem 
+                                            key={item.id} 
+                                            item={item} 
+                                            onRemove={handleRemoveItem} 
+                                    />
+                        </motion.div>
+                    
               ))}
+                </AnimatePresence>
+              
             </div>
 
             {/* Right - orderSummery component */}

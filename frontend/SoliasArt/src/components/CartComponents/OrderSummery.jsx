@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const OrderSummary = ({ subtotal, shipping, tax }) => {
-  const total = subtotal + shipping + tax;
+const OrderSummary = ({ subtotal, shipping }) => {
+  const total = subtotal + shipping;
 
   return (
     <div className="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
@@ -12,7 +12,7 @@ const OrderSummary = ({ subtotal, shipping, tax }) => {
         <div className="space-y-4">
           <div className="space-y-2">
             <dl className="flex items-center justify-between gap-4">
-              <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Artwork Subtotal</dt>
+              <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Subtotal</dt>
               <dd className="text-base font-medium text-gray-900 dark:text-white">${subtotal.toLocaleString()}</dd>
             </dl>
 
@@ -21,10 +21,6 @@ const OrderSummary = ({ subtotal, shipping, tax }) => {
               <dd className="text-base font-medium text-gray-900 dark:text-white">${shipping.toLocaleString()}</dd>
             </dl>
 
-            <dl className="flex items-center justify-between gap-4">
-              <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Estimated Tax</dt>
-              <dd className="text-base font-medium text-gray-900 dark:text-white">${tax.toLocaleString()}</dd>
-            </dl>
           </div>
 
           <dl className="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
@@ -34,7 +30,7 @@ const OrderSummary = ({ subtotal, shipping, tax }) => {
         </div>
 
         {/* Checkout btn */}
-        <button className="flex w-full items-center justify-center rounded-lg bg-orange-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-4 focus:ring-orange-300 dark:bg-orange-500 dark:hover:bg-orange-600 dark:focus:ring-orange-800 transition-colors">
+        <button className="flex w-full items-center justify-center rounded-lg bg-[#FF7A00] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#E06B00] !border-none !outline-none focus:!outline-none focus:!ring-4 focus:!ring-[#FF7A00]/50 dark:bg-[#FF7A00] dark:hover:bg-[#E06B00]">
           Proceed to Checkout
         </button>
 
