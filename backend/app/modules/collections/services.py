@@ -14,8 +14,15 @@ def get_db():
 def get_all_collections():
     try:
         db = get_db()
-        # Initial implementation with basic select
-        response = db.table('collections').select('*').execute()
-        return response.data
+        # Fetch collections and their artwork IDs for the preview cover
+        response = db.table('collections').select('id, title, description, curator_name, curator_id, total_artworks, total_value, preview_images, created_at, collection_artworks(artwork_id)').execute()
+        
+        # Flatten the artwork_ids mapping
+        collections = []
+        for col in response.data:
+            col['artwork_ids'] = [ca['artwork_id'] for ca in col.get('collection_artworks', [])]
+            collections.append(col)
+            
+        return collections
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch collections: {str(e)}")
