@@ -48,3 +48,6 @@ class CollectionResponse(CollectionBase):
     artwork_ids: List[str] = [] # added from DB mapping
     
     model_config = ConfigDict(from_attributes=True)
+
+class CollectionDetailResponse(CollectionResponse):
+    artworks: List[ArtworkInCollection]
