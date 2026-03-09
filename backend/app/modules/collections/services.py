@@ -10,3 +10,12 @@ def get_db():
             detail="Database not configured. Supabase credentials missing."
         )
     return supabase
+
+def get_all_collections():
+    try:
+        db = get_db()
+        # Initial implementation with basic select
+        response = db.table('collections').select('*').execute()
+        return response.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch collections: {str(e)}")
