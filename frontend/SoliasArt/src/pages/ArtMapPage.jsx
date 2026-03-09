@@ -4,13 +4,13 @@ import { artEvents, artGalleries } from '../data/mockData';
 const MAP_URL =
   'https://www.google.com/maps/d/embed?mid=1xQO6M7BnRd-s9GC_7Pih11fibV2Izcg&ehbc=2E312F&noprof=1';
 
-// Per-type dot colour and badge classes
+// Per-type dot colour and badge classes - using project's amber #FFC247
 const EVENT_TYPES = {
-  All: { dot: '#d4a853', badge: 'bg-stone-700/60 text-stone-300 border-stone-600' },
-  Exhibition: { dot: '#d4a853', badge: 'bg-amber-900/40 text-amber-300 border-amber-700/50' },
-  Festival: { dot: '#c0715a', badge: 'bg-rose-900/40 text-rose-300 border-rose-700/50' },
-  Opening: { dot: '#7c8fa8', badge: 'bg-slate-700/40 text-slate-300 border-slate-600/50' },
-  'Art Walk': { dot: '#7aaa8a', badge: 'bg-emerald-900/40 text-emerald-300 border-emerald-700/50' },
+  All: { dot: '#FFC247', badge: 'bg-zinc-800 text-zinc-300 border-zinc-700' },
+  Exhibition: { dot: '#FFC247', badge: 'bg-amber-500/10 text-amber-500 border-amber-500/20' },
+  Festival: { dot: '#F43F5E', badge: 'bg-rose-500/10 text-rose-500 border-rose-500/20' },
+  Opening: { dot: '#3B82F6', badge: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
+  'Art Walk': { dot: '#10B981', badge: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' },
 };
 
 // Decorative corners rendered over the map iframe
@@ -21,7 +21,7 @@ const MAP_CORNERS = [
   ['bottom-4 right-4', 'border-b border-r rounded-br'],
 ];
 
-function PulseDot({ color = '#d4a853' }) {
+function PulseDot({ color = '#FFC247' }) {
   return (
     <span className="relative flex h-2.5 w-2.5">
       <span
@@ -45,46 +45,37 @@ function EventCard({ event, selected, onSelect }) {
       onClick={() => onSelect(selected ? null : event)}
       className="w-full text-left rounded-xl border transition-all duration-200 focus:outline-none group overflow-hidden"
       style={{
-        backgroundColor: selected ? 'rgba(212,168,83,0.08)' : 'rgba(20,19,16,0.8)',
-        borderColor: selected ? 'rgba(212,168,83,0.35)' : 'rgba(255,255,255,0.06)',
-        boxShadow: selected ? '0 0 0 1px rgba(212,168,83,0.1), 0 8px 24px -4px rgba(0,0,0,0.4)' : 'none',
+        backgroundColor: selected ? 'rgba(255,194,71,0.05)' : 'rgba(24,24,27,0.6)',
+        borderColor: selected ? 'rgba(255,194,71,0.3)' : 'rgba(255,255,255,0.05)',
+        boxShadow: selected ? '0 4px 20px -4px rgba(0,0,0,0.3)' : 'none',
       }}
     >
-      {/* Coloured top bar visible when selected */}
+      {/* Amber top bar visible when selected */}
       <div
-        className="h-0.5 w-full transition-all duration-300"
-        style={{ backgroundColor: selected ? t.dot : 'transparent' }}
+        className="h-1 w-full transition-all duration-300"
+        style={{ backgroundColor: selected ? '#FFC247' : 'transparent' }}
       />
 
       <div className="p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
           <span
-            className="text-[17px] text-stone-100 leading-tight group-hover:text-amber-100 transition-colors"
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            className="text-lg font-bold text-zinc-100 leading-tight group-hover:text-amber-400 transition-colors"
           >
             {event.name}
           </span>
-          <span className={`shrink-0 text-[10px] px-2 py-0.5 rounded-full border tracking-wide ${t.badge}`}>
+          <span className={`shrink-0 text-[10px] px-2 py-0.5 rounded-full border font-bold uppercase tracking-wider ${t.badge}`}>
             {event.type}
           </span>
         </div>
 
-        <div className="flex items-center gap-3 text-[11px] text-stone-500">
+        <div className="flex items-center gap-3 text-xs text-zinc-500">
           <span className="flex items-center gap-1">
-            <svg className="w-3 h-3 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
+            <span className="material-symbols-outlined text-[16px]">location_on</span>
             {event.location}
           </span>
-          <span className="text-stone-700">·</span>
-          <span className="flex items-center gap-1 text-amber-500/70">
-            <svg className="w-3 h-3 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
+          <span className="text-zinc-700">·</span>
+          <span className="flex items-center gap-1 text-amber-500/80">
+            <span className="material-symbols-outlined text-[16px]">calendar_today</span>
             {new Date(event.date).toLocaleDateString('en-GB', {
               day: 'numeric', month: 'short', year: 'numeric',
             })}
@@ -93,18 +84,16 @@ function EventCard({ event, selected, onSelect }) {
 
         <div
           className="overflow-hidden transition-all duration-300"
-          style={{ maxHeight: selected ? '160px' : '0px', opacity: selected ? 1 : 0 }}
+          style={{ maxHeight: selected ? '200px' : '0px', opacity: selected ? 1 : 0 }}
         >
-          <div className="mt-3 pt-3 border-t border-stone-800/80">
-            <p className="text-stone-400 text-xs leading-relaxed font-light">{event.description}</p>
+          <div className="mt-3 pt-3 border-t border-zinc-800">
+            <p className="text-zinc-400 text-sm leading-relaxed font-normal">{event.description}</p>
             {event.artist && (
-              <div className="flex items-center gap-2 mt-2.5">
-                <div className="w-5 h-5 rounded-full bg-amber-400/15 border border-amber-400/25 flex items-center justify-center shrink-0">
-                  <svg className="w-2.5 h-2.5 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
-                  </svg>
+              <div className="flex items-center gap-2 mt-3">
+                <div className="w-6 h-6 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-[14px] text-amber-500">person</span>
                 </div>
-                <span className="text-xs text-amber-300/80 font-light">{event.artist}</span>
+                <span className="text-xs text-zinc-300 font-medium">{event.artist}</span>
               </div>
             )}
           </div>
@@ -125,14 +114,6 @@ export function ArtMapPage({ theme = 'dark', artists = [] }) {
     : artEvents.filter(e => e.type === filter);
 
   useEffect(() => {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap';
-    document.head.appendChild(link);
-    return () => document.head.removeChild(link);
-  }, []);
-
-  useEffect(() => {
     if (!selected) return;
     sidebarRef.current
       ?.querySelector(`[data-id="${selected.id}"]`)
@@ -140,139 +121,116 @@ export function ArtMapPage({ theme = 'dark', artists = [] }) {
   }, [selected]);
 
   return (
-    <div className="min-h-screen bg-[#0e0d0b] text-stone-100" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+    <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-zinc-100 font-sans transition-colors duration-300">
 
-      {/* Grain texture overlay */}
-      <div
-        className="pointer-events-none fixed inset-0 z-0 opacity-[0.03]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-          backgroundSize: '128px',
-        }}
-      />
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
 
-      <div className="relative z-10 max-w-[1400px] mx-auto px-5 md:px-10 py-12">
-
-        <header className="mb-10">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-stone-700 to-transparent" />
-            <span
-              className="text-[10px] uppercase text-stone-500 font-light"
-              style={{ fontFamily: "'Cormorant Garamond', serif", letterSpacing: '0.3em' }}
-            >
-              Sri Lanka · Art Events
-            </span>
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-stone-700 to-transparent" />
-          </div>
-
+        <header className="mb-12">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
-              <h1
-                className="text-5xl md:text-6xl font-light leading-[1.05] tracking-tight"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
-              >
-                Art on the
-                <em className="block italic text-amber-400/90 font-light">Map</em>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="h-px w-8 bg-amber-500" />
+                <span className="text-xs font-bold uppercase tracking-widest text-amber-500">Art Discovery</span>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white">
+                Art on the <span className="text-amber-500 italic">Map</span>
               </h1>
-              <p className="mt-3 text-stone-400 text-sm font-light max-w-md leading-relaxed">
-                Exhibitions, festivals, and cultural gatherings across the island.
+              <p className="mt-3 text-zinc-600 dark:text-zinc-400 text-lg max-w-2xl leading-relaxed">
+                Explore vibrant exhibitions, cultural festivals, and art openings across Sri Lanka in one interactive view.
               </p>
             </div>
 
-            <div className="flex items-center gap-2.5 bg-stone-900/70 border border-stone-800 rounded-full px-4 py-2 w-fit backdrop-blur-sm">
-              <PulseDot />
-              <span className="text-xs text-stone-400 font-light">
-                <span className="text-amber-300 font-medium">{artEvents.length}</span> upcoming events
-              </span>
+            <div className="flex items-center gap-3 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-3 backdrop-blur-sm shadow-sm">
+              <PulseDot color="#FFC247" />
+              <div className="flex flex-col">
+                <span className="text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-tight">Active Events</span>
+                <span className="text-sm text-zinc-500">{artEvents.length} happenings islandwide</span>
+              </div>
             </div>
           </div>
         </header>
 
-        <div className="flex gap-2 flex-wrap mb-6">
+        <div className="flex gap-2 flex-wrap mb-8">
           {Object.keys(EVENT_TYPES).map(type => (
             <button
               key={type}
               onClick={() => setFilter(type)}
-              className={`px-4 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 ${filter === type
-                ? 'bg-amber-400/15 border-amber-400/50 text-amber-300'
-                : 'bg-stone-900/60 border-stone-800 text-stone-500 hover:border-stone-600 hover:text-stone-300'
+              className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 border ${filter === type
+                ? 'bg-[#FFC247] border-[#FFC247] text-zinc-900 shadow-lg shadow-amber-500/20'
+                : 'bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:border-amber-500/50 hover:text-amber-500'
                 }`}
             >
-              {type !== 'All' && (
-                <span
-                  className="inline-block w-1.5 h-1.5 rounded-full mr-1.5 -translate-y-px"
-                  style={{ backgroundColor: EVENT_TYPES[type].dot }}
-                />
-              )}
-              {type}
+              <div className="flex items-center gap-2">
+                {type !== 'All' && (
+                  <span
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: EVENT_TYPES[type].dot }}
+                  />
+                )}
+                {type}
+              </div>
             </button>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8">
 
           <div
-            className="relative rounded-2xl overflow-hidden"
-            style={{ boxShadow: '0 0 0 1px rgba(255,255,255,0.05), 0 32px 64px -12px rgba(0,0,0,0.7)' }}
+            className="relative rounded-3xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 min-h-[500px]"
+            style={{ boxShadow: '0 20px 50px -12px rgba(0,0,0,0.25)' }}
           >
             {!mapLoaded && (
-              <div className="absolute inset-0 z-10 bg-[#1a1a17] flex flex-col items-center justify-center gap-4">
-                <div className="relative">
-                  <div className="w-12 h-12 rounded-full border border-amber-400/20 animate-ping absolute inset-0" />
-                  <div className="w-12 h-12 rounded-full border-2 border-t-amber-400 border-stone-700 animate-spin" />
-                </div>
-                <p className="text-stone-500 text-xs tracking-widest uppercase">Loading map…</p>
+              <div className="absolute inset-0 z-10 bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center justify-center gap-4">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-amber-500"></div>
+                <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Loading Map Data</p>
               </div>
             )}
 
             {MAP_CORNERS.map(([pos, borders]) => (
-              <div key={pos} className={`absolute ${pos} z-20 pointer-events-none`}>
-                <div className={`w-6 h-6 ${borders} border-amber-400/30`} />
+              <div key={pos} className={`absolute ${pos} z-20 pointer-events-none opacity-40`}>
+                <div className={`w-8 h-8 ${borders} border-amber-500/40`} />
               </div>
             ))}
 
             <iframe
               src={MAP_URL}
               title="Art Events Map"
-              className="w-full block"
-              style={{ height: 'clamp(400px, 62vh, 680px)', border: 'none' }}
+              className="w-full h-full block min-h-[500px]"
+              style={{ border: 'none' }}
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               onLoad={() => setMapLoaded(true)}
             />
 
-            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#0e0d0b] to-transparent pointer-events-none z-10" />
+            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-zinc-50 dark:from-black to-transparent pointer-events-none z-10" />
           </div>
 
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between mb-1">
-              <h2
-                className="text-xl font-light text-stone-300 tracking-wide"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
-              >
-                {filter === 'All' ? 'All Events' : filter}
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between px-2">
+              <h2 className="text-lg font-bold text-zinc-900 dark:text-white uppercase tracking-tight">
+                {filter === 'All' ? 'Upcoming Events' : filter}
               </h2>
-              <span className="text-xs text-stone-600">
-                {visible.length} {visible.length === 1 ? 'event' : 'events'}
+              <span className="bg-amber-500/10 text-amber-500 text-[10px] font-black px-2 py-0.5 rounded-md uppercase">
+                {visible.length} Total
               </span>
             </div>
 
             <div
               ref={sidebarRef}
-              className="flex flex-col gap-2.5 overflow-y-auto"
+              className="flex flex-col gap-3 overflow-y-auto pr-2 custom-scrollbar"
               style={{
-                maxHeight: 'clamp(400px, 62vh, 680px)',
-                scrollbarWidth: 'thin',
-                scrollbarColor: '#3f3a30 transparent',
+                height: 'calc(100vh - 400px)',
+                minHeight: '400px',
               }}
             >
               {visible.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-16">
-                  <span className="text-4xl mb-3 opacity-40">🗓</span>
-                  <p className="text-stone-500 text-sm">No events for this filter.</p>
+                <div className="flex flex-col items-center justify-center py-20 bg-zinc-50 dark:bg-zinc-900/50 rounded-3xl border border-dashed border-zinc-200 dark:border-zinc-800">
+                  <span className="material-symbols-outlined text-4xl text-zinc-300 dark:text-zinc-700 mb-2">calendar_today</span>
+                  <p className="text-zinc-500 text-sm font-medium">No results found.</p>
                 </div>
               )}
+
 
               {visible.map(event => (
                 <EventCard
@@ -283,16 +241,16 @@ export function ArtMapPage({ theme = 'dark', artists = [] }) {
                 />
               ))}
 
-              <div className="mt-4 pt-4 border-t border-stone-800/60">
-                <p className="text-[10px] uppercase tracking-widest text-stone-600 mb-3 font-light">
+              <div className="mt-6 pt-6 border-t border-zinc-800/60">
+                <p className="text-[10px] lowercase tracking-widest text-zinc-600 mb-3 font-bold uppercase">
                   Partner Galleries
                 </p>
                 {artGalleries.map(g => (
-                  <div key={g.id} className="flex items-center gap-3 py-2.5 border-b border-stone-900/80 last:border-0 group">
-                    <span className="w-1.5 h-1.5 rounded-full bg-rose-400/70 shrink-0" />
+                  <div key={g.id} className="flex items-center gap-3 py-2.5 border-b border-zinc-900/80 last:border-0 group">
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-500/70 shrink-0" />
                     <div>
-                      <p className="text-xs text-stone-300 group-hover:text-stone-100 transition-colors">{g.name}</p>
-                      <p className="text-[11px] text-stone-600">{g.location}</p>
+                      <p className="text-xs text-zinc-300 group-hover:text-amber-400 transition-colors uppercase font-bold">{g.name}</p>
+                      <p className="text-[11px] text-zinc-600 font-medium">{g.location}</p>
                     </div>
                   </div>
                 ))}
@@ -301,7 +259,7 @@ export function ArtMapPage({ theme = 'dark', artists = [] }) {
           </div>
         </div>
 
-        <footer className="mt-6 flex flex-wrap items-center gap-6 text-[11px] text-stone-600 font-light">
+        <footer className="mt-12 flex flex-wrap items-center gap-6 text-[10px] text-zinc-600 font-bold uppercase tracking-widest border-t border-zinc-800 pt-6">
           {Object.entries(EVENT_TYPES)
             .filter(([k]) => k !== 'All')
             .map(([type, cfg]) => (
@@ -311,7 +269,7 @@ export function ArtMapPage({ theme = 'dark', artists = [] }) {
               </span>
             ))}
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-rose-400/70" />
+            <span className="w-2 h-2 rounded-full bg-rose-500/70" />
             Gallery
           </span>
         </footer>
