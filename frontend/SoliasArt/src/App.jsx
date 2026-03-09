@@ -10,6 +10,7 @@ import Test from './pages/test.jsx';
 
 import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
 import Layout from './components/Layout';
+import CartPage from './pages/CartPage';
 
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
 
@@ -45,6 +46,8 @@ function App() {
         <Route element={<Layout />}>
           {/* Artwork details page */}
           <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
+
+          <Route path ="/cart" element={<CartPage />} />
           
         </Route>
 
