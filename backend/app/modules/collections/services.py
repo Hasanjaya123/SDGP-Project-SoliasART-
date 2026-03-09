@@ -26,3 +26,18 @@ def get_all_collections():
         return collections
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch collections: {str(e)}")
+
+def get_collection_by_id(collection_id: UUID):
+    try:
+        db = get_db()
+        # Fetch the main collection data
+        collection_res = db.table('collections').select('*').eq('id', str(collection_id)).single().execute()
+        collection_data = collection_res.data
+        if not collection_data:
+            raise HTTPException(status_code=404, detail="Collection not found")
+            
+        return collection_data
+    except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=500, detail=f"Failed to fetch collection details: {str(e)}")
