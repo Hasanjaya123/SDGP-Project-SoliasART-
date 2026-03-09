@@ -67,3 +67,45 @@ def get_collection_by_id(collection_id: UUID):
         if isinstance(e, HTTPException):
             raise e
         raise HTTPException(status_code=500, detail=f"Failed to fetch collection details: {str(e)}")
+
+def create_collection(data: CollectionCreate):
+    try:
+        db = get_db()
+        # First, calculate total_value and total_artworks based on provided artwork_ids
+        total_value = 0.0
+        preview_images = []
+        
+        if data.artwork_ids:
+            artworks_res = db.table('artwork').select('price, image_url').in_('id', [str(id) for id in data.artwork_ids]).execute()
+            for art in artworks_res.data:
+                total_value += art.get('price', 0.0)
+                if len(preview_images) < 4:
+                    preview_images.append(art.get('image_url'))
+
+        # Insert collection
+        new_collection = {
+            "title": data.title,
+            "description": data.description,
+            "curator_name": data.curator_name,
+            "curator_id": str(data.curator_id),
+            "total_artworks": len(data.artwork_ids),
+            "total_value": total_value,
+            "preview_images": preview_images
+        }
+        
+        insert_res = db.table('collections').insert(new_collection).execute()
+        collection = insert_res.data[0]
+        
+        # Insert artwork relationships
+        if data.artwork_ids:
+            collection_artworks = []
+            for item_id in data.artwork_ids:
+                collection_artworks.append({
+                    "collection_id": collection['id'],
+                    "artwork_id": str(item_id)
+                })
+            db.table('collection_artworks').insert(collection_artworks).execute()
+        
+        return collection
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create collection: {str(e)}")
