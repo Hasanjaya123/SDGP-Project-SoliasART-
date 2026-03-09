@@ -109,3 +109,18 @@ def create_collection(data: CollectionCreate):
         return collection
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to create collection: {str(e)}")
+
+def process_collection_purchase(collection_id: UUID, user_id: UUID):
+    try:
+        db = get_db()
+        # In a real app, integrate with Stripe or similar
+        # For this prototype, we just mark a transaction or create a purchase record
+        purchase_data = {
+            "collection_id": str(collection_id),
+            "buyer_id": str(user_id),
+            "status": "completed"
+        }
+        res = db.table('collection_purchases').insert(purchase_data).execute()
+        return {"status": "success", "message": "Collection purchased successfully", "purchase_id": res.data[0]['id']}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to process purchase: {str(e)}")
