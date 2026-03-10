@@ -6,6 +6,7 @@ from datetime import datetime,timezone
 from pgvector.sqlalchemy import Vector
 from app.core.database import Base
 from app.modules.ArtistOnboarding.model import Artist
+from sqlalchemy.orm import relationship
 
 
 class ArtWork(Base):
@@ -32,5 +33,8 @@ class ArtWork(Base):
      embedding = Column(Vector(512))
      artist_id = Column(UUID(as_uuid=True), ForeignKey("artists.id"))
      view_count = Column(Integer, default=0)
+     status = Column(String, default="available")
      likes = Column(Integer, default=0, server_default="0")
+
+     artist = relationship("Artist")
      

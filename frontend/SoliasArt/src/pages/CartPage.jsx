@@ -37,7 +37,7 @@ const CartPage = () => {
 
   return (
     <section className="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-16 min-h-screen">
-      <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
+      <div className="mx-auto max-w-screen-xl px-8 md:px-12 lg:px-16">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
           Your Shopping Cart ({cartItems.length} items)
         </h2>
@@ -53,10 +53,10 @@ const CartPage = () => {
           </div>
         ) : (
           // cart with items
-          <div className="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
+          <div className="mt-6 sm:mt-8 lg:grid lg:grid-cols-12 lg:items-start lg:gap-8 xl:gap-10">
             
             {/* left - cartitem component */}
-            <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl space-y-6">
+            <div className="w-full space-y-6 lg:col-span-7 xl:col-span-8">
                 {/* to add animation */}
                 <AnimatePresence>
                     {cartItems.map((item) => (
@@ -81,11 +81,13 @@ const CartPage = () => {
             </div>
 
             {/* Right - orderSummery component */}
+            <div className="w-full mt-6 lg:col-span-5 xl:col-span-4 lg:mt-0">
             <OrderSummary 
               subtotal={subtotal} 
               shipping={shipping} 
               tax={tax} 
             />
+            </div>
 
           </div>
         )}

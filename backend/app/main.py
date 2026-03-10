@@ -6,6 +6,7 @@ from app.modules.auth.router import router as auth_router
 from app.modules.ArtistProfile.router import router as artist_profile_router
 from app.modules.ArtistOnboarding.router import router as artist_router
 from app.modules.Artwork.router import router as artworks_router
+from app.modules.Purchase.router import router as cart_router
 from app.core.database import Base, engine
 
 # Initialise the API application
@@ -33,5 +34,6 @@ app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 app.include_router(artist_router)
 app.include_router(artist_profile_router)
 app.include_router(artworks_router, prefix="/api/artworks", tags=["Artworks Gallery"])
+app.include_router(cart_router, prefix="/api", tags=["Cart"])
 
 
