@@ -1,0 +1,81 @@
+
+=== artwork ===
+  EXISTS - 1 sample row(s)
+  artist_id: None
+  create_at: '2026-02-25T17:58:04.059709+00:00'
+  depth_in: 2.0
+  description: 'Ok'
+  embedding: '[-0.25091976,0.90142864,0.4639879,0.19731697,-0.6879627,-0.68801093,-0.88383275,0.7323523,0.2022300
+  height_in: 23.0
+  id: '7fc4cb02-e8c8-4d68-a3f8-8e027a1f729b'
+  image_url: ['h', 't', 't', 'p', 's', ':', '/', '/', 'i', 'k', '.', 'i', 'm', 'a', 'g', 'e', 'k', 'i', 't', '.',
+  is_framed: True
+  medium: 'Oil'
+  price: 12000.0
+  title: 'Test'
+  weight_kg: 34.0
+  width_in: 23.0
+  year_created: 2023
+
+=== collections ===
+  EXISTS - 1 sample row(s)
+  created_at: '2026-03-06T05:10:32.306239+00:00'
+  curator_id: '00000000-0000-0000-0000-000000000000'
+  curator_name: 'Nadisha Silva'
+  description: 'A collection of vibrant artworks inspired by the tropical beauty and cultural richness of island li
+  id: 'aaaaaa11-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+  preview_images: ['https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w
+  title: 'Island Hues'
+  total_artworks: 3
+  total_value: 111000
+
+=== collection_artworks ===
+  EXISTS but EMPTY
+
+=== artists ===
+  EXISTS - 1 sample row(s)
+  account_number: '100022'
+  agreed_to_terms: True
+  artist_bio: 'Funny guy'
+  artistic_styles: ['test,oil']
+  bank_name: 'BOC'
+  branch_name: 'Malabe'
+  dispatch_address: '708'
+  display_name: 'Hasanjaya Perera'
+  followers: '0'
+  id: '1261ed3f-e904-4c92-ad7f-b84337226c3b'
+  identy_card_image_url: ''
+  legal_name: 'Danith Hasanjaya Perera'
+  other_social_media_username: 'Hasanjaya'
+  other_social_nedia_link: 'Inster'
+  phone: '12341312'
+  primary_medium: 'Oil '
+  profile_image: 'https://ik.imagekit.io/sjunnxn6x/Profile-Pictures/Gary-Hernandez-A-Warm-Gaze-1_akLZS9tMSh.jpg'
+  profile_image_url: 'https://shorturl.at/3ywNl'
+  user_id: None
+  verified_artist: True
+  years_experience: '4+'
+
+=== artist ===
+  ERROR: {'message': "Could not find the table 'public.artist' in the schema cache", 'code': 'PGRST205', 'hint': "Perhaps you mea
+
+=== users ===
+  EXISTS - 1 sample row(s)
+  created_at: '2026-01-10T19:30:19.658632+00:00'
+  email: 'kasun.p@example.com'
+  first_name: 'Kasun'
+  full_name: 'Kasun Perera'
+  id: '8c2a0157-8f91-44d6-8ad1-8599ff33bd0c'
+  is_verified: False
+  last_name: 'Perera'
+  password_hash: '$2b$12$eImiTXuWVxfM37uY4JANjO.oJyzQG67H6vH3ZpL'
+  role: 'artist'
+
+=== user ===
+  ERROR: {'message': "Could not find the table 'public.user' in the schema cache", 'code': 'PGRST205', 'hint': "Perhaps you meant
+
+=== profiles ===
+  ERROR: {'message': "Could not find the table 'public.profiles' in the schema cache", 'code': 'PGRST205', 'hint': "Perhaps you m
+
+=== profile ===
+  ERROR: {'message': "Could not find the table 'public.profile' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details'
