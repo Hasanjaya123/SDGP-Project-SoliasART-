@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
 import './index.css';
 import Test from './pages/test.jsx';
+import ArtSearch from './pages/ArtSearch.jsx';
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
 
 function App() {
@@ -22,6 +23,8 @@ function App() {
 
         {/* Test route for ArtDisplayCard */}
         <Route path="/test" element={<Test />} />
+
+        <Route path="/search/:userId" element={<ArtSearch />} />
         
         {/* Default route - redirect to signup */}
         <Route path="/" element={<Navigate to="/signup" replace />} />
@@ -29,9 +32,9 @@ function App() {
         <Route path='/user/dashboard/upload/:artistId' element={<UploadArtPage />}></Route>
 
         {/* Artist on boarding page */}
-        <Route path="/settings/convert/artist" element={<ArtistOnboardingPage />} />
+        <Route path="/settings/convert/:userId" element={<ArtistOnboardingPage />} />
 
-        <Route path="/user/artist/profile" element={<ArtistProfilePage />} />
+        <Route path="/user/artist/profile/:artistId" element={<ArtistProfilePage />} />
 
     </Routes>    
     </>
