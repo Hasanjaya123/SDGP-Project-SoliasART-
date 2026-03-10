@@ -52,6 +52,12 @@ const CartPage = () => {
 
   // remove art
   const handleRemoveItem = async (cartItemId) => {
+    // save the latest cart version
+    const previousCart = [...cartItems];
+
+    // optimistic update
+    setCartItems((prevItems) => prevItems.filter(item => item.id !== cartItemId));
+
     try {
       const response = await fetch(`http://localhost:8000/api/cart/remove/${cartItemId}`, {
         method: 'DELETE',
@@ -66,6 +72,8 @@ const CartPage = () => {
       
     } catch (error) {
       console.error("Error removing item:", error);
+      // Revert to previous cart if deletion fails
+      setCartItems(previousCart);
       alert("Could not remove item. Please try again.");
     }
   };

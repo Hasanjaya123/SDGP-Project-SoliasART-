@@ -7,7 +7,7 @@ import { FaPaintBrush } from 'react-icons/fa'; // For the logo icon
 
 const Sidebar = () => {
   
-  // --- DATA: Group 1 (Main Navigation) ---
+  // Main Navigation
   const mainLinks = [
     { icon: <BiSearch size={24} />, label: "Search" },
     { icon: <BiCompass size={24} />, label: "Explore" },
@@ -17,24 +17,24 @@ const Sidebar = () => {
     { icon: <BiMap size={24} />, label: "ArtMaps" },
   ];
 
-  // --- DATA: Group 2 (Bottom Actions) ---
+  // Bottom Actions
   const bottomLinks = [
     { icon: <BiSave size={24} />, label: "Saved" },
     { icon: <BsGrid size={24} />, label: "Dashboard" },
     { icon: <BiMoon size={24} />, label: "Toggle Theme" },
   ];
 
-  // --- STYLES ---
+  // STYLES
   // A reusable class for the links to make them look consistent
   const linkClass = "flex items-center gap-4 px-4 py-3 text-gray-500 hover:text-[#C58940] hover:bg-yellow-50 rounded-lg transition-colors cursor-pointer group";
 
   return (
-    // 1. CONTAINER: Fixed height, fixed width, border on right
+    // CONTAINER
     <div className="flex h-screen w-64 flex-col border-r border-gray-200 bg-white px-6 py-8">
       
-      {/* 2. LOGO AREA */}
+      {/*  LOGO AREA */}
       <div className="mb-10 flex items-center gap-2">
-        {/* I'm using an icon here, but you can replace this <FaPaintBrush> with your <img src="..." /> */}
+        
         <div className="text-3xl text-[#C58940]">
             <FaPaintBrush /> 
         </div>
@@ -43,7 +43,7 @@ const Sidebar = () => {
         </div>
       </div>
 
-      {/* 3. MIDDLE: Navigation Links */}
+      {/* MIDDLE: Navigation Links */}
       <nav className="flex flex-col gap-2">
         
         {/* Loop through Main Links */}
@@ -69,8 +69,7 @@ const Sidebar = () => {
 
       </nav>
 
-      {/* 4. FOOTER: User Profile */}
-      {/* 'mt-auto' is the MAGIC CLASS. It pushes this box to the very bottom. */}
+      {/*  FOOTER: User Profile */}
       <div className="mt-auto border-t border-gray-200 pt-6">
         <div className="flex items-center gap-3">
           

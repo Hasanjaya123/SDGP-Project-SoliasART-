@@ -66,7 +66,7 @@ const ArtworkDetailsPage = () => {
   // Page states: loading, error, or display artwork details
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center pb-24 pt-12 md:pt-16">
+      <div className="min-h-screen dark:bg-gray-900 flex items-center justify-center pb-24 pt-12 md:pt-16">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1F4E79]"></div>
       </div>
     );
@@ -74,7 +74,7 @@ const ArtworkDetailsPage = () => {
 
   if (error || !artwork) {
     return (
-      <div className="min-h-screen flex items-center justify-center pb-24 pt-12 text-red-500 font-bold">
+      <div className="min-h-screen dark:bg-gray-900 flex items-center justify-center pb-24 pt-12 text-red-500 font-bold">
         Error: {error || "Artwork not found"}
       </div>
     );
@@ -85,7 +85,7 @@ const ArtworkDetailsPage = () => {
   const qrCodeUrl = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${encodeURIComponent(arUrl)}`;
 
   return (
-    <div className="pb-24 pt-12 md:pt-16">
+    <div className="min-h-screen bg-white dark:bg-gray-900 pb-24 pt-12 md:pt-16">
       <div className="max-w-7xl mx-auto px-8 md:px-12 lg:px-20">
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">

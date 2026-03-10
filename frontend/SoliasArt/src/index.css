@@ -52,6 +52,12 @@ body {
   min-height: 100vh;
 }
 
+/* When the 'dark' class is active */
+.dark body {
+  color: #f3f4f6; 
+  background-color: #111827; 
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
@@ -84,6 +90,16 @@ button:focus-visible {
   }
   a:hover {
     color: #D97706;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #f3f4f6; /* Tailwind gray-100 for readable light text */
+    background-color: #111827; /* Tailwind gray-900 */
+  }
+  a:hover {
+    color: #D97706; /* Matches your light mode hover */
   }
 }
 

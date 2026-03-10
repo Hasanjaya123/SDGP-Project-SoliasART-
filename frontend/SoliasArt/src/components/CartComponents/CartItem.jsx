@@ -1,5 +1,6 @@
 import React from 'react';
 import { FiTrash2 } from "react-icons/fi";
+import { Link } from 'react-router-dom';
 
 const CartItem = ({ item, onRemove }) => {
   return (
@@ -7,22 +8,22 @@ const CartItem = ({ item, onRemove }) => {
         <div className="flex items-start gap-4 md:gap-6">
             
             {/* Artwork Image */}
-            <a href="#" className="shrink-0">
+            <Link to={`/artwork/${item.artwork_id}`} className="shrink-0">
             <img 
                 className="h-20 w-20 rounded object-cover" 
                 src={item.imageUrl} 
                 alt={item.title} 
             />
-            </a>
+            </Link>
 
             {/* Artwork details and remove btn */}
             <div className="flex flex-1 justify-between gap-4">
             
             {/* Artwork name and artist  */}
             <div className="mt-2 flex flex-col min-w-0">
-                <a href="#" className="text-xl font-medium !text-gray-900 hover:underline dark:text-white">
+                <Link to={`/artwork/${item.artwork_id}`} className="text-xl font-medium !text-gray-900 hover:underline dark:!text-white">
                 {item.title}  <span className="text-sm text-gray-500 dark:text-gray-400"> by {item.artist}</span>
-                </a>
+                </Link>
 
                 <div className="mt-2 flex items-center">
                 <button 
