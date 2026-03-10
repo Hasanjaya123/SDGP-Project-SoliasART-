@@ -31,4 +31,9 @@ class ArtWork(Base):
      image_url = Column(ARRAY(String), nullable=False)
      embedding = Column(Vector(512))
      artist_id = Column(UUID(as_uuid=True), ForeignKey("artists.id"))
+<<<<<<< HEAD
+=======
+     view_count = Column(Integer, default=0)
+     likes = Column(Integer, default=0, server_default="0")
+>>>>>>> 4fcd7786d647fa3918f0162d55f387f73fddef72
      

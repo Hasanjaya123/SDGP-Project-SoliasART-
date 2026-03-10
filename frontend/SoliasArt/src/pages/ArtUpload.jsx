@@ -2,7 +2,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ICONS } from '../constants';
 import { artworkService } from '../services/uploadApi'
+<<<<<<< HEAD
 import { useNavigate } from 'react-router-dom';
+=======
+import { useNavigate, useParams } from 'react-router-dom';
+>>>>>>> 4fcd7786d647fa3918f0162d55f387f73fddef72
 
 const INITIAL_DATA = {
   images: [],
@@ -24,6 +28,10 @@ const INITIAL_DATA = {
 const UploadArtPage = () => {
   
   const navigate = useNavigate()
+<<<<<<< HEAD
+=======
+  const { artistId } = useParams()
+>>>>>>> 4fcd7786d647fa3918f0162d55f387f73fddef72
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(INITIAL_DATA);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -36,7 +44,11 @@ const UploadArtPage = () => {
         // Optional: Add loading state here
         setIsPublishing(true)
         if (isPublishing) alert("Publishing...")
+<<<<<<< HEAD
         await artworkService.uploadArtwork(formData);
+=======
+        await artworkService.uploadArtwork(formData, artistId);
+>>>>>>> 4fcd7786d647fa3918f0162d55f387f73fddef72
         alert("Artwork published successfully!");
         navigate("/home")
         // Redirect or reset form

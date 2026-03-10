@@ -1,8 +1,26 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import CollectionsPage from './pages/CollectionsPage';
 import CollectionDetailPage from './pages/CollectionDetailPage';
 import { artworks } from './data/mockData';
+=======
+
+import './App.css'
+import UploadArtPage from './pages/ArtUpload'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import SignupPage from './pages/SignupPage.jsx';
+import LoginPage from './pages/LoginPage.jsx';
+import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
+import './index.css';
+import Test from './pages/test.jsx';
+
+import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
+import Layout from './components/Layout';
+
+import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
+
+>>>>>>> 4fcd7786d647fa3918f0162d55f387f73fddef72
 
 function App() {
   const [currentPage, setCurrentPage] = useState('collections');
@@ -37,6 +55,7 @@ function App() {
   };
 
   return (
+<<<<<<< HEAD
     <div className={`min-h-screen font-sans flex ${isDarkMode ? 'dark bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
       <Sidebar
         currentPage={currentPage}
@@ -76,6 +95,46 @@ function App() {
       </div>
     </div>
   );
+=======
+    <>
+    <Routes>
+        <Route path="/home"></Route>
+        {/* Route to Signup page */} 
+        <Route path="/signup" element={<SignupPage />} />
+        
+        {/* Route to Login page */}
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* Test route for ArtDisplayCard */}
+        <Route path="/test" element={<Test />} />
+        
+        {/* Default route - redirect to signup */}
+        <Route path="/" element={<Navigate to="/signup" replace />} />
+
+        {/* Route for Art Upload page (for artists) - can be accessed after login */}
+        <Route path='/user/dashboard/upload' element={<UploadArtPage />}></Route>
+
+        <Route path='/user/dashboard/upload/:artistId' element={<UploadArtPage />}></Route>
+
+        {/* Artist on boarding page */}
+        <Route path="/settings/convert/:userId" element={<ArtistOnboardingPage />} />
+
+        <Route path="/user/artist/profile/:artistId" element={<ArtistProfilePage />} />
+
+        {/* Pages within the main layout (pages which have sidebar and footer) */}
+        <Route element={<Layout />}>
+          {/* Artwork details page */}
+          <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
+          
+        </Route>
+
+    </Routes>  
+
+    </>
+         
+  );
+
+>>>>>>> 4fcd7786d647fa3918f0162d55f387f73fddef72
 }
 
 export default App;
