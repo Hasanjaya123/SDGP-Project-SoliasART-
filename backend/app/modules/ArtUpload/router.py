@@ -7,12 +7,7 @@ from app.core.database import get_db
 from fastapi.concurrency import run_in_threadpool
 from app.modules.ArtUpload.model import ArtWork
 from app.core.supabase import supabase
-
-#-----------Test-------------------------
-import numpy as np
-np.random.seed(42)
-consistent_embedding = np.random.uniform(-1, 1, 512).tolist()
-#-----------Test-------------------------
+from app.modules.ArtUpload.embeddings import generate_image_embedding
 
 router = APIRouter(prefix="/user/dashboard", tags=["ArtUpload"])
 
@@ -35,6 +30,13 @@ async def upload(
             raise HTTPException(statis_code=404, details="Artist not found")
         
         artist_data = profile_response.data[0]
+        
+        #Taking the first image to convert into Embeddings
+        first_image_bytes = await images[0].read()
+        await images[0].seek(0)
+        
+        vector_embedding = await run_in_threadpool(generate_image_embedding, first_image_bytes)
+        
         
         for image in images:
             image_content = await image.read()
@@ -68,7 +70,7 @@ async def upload(
             is_framed=form_data.framing,    
             
             image_url=image_links,
-            embedding=consistent_embedding,
+            embedding=vector_embedding,
             artist_id= artist__id
         )
 
