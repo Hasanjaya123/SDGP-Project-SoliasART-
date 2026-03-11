@@ -7,14 +7,12 @@ import LoginPage from './pages/LoginPage.jsx';
 import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
 import './index.css';
 import Test from './pages/test.jsx';
-import ArtSearch from './pages/ArtSearch.jsx';
-
-import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
 import Layout from './components/Layout';
-
+import CartPage from './pages/CartPage';
+import ArtSearch from './pages/ArtSearch.jsx';
+import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
 import ArtMapPage from './pages/ArtMapPage.jsx';
-
 
 
 
@@ -51,6 +49,9 @@ function App() {
         <Route element={<Layout />}>
           {/* Artwork details page */}
           <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
+          {/* Cart page */}
+          <Route path ="/cart" element={<CartPage />} />
+  
 
           {/* Art Map page route */}
           <Route path="/art-map" element={<ArtMapPage />} />
