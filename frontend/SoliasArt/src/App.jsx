@@ -1,4 +1,4 @@
-import { useState } from 'react'
+
 import './App.css'
 import UploadArtPage from './pages/ArtUpload'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
@@ -7,14 +7,20 @@ import LoginPage from './pages/LoginPage.jsx';
 import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
 import './index.css';
 import Test from './pages/test.jsx';
+import ArtSearch from './pages/ArtSearch.jsx';
+
+import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
+import Layout from './components/Layout';
+
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
+
 
 function App() {
   return (
     <>
     <Routes>
         <Route path="/home"></Route>
-        {/* Route to Signup page */}
+        {/* Route to Signup page */} 
         <Route path="/signup" element={<SignupPage />} />
         
         {/* Route to Login page */}
@@ -22,9 +28,14 @@ function App() {
 
         {/* Test route for ArtDisplayCard */}
         <Route path="/test" element={<Test />} />
+
+        <Route path="/search/:userId" element={<ArtSearch />} />
         
         {/* Default route - redirect to signup */}
         <Route path="/" element={<Navigate to="/signup" replace />} />
+
+        {/* Route for Art Upload page (for artists) - can be accessed after login */}
+        <Route path='/user/dashboard/upload' element={<UploadArtPage />}></Route>
 
         <Route path='/user/dashboard/upload/:artistId' element={<UploadArtPage />}></Route>
 
@@ -33,7 +44,15 @@ function App() {
 
         <Route path="/user/artist/profile/:artistId" element={<ArtistProfilePage />} />
 
-    </Routes>    
+        {/* Pages within the main layout (pages which have sidebar and footer) */}
+        <Route element={<Layout />}>
+          {/* Artwork details page */}
+          <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
+          
+        </Route>
+
+    </Routes>  
+
     </>
          
   );
