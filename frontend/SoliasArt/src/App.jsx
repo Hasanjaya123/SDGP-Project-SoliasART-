@@ -12,15 +12,18 @@ import CartPage from './pages/CartPage';
 import ArtSearch from './pages/ArtSearch.jsx';
 import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
+import ArtMapPage from './pages/ArtMapPage.jsx';
+
+
 
 function App() {
   return (
     <>
-    <Routes>
+      <Routes>
         <Route path="/home"></Route>
-        {/* Route to Signup page */} 
+        {/* Route to Signup page */}
         <Route path="/signup" element={<SignupPage />} />
-        
+
         {/* Route to Login page */}
         <Route path="/login" element={<LoginPage />} />
 
@@ -49,12 +52,18 @@ function App() {
           {/* Cart page */}
           <Route path ="/cart" element={<CartPage />} />
   
+
+          {/* Art Map page route */}
+          <Route path="/art-map" element={<ArtMapPage />} />
+
+
+
         </Route>
 
-    </Routes>  
+      </Routes>
 
     </>
-         
+
   );
 
 }
