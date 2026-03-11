@@ -284,7 +284,6 @@ export const ArtistProfilePage = ({
               </button>
             </div>
           </div>
-
           {/* Artist Info */}
           <div className="mt-4">
             <div className="flex items-center gap-3">
