@@ -8,6 +8,8 @@ from app.modules.ArtistOnboarding.router import router as artist_router
 from app.modules.ArtSearch.router import router as art_search_router
 from app.modules.Artwork.router import router as artworks_router
 from app.core.database import Base, engine
+from app.modules.PostUpload.router import router as post_upload_router
+
 
 # Initialise the API application
 app = FastAPI(title=settings.PROJECT_NAME)
@@ -32,8 +34,10 @@ def read_root():
 app.include_router(art_upload_router)
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 app.include_router(artist_router)
+app.include_router(post_upload_router)
 app.include_router(artist_profile_router)
 app.include_router(art_search_router)
 app.include_router(artworks_router, prefix="/api/artworks", tags=["Artworks Gallery"])
+
 
 
