@@ -1,10 +1,155 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ICONS } from '../constants';
 import { artistProfileService } from '../services/uploadApi';
 import ArtDisplayCard from '../components/Art-card';
 import Sidebar from '../components/Nav-bar';
 import Footer from '../components/Footer';
+
+// --- Upload Post Modal ---
+
+const CreatePostModal = ({ artist, artistId, onClose, onPostCreated }) => {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setSelectedImage(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleSubmit = async () => {
+    if (!title.trim() && !description.trim() && !selectedImage) {
+      setError('Please add a title, description, or image.');
+      return;
+    }
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      const newPost = await artistProfileService.uploadPost(artistId, {
+        title: title.trim(),
+        description: description.trim(),
+        imageFile: selectedImage,
+      });
+      onPostCreated(newPost);
+      onClose();
+    } catch (err) {
+      const detail = err.response?.data?.detail;
+      setError(typeof detail === 'string' ? detail : 'Failed to create post. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
+      <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full overflow-hidden bg-slate-200 dark:bg-zinc-700 shrink-0">
+              <img src={artist?.profileImageUrl} alt={artist?.name} className="w-full h-full object-cover" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{artist?.name}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Post to Anyone</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors text-lg font-bold"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="px-6 py-4 space-y-3">
+          <input
+            type="text"
+            placeholder="Post title (optional)"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full bg-transparent text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-base font-semibold outline-none border-b border-slate-100 dark:border-zinc-800 pb-2 focus:border-[#FFC247] transition-colors"
+            maxLength={120}
+          />
+          <textarea
+            placeholder="What do you want to talk about?"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={4}
+            className="w-full bg-transparent text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 text-sm leading-relaxed outline-none resize-none"
+            maxLength={1000}
+          />
+          {imagePreview && (
+            <div className="relative rounded-xl overflow-hidden border border-slate-100 dark:border-zinc-800 group">
+              <img src={imagePreview} alt="Preview" className="w-full max-h-56 object-cover" />
+              <button
+                onClick={handleRemoveImage}
+                className="absolute top-2 right-2 bg-black/60 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+          {error && <p className="text-red-500 text-xs font-medium">{error}</p>}
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageChange}
+              id="post-image-input"
+            />
+            <label
+              htmlFor="post-image-input"
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium transition-colors ${
+                selectedImage
+                  ? 'bg-[#FFC247]/20 text-[#b8860b] dark:text-[#FFC247]'
+                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-700 dark:hover:text-slate-200'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[20px]">image</span>
+              <span>{selectedImage ? 'Image added' : 'Add image'}</span>
+            </label>
+          </div>
+          <button
+            onClick={handleSubmit}
+            disabled={isSubmitting || (!title.trim() && !description.trim() && !selectedImage)}
+            className="px-6 py-2 bg-[#FFC247] text-slate-900 font-bold text-sm rounded-full hover:bg-yellow-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            {isSubmitting ? (
+              <>
+                <div className="w-3.5 h-3.5 border-2 border-slate-900/30 border-t-slate-900 rounded-full animate-spin" />
+                Posting...
+              </>
+            ) : (
+              'Post'
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // --- Sub-components for tab content ---
 
@@ -38,23 +183,37 @@ const PortfolioTab = ({ artworks, onArtworkClick }) => (
   </div>
 );
 
-const UploadsTab = ({ posts }) => (
-  <div className="grid grid-cols-2 md:grid-cols-3 gap-1">
-    {posts.map((post) => (
+const UploadsTab = ({ posts, onCreatePost }) => (
+  <div>
+    <div className="flex justify-end mb-4">
+      <button
+        onClick={onCreatePost}
+        className="flex items-center gap-2 bg-[#FFC247] text-slate-900 font-bold text-sm px-5 py-2.5 rounded-full hover:bg-yellow-400 transition-colors shadow-sm"
+      >
+        <span className="material-symbols-outlined text-[18px]">add</span>
+        New Post
+      </button>
+    </div>
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-1">
+    {posts.map((post) => {
+      const thumb = post.imageUrl || post.image_url?.[0] || null;
+      const text = post.description || post.title || post.text || '';
+
+      return (
       <div key={post.id} className="relative aspect-square bg-slate-100 dark:bg-zinc-800 group cursor-pointer overflow-hidden">
-        {post.imageUrl ? (
-          <img src={post.imageUrl} alt="Post" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+        {thumb ? (
+          <img src={thumb} alt="Post" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
         ) : post.videoUrl ? (
           <video src={post.videoUrl} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-slate-200 dark:bg-zinc-700 text-slate-500 p-4 text-center text-sm">
-            {post.text?.slice(0, 50)}...
+            {text.slice(0, 50)}{text.length > 50 ? '...' : ''}
           </div>
         )}
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-6 text-white font-bold">
           <div className="flex items-center gap-1">
             {React.cloneElement(ICONS.heartSolid, { className: 'w-5 h-5' })}
-            {post.likes}
+            {post.likes || 0}
           </div>
           <div className="flex items-center gap-1">
             {React.cloneElement(ICONS.chat, { className: 'w-5 h-5' })}
@@ -67,12 +226,14 @@ const UploadsTab = ({ posts }) => (
           </div>
         )}
       </div>
-    ))}
+      );
+    })}
     {posts.length === 0 && (
       <div className="col-span-full text-center py-20 text-slate-500 dark:text-slate-400">
         No posts uploaded yet.
       </div>
     )}
+    </div>
   </div>
 );
 
@@ -135,6 +296,7 @@ export const ArtistProfilePage = ({
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('portfolio');
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
+  const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
 
   const [artist, setArtist] = useState(null);
   const [artworks, setArtworks] = useState([]);
@@ -193,6 +355,12 @@ export const ArtistProfilePage = ({
 
   const openModal = useCallback(() => setIsChatModalOpen(true), []);
   const closeModal = useCallback(() => setIsChatModalOpen(false), []);
+  const openCreatePost = useCallback(() => setIsCreatePostModalOpen(true), []);
+  const closeCreatePost = useCallback(() => setIsCreatePostModalOpen(false), []);
+
+  const handlePostCreated = useCallback((newPost) => {
+    setPosts((prev) => [newPost, ...prev]);
+  }, []);
 
   // Loading & Error states
   if (loading) {
@@ -284,7 +452,6 @@ export const ArtistProfilePage = ({
               </button>
             </div>
           </div>
-
           {/* Artist Info */}
           <div className="mt-4">
             <div className="flex items-center gap-3">
@@ -361,7 +528,7 @@ export const ArtistProfilePage = ({
             {activeTab === 'portfolio' && (
               <PortfolioTab artworks={artworks} onArtworkClick={handleArtworkClick} />
             )}
-            {activeTab === 'uploads' && <UploadsTab posts={posts} />}
+            {activeTab === 'uploads' && <UploadsTab posts={posts} onCreatePost={openCreatePost} />}
             {activeTab === 'about' && <AboutTab artist={artist} />}
           </div>
         </div>
@@ -369,6 +536,14 @@ export const ArtistProfilePage = ({
 
       {isChatModalOpen && (
         <CommissionModal artistName={artist.name} onClose={closeModal} />
+      )}
+      {isCreatePostModalOpen && (
+        <CreatePostModal
+          artist={artist}
+          artistId={artistId}
+          onClose={closeCreatePost}
+          onPostCreated={handlePostCreated}
+        />
       )}
         </div>
 

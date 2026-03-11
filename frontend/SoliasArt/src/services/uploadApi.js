@@ -12,6 +12,21 @@ export const artistProfileService = {
     const response = await api.get(`/artists/profile/${artistId}`);
     return response.data;
   },
+
+  uploadPost: async (artistId, postData) => {
+    const formData = new FormData();
+
+    // Optional text fields
+    if (postData.title?.trim())       formData.append('title', postData.title.trim());
+    if (postData.description?.trim()) formData.append('description', postData.description.trim());
+
+    // Optional image – the backend accepts a list named 'images'
+    if (postData.imageFile) formData.append('images', postData.imageFile);
+
+    const response = await api.post(`/artists/posts/${artistId}`, formData);
+
+    return response.data;
+  },
 };
 
 export const artworkService = {
@@ -59,6 +74,47 @@ export const artworkService = {
       console.error("Upload failed:", error.response?.data?.detail || error.message);
       throw error;
     }
+  },
+
+  getArtWorks: async (userId) => {
+    try{
+
+      const response = await api.get(`/explore/${userId}`)
+
+      return response.data
+
+    } catch (error) {
+      console.log("failed to load artworks", error.response?.data?.detail || error.message)
+      throw error
+
+    }
+  },
+  
+  SearchArtWork: async (textInput, imageFile) => {
+    const formData = new FormData();
+  
+    if (textInput) {
+      formData.append("query_text", textInput);
+    } else if (imageFile) {
+      formData.append("query_image", imageFile);
+    }
+
+    try{
+
+      const response = await api.post(`/explore/search`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      return response.data.results
+
+    } catch (error) {
+      console.log("failed to load artworks", error.response?.data?.detail || error.message)
+      throw error
+
+    }
+
   },
 
   uploadArtist: async (formDataState, userId) => {

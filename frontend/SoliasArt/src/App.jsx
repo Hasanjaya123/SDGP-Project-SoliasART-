@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
 import './index.css';
 import Test from './pages/test.jsx';
+import ArtSearch from './pages/ArtSearch.jsx';
 
 import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
 import Layout from './components/Layout';
@@ -31,6 +32,8 @@ function App() {
         {/* Test route for ArtDisplayCard */}
         <Route path="/test" element={<Test />} />
 
+        <Route path="/search/:userId" element={<ArtSearch />} />
+        
         {/* Default route - redirect to signup */}
         <Route path="/" element={<Navigate to="/signup" replace />} />
 

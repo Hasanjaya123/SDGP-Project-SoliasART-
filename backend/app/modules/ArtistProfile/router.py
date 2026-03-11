@@ -21,7 +21,7 @@ async def get_full_artist_profile(artist_id: str):
 
         artworks_res = supabase.table("artwork").select("id, title, price, image_url, width_in, height_in, medium").eq("artist_id", artist_id).execute()
         
-        #posts_res = supabase.table("posts").select("*").eq("artist_id", artist_id).order("created_at", desc=True).execute()
+        posts_res = supabase.table("post").select("*").eq("artist_id", artist_id).order("created_at", desc=True).execute()
 
         # We map the database columns (snake_case) to match your React props (camelCase)
         return {
@@ -39,7 +39,7 @@ async def get_full_artist_profile(artist_id: str):
                 "recognition": [],
             },
             "artworks": artworks_res.data,
-            "posts": []
+            "posts": posts_res.data
         }
 
     except Exception as e:
