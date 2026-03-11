@@ -6,6 +6,7 @@
     opacity: 0;
     transform: translateY(16px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -47,6 +48,7 @@ a {
   color: #D97706;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #ff8902;
 }
@@ -87,6 +89,7 @@ button:focus-visible {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #D97706;
   }
@@ -100,4 +103,3 @@ input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 30px white inset !important;
   -webkit-text-fill-color: #111827 !important;
 }
-
