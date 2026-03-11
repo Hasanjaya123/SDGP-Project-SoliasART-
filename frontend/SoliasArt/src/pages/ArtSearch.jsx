@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ArtDisplayCard from "../components/Art-card";
 import SearchBar from "../components/SearchBar";
 import UploadButton from "../components/UploadButton";
@@ -13,7 +13,8 @@ import { useParams } from 'react-router-dom'
 const ArtSearch = () => {
   const [query, setQuery] = useState("");
   const [isDark, setIsDark] = useState(true);
-  const [previewImage, setPreviewImage] = useState(null); 
+  const [previewImage, setPreviewImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
   const { userId } = useParams()
 
   const [ARTWORKS, setArtworks] = useState([]);
@@ -33,6 +34,24 @@ const ArtSearch = () => {
 
   }, [userId]);
 
+  const handleSearch = async (searchQuery, file) => {
+    const searchFile = file || imageFile;
+    if (!searchQuery && !searchFile) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const results = await artworkService.SearchArtWork(
+        searchQuery || null,
+        searchFile || null
+      );
+      setArtworks(results || []);
+    } catch (err) {
+      setError(err.response?.data?.detail || "Search failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // ── Apply / remove the "dark" class on <html> so ALL dark: variants work ──
   useEffect(() => {
     if (isDark) {
@@ -42,23 +61,8 @@ const ArtSearch = () => {
     }
   }, [isDark]);
 
-  const filtered = useMemo(() => {
-    if (!query.trim()) return ARTWORKS;
-    const q = query.toLowerCase();
-    return ARTWORKS.filter(
-      (art) =>
-        art.title?.toLowerCase().includes(q) ||
-        art.medium?.toLowerCase().includes(q)
-    );
-  }, [query, ARTWORKS]);
-
   return (
-    /*
-      Root wrapper:
-      - `dark` class is toggled on <html> via useEffect above, so dark: variants
-        fire globally — including inside Nav-bar.jsx without editing it.
-      - We use a flex-col wrapper so the footer can span full width at the bottom.
-    */
+    
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-950 font-sans transition-colors duration-300">
 
       {/* ── Top section: sidebar + main side by side ── */}
@@ -101,16 +105,24 @@ const ArtSearch = () => {
               <div className="flex-1 flex justify-center">
                 <SearchBar
                   onSearch={setQuery}
+                  onSearchSubmit={handleSearch}
                   previewImage={previewImage}
                   onClearImage={() => {
                     if (previewImage) URL.revokeObjectURL(previewImage);
                     setPreviewImage(null);
+                    setImageFile(null);
                   }}
                 />
               </div>
 
               <div className="flex items-center gap-2 flex-shrink-0">
-                <UploadButton onImageUpload={(url) => setPreviewImage(url)} />
+                <UploadButton onImageUpload={(url, file) => {
+                  if (previewImage) URL.revokeObjectURL(previewImage);
+                  const ownUrl = URL.createObjectURL(file);
+                  setPreviewImage(ownUrl);
+                  setImageFile(file);
+                  handleSearch(null, file);
+                }} />
                 <CartButton count={0} />
               </div>
             </div>
@@ -133,26 +145,29 @@ const ArtSearch = () => {
                 {query ? `Results for "${query}"` : "All Masterpieces"}
               </h1>
               <p className="text-xs text-gray-400 mt-0.5">
-                {filtered.length} artwork{filtered.length !== 1 ? "s" : ""} found
+                {ARTWORKS.length} artwork{ARTWORKS.length !== 1 ? "s" : ""} found
               </p>
             </div>
 
-            {filtered.length > 0 ? (
+            {ARTWORKS.length > 0 ? (
               <div className="flex flex-wrap gap-4 items-start justify-center">
-                {filtered.map((art) => (
+                {ARTWORKS.map((art) => {
+                  const imgUrl = Array.isArray(art.image_url) ? art.image_url[0] : art.image_url;
+                  return (
                   <div
                     key={art.id}
                   >
-                    <ArtDisplayCard image={art.image_url?.[0]} formData={{
+                    <ArtDisplayCard image={imgUrl} formData={{
                       title: art.title,
                       price: art.price,
                       category: art.medium || '',
                       height: art.height_in || '',
                       width: art.width_in || '',
-                      images: art.image_url ? [art.image_url] : [],
+                      images: imgUrl ? [imgUrl] : [],
                     }} />
                   </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-24 text-center">

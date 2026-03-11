@@ -74,6 +74,33 @@ export const artworkService = {
 
     }
   },
+  
+  SearchArtWork: async (textInput, imageFile) => {
+    const formData = new FormData();
+  
+    if (textInput) {
+      formData.append("query_text", textInput);
+    } else if (imageFile) {
+      formData.append("query_image", imageFile);
+    }
+
+    try{
+
+      const response = await api.post(`/explore/search`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      return response.data.results
+
+    } catch (error) {
+      console.log("failed to load artworks", error.response?.data?.detail || error.message)
+      throw error
+
+    }
+
+  },
 
   uploadArtist: async (formDataState, userId) => {
 
