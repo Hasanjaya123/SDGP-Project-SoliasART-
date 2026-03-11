@@ -1,4 +1,5 @@
 ﻿@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* fade-in-up animation used by artwork cards and onboarding steps */
 @keyframes fade-in-up {
