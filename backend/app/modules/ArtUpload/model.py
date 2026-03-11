@@ -28,7 +28,6 @@ class ArtWork(Base):
      height_in = Column(Numeric(5,2), nullable=False)
      depth_in = Column(Numeric(5,2), nullable=False)
      is_framed = Column(Boolean, server_default=text("false"), default=False)
-     
      image_url = Column(ARRAY(String), nullable=False)
      embedding = Column(Vector(512))
      artist_id = Column(UUID(as_uuid=True), ForeignKey("artists.id"))

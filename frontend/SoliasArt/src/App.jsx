@@ -7,13 +7,11 @@ import LoginPage from './pages/LoginPage.jsx';
 import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
 import './index.css';
 import Test from './pages/test.jsx';
-
-import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
 import Layout from './components/Layout';
 import CartPage from './pages/CartPage';
-
+import ArtSearch from './pages/ArtSearch.jsx';
+import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
-
 
 function App() {
   return (
@@ -28,6 +26,8 @@ function App() {
 
         {/* Test route for ArtDisplayCard */}
         <Route path="/test" element={<Test />} />
+
+        <Route path="/search/:userId" element={<ArtSearch />} />
         
         {/* Default route - redirect to signup */}
         <Route path="/" element={<Navigate to="/signup" replace />} />
@@ -46,9 +46,9 @@ function App() {
         <Route element={<Layout />}>
           {/* Artwork details page */}
           <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
-
+          {/* Cart page */}
           <Route path ="/cart" element={<CartPage />} />
-          
+  
         </Route>
 
     </Routes>  

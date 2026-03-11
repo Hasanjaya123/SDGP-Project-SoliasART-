@@ -56,7 +56,9 @@ const ArtworkDetailsPage = () => {
         throw new Error('Failed to update like');
       }
     } catch (err) {
+
       // Revert if the backend fails 
+
       setLiveLikesCount(prev => wasLiked ? prev + 1 : prev - 1);
       setIsLiked(wasLiked);
       console.error("Backend error:", err);
