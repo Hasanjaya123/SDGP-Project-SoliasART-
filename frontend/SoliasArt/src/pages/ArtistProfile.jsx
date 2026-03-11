@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ICONS } from '../constants';
 import { artistProfileService } from '../services/uploadApi';
 import ArtDisplayCard from '../components/Art-card';
@@ -127,11 +127,12 @@ const formatFollowerCount = (count) =>
 // --- Main Page Component ---
 
 export const ArtistProfilePage = ({
-  setCurrentPage = () => {},
+
   currentUser = { followingIds: [] },
   onToggleFollow = () => {},
 }) => {
   const { artistId } = useParams();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('portfolio');
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
 
@@ -182,15 +183,18 @@ export const ArtistProfilePage = ({
     onToggleFollow(artistId);
   }, [artistId, onToggleFollow]);
 
+  // When an artwork card is clicked, navigate to that artwork's details page
   const handleArtworkClick = useCallback(
-    (id) => setCurrentPage('artworkDetail', id),
-    [setCurrentPage]
+    (id) => {
+      navigate(`/artwork/${id}`); 
+    },
+    [navigate]
   );
 
   const openModal = useCallback(() => setIsChatModalOpen(true), []);
   const closeModal = useCallback(() => setIsChatModalOpen(false), []);
 
-  // --- Loading & Error states ---
+  // Loading & Error states
   if (loading) {
     return (
       <div className="flex min-h-screen">
@@ -225,12 +229,11 @@ export const ArtistProfilePage = ({
 
   return (
     <div className="flex min-h-screen">
-      {/* Fixed Sidebar */}
+      {/* Sidebar */}
       <div className="fixed top-0 left-0 h-screen z-50">
         <Sidebar />
       </div>
 
-      {/* Main Content â€” offset by sidebar width (w-64 = 16rem) */}
       <div className="ml-64 flex-1">
         <div className="min-h-screen bg-white dark:bg-black font-sans transition-colors duration-300">
 
