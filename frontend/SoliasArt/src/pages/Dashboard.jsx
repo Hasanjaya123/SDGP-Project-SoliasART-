@@ -109,3 +109,15 @@ useEffect(() => {
         .slice(0, 5),
     [artworks]
   );
+
+  // ── Search filter: matches title, medium, or status ───────────────────────
+    const filtered = useMemo(() => {
+      const q = search.trim().toLowerCase();
+      if (!q) return artworks;
+      return artworks.filter(
+        (a) =>
+          a.title?.toLowerCase().includes(q)  ||
+          a.medium?.toLowerCase().includes(q) ||
+          a.status?.toLowerCase().includes(q)
+      );
+    }, [search, artworks]);
