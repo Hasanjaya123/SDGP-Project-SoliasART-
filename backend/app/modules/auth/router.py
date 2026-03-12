@@ -6,7 +6,6 @@ from app.modules.auth import dependencies
 from jose import JWTError, jwt
 from app.core.config import settings
 from . import utils as email_utils  
-from app.core.config import settings
 from fastapi.responses import HTMLResponse
 
 router = APIRouter()

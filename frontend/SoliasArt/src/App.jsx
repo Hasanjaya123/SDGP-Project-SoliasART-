@@ -7,12 +7,12 @@ import LoginPage from './pages/LoginPage.jsx';
 import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
 import './index.css';
 import Test from './pages/test.jsx';
+import Layout from './components/Layout';
+import CartPage from './pages/CartPage';
 import ArtSearch from './pages/ArtSearch.jsx';
 import React, { useState, useEffect } from 'react';
 
 import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
-import Layout from './components/Layout';
-
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
 import { jwtDecode } from "jwt-decode";
 import { authService } from './services/uploadApi';
@@ -64,11 +64,11 @@ function ArtistGuard({ children }) {
 function App() {
   return (
     <>
-    <Routes>
+      <Routes>
         <Route path="/home"></Route>
-        {/* Route to Signup page */} 
+        {/* Route to Signup page */}
         <Route path="/signup" element={<SignupPage />} />
-        
+
         {/* Route to Login page */}
         <Route path="/login" element={<LoginPage />} />
 
@@ -94,10 +94,10 @@ function App() {
           
         </Route>
 
-    </Routes>  
+      </Routes>
 
     </>
-         
+
   );
 
 }
