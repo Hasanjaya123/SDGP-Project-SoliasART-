@@ -47,3 +47,65 @@ const AlertIcon = ({ className }) => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
   </svg>
 );
+
+
+const toCardProps = (art) => ({
+  image: art.image_url?.[0] ?? null,
+  formData: {
+    title:    art.title     ?? "",
+    price:    art.price     ?? "",
+    category: art.medium    ?? "",
+    height:   art.height_in ?? "",
+    width:    art.width_in  ?? "",
+    // ArtDisplayCard uses `formData.images.length > 0` to decide whether
+    // to show the image or the "No Image" placeholder — mirror ArtSearch.jsx exactly
+    images:   art.image_url ? [art.image_url] : [],
+  },
+});
+
+// ─── Derive live metric values from raw artwork array 
+const deriveMetrics = (artworks) => {
+  const total        = artworks.length;
+  const sold         = artworks.filter((a) => a.status?.toLowerCase() === "sold").length;
+  const totalRevenue = artworks
+    .filter((a) => a.status?.toLowerCase() === "sold")
+    .reduce((sum, a) => sum + (parseFloat(a.price) || 0), 0);
+  const views = artworks.reduce((sum, a) => sum + (parseInt(a.views)  || 0), 0);
+  const likes = artworks.reduce((sum, a) => sum + (parseInt(a.likes)  || 0), 0);
+  return { total, sold, totalRevenue, views, likes };
+};
+
+// ─── Loading skeleton for artwork cards
+const SkeletonCard = () => (
+  <div className="bg-white border border-slate-200 rounded-lg p-4 animate-pulse">
+    <div className="bg-slate-200 rounded aspect-[3/4] mb-4" />
+    <div className="h-3 bg-slate-200 rounded w-1/2 mx-auto mb-2" />
+    <div className="h-4 bg-slate-200 rounded w-3/4 mx-auto mb-3" />
+    <div className="h-3 bg-slate-200 rounded w-1/3 mx-auto" />
+  </div>
+);
+
+// ─── Dashboard Page
+useEffect(() => {
+    if (!userId) return;
+    setLoading(true);
+    setError(null);
+
+    artworkService
+      .getArtWorks(userId)
+      .then((data) => setArtworks(Array.isArray(data) ? data : []))
+      .catch((err) =>
+        setError(err.response?.data?.detail ?? "Failed to load artworks.")
+      )
+      .finally(() => setLoading(false));
+  }, [userId]);
+
+  // ── Recent Sales: sold artworks sorted newest-first, max 5 
+  const recentSales = useMemo(
+    () =>
+      [...artworks]
+        .filter((a) => a.status?.toLowerCase() === "sold")
+        .sort((a, b) => new Date(b.sold_at ?? 0) - new Date(a.sold_at ?? 0))
+        .slice(0, 5),
+    [artworks]
+  );
