@@ -91,6 +91,7 @@ function App() {
           <Route path="/search" element={<ArtSearch />} />
           <Route path="/artist/profile" element={<ArtistProfilePage />} />
           <Route path="/artist/profile/:artistId" element={<ArtistProfilePage />} />
+          <Route path="/cart" element={<CartPage />} />
           
         </Route>
 
