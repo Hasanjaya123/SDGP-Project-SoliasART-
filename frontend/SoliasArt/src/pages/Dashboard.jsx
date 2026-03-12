@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import ArtDisplayCard from '../components/Art-card';
-import Sidebar from '../components/Nav-bar';
-import Footer from '../components/Footer';
+import ArtDisplayCard from "../components/Art-card";
+import Sidebar from "../components/Nav-bar";
+import Footer from "../components/Footer";
 import { artworkService } from "../services/uploadApi";
 
-// SVG Icons
+// ─── SVG Icons ────────────────────────────────────────────────────────────────
 const SearchIcon = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -49,6 +49,7 @@ const AlertIcon = ({ className }) => (
 );
 
 
+
 const toCardProps = (art) => ({
   image: art.image_url?.[0] ?? null,
   formData: {
@@ -63,7 +64,7 @@ const toCardProps = (art) => ({
   },
 });
 
-// ─── Derive live metric values from raw artwork array 
+// ─── Derive live metric values from raw artwork array ─────────────────────────
 const deriveMetrics = (artworks) => {
   const total        = artworks.length;
   const sold         = artworks.filter((a) => a.status?.toLowerCase() === "sold").length;
@@ -75,7 +76,7 @@ const deriveMetrics = (artworks) => {
   return { total, sold, totalRevenue, views, likes };
 };
 
-// ─── Loading skeleton for artwork cards
+// ─── Loading skeleton for artwork cards ──────────────────────────────────────
 const SkeletonCard = () => (
   <div className="bg-white border border-slate-200 rounded-lg p-4 animate-pulse">
     <div className="bg-slate-200 rounded aspect-[3/4] mb-4" />
@@ -85,8 +86,17 @@ const SkeletonCard = () => (
   </div>
 );
 
-// ─── Dashboard Page
-useEffect(() => {
+// ─── Dashboard Page ───────────────────────────────────────────────────────────
+const ArtistDashboard = () => {
+  const { userId } = useParams();
+
+  const [artworks, setArtworks] = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [error,    setError]    = useState(null);
+  const [search,   setSearch]   = useState("");
+
+  // ── Fetch artworks — identical pattern to ArtSearch.jsx ──────────────────
+  useEffect(() => {
     if (!userId) return;
     setLoading(true);
     setError(null);
@@ -100,7 +110,7 @@ useEffect(() => {
       .finally(() => setLoading(false));
   }, [userId]);
 
-  // ── Recent Sales: sold artworks sorted newest-first, max 5 
+  // ── Recent Sales: sold artworks sorted newest-first, max 5 ───────────────
   const recentSales = useMemo(
     () =>
       [...artworks]
@@ -111,13 +121,305 @@ useEffect(() => {
   );
 
   // ── Search filter: matches title, medium, or status ───────────────────────
-    const filtered = useMemo(() => {
-      const q = search.trim().toLowerCase();
-      if (!q) return artworks;
-      return artworks.filter(
-        (a) =>
-          a.title?.toLowerCase().includes(q)  ||
-          a.medium?.toLowerCase().includes(q) ||
-          a.status?.toLowerCase().includes(q)
-      );
-    }, [search, artworks]);
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return artworks;
+    return artworks.filter(
+      (a) =>
+        a.title?.toLowerCase().includes(q)  ||
+        a.medium?.toLowerCase().includes(q) ||
+        a.status?.toLowerCase().includes(q)
+    );
+  }, [search, artworks]);
+  
+
+  // ── Live metrics derived from fetched data ────────────────────────────────
+  const { total, sold, totalRevenue, views, likes } = deriveMetrics(artworks);
+
+  const METRICS = [
+    {
+      label:      "Total Revenue",
+      value:      `LKR ${totalRevenue.toLocaleString()}`,
+      badge:      `${sold} sold`,
+      badgeClass: "text-emerald-600 bg-emerald-50",
+      iconClass:  "bg-emerald-50 text-emerald-600",
+      Icon: TrendUpIcon,
+    },
+    {
+      label:      "Listed Artworks",
+      value:      total.toString(),
+      badge:      `+${total}`,
+      badgeClass: "text-blue-600 bg-blue-50",
+      iconClass:  "bg-blue-50 text-blue-600",
+      Icon: BrushIcon,
+    },
+    {
+      label:      "Sold Artworks",
+      value:      sold.toString(),
+      badge:      sold > 0 ? `${sold} New` : "—",
+      badgeClass: "text-amber-600 bg-amber-50",
+      iconClass:  "bg-amber-50 text-amber-600",
+      Icon: ShoppingBagIcon,
+    },
+    {
+      label:      "Store Views",
+      value:      views > 0 ? views.toLocaleString() : "—",
+      badge:      views > 999 ? `${(views / 1000).toFixed(1)}k` : `${views}`,
+      badgeClass: "text-purple-600 bg-purple-50",
+      iconClass:  "bg-purple-50 text-purple-600",
+      Icon: EyeIcon,
+    },
+    {
+      label:      "Profile Likes",
+      value:      likes > 0 ? likes.toLocaleString() : "—",
+      badge:      `+${likes}`,
+      badgeClass: "text-rose-600 bg-rose-50",
+      iconClass:  "bg-rose-50 text-rose-600",
+      Icon: HeartIcon,
+    },
+  ];
+
+  return (
+    <div className="flex h-screen overflow-hidden bg-stone-50 font-sans">
+
+      {/* ── Sidebar — imported & unmodified ── */}
+      <Sidebar />
+
+      {/* ── Main ── */}
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+
+        {/* ── Header ── */}
+        <header className="h-20 flex-shrink-0 bg-white border-b border-slate-200 flex items-center justify-between px-8 gap-4">
+          <div className="flex-shrink-0">
+            <h2 className="text-xl font-bold text-slate-900">Good Morning, Hasanjaya!</h2>
+            <p className="text-sm text-slate-500">Welcome back to your command center.</p>
+          </div>
+
+          <div className="flex items-center gap-4">
+            {/* Search — filters live backend data by title / medium / status */}
+            <div className="relative hidden lg:block">
+              <SearchIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search your inventory..."
+                className="pl-9 pr-8 py-2 bg-slate-100 border-none rounded-lg focus:ring-2 focus:ring-amber-400 w-64 text-sm outline-none transition-all"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
+            {/* Upload — navigates to the upload page */}
+            <a
+              href={`/user/dashboard/upload/3dff7d1a-467b-431f-b4f0-9541e7d6c318`}
+              className="bg-amber-400 hover:bg-amber-500 active:scale-95 text-slate-900 font-bold px-5 py-2.5 rounded-lg flex items-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap"
+            >
+              <PlusCircleIcon className="w-4 h-4" />
+              Upload New Artwork
+            </a>
+          </div>
+        </header>
+
+        {/* ── Scrollable body ── */}
+        <div className="flex-1 overflow-y-auto p-8">
+          <div className="max-w-7xl mx-auto space-y-8">
+
+            {/* ── Metrics grid ── */}
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+              {METRICS.map(({ label, value, badge, badgeClass, iconClass, Icon }) => (
+                <div
+                  key={label}
+                  className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <span className={`p-2 rounded-lg ${iconClass}`}>
+                      <Icon className="w-4 h-4" />
+                    </span>
+                    {loading ? (
+                      <div className="h-5 w-12 bg-slate-200 rounded animate-pulse" />
+                    ) : (
+                      <span className={`text-xs font-bold px-2 py-1 rounded ${badgeClass}`}>
+                        {badge}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">{label}</p>
+                  {loading ? (
+                    <div className="h-7 w-20 bg-slate-200 rounded animate-pulse mt-1" />
+                  ) : (
+                    <h3 className="text-xl font-bold mt-1 text-slate-900">{value}</h3>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* ── Active Artworks + Recent Sales ── */}
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+
+              {/* ── Active Artworks ── */}
+              <div className="xl:col-span-2 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-bold text-slate-900">
+                    Active Artworks
+                    {!loading && search && (
+                      <span className="ml-2 text-sm font-normal text-slate-400">
+                        — {filtered.length} result{filtered.length !== 1 ? "s" : ""} for &ldquo;{search}&rdquo;
+                      </span>
+                    )}
+                  </h3>
+                </div>
+
+                {/* Loading state */}
+                {loading && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <SkeletonCard /><SkeletonCard /><SkeletonCard />
+                  </div>
+                )}
+
+                {/* Error state */}
+                {!loading && error && (
+                  <div className="bg-red-50 border border-red-200 rounded-xl p-8 flex items-center gap-4">
+                    <AlertIcon className="w-8 h-8 text-red-400 flex-shrink-0" />
+                    <div>
+                      <p className="text-red-700 font-semibold">Failed to load artworks</p>
+                      <p className="text-red-500 text-sm mt-0.5">{error}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* No search results */}
+                {!loading && !error && filtered.length === 0 && search && (
+                  <div className="bg-white border border-slate-200 rounded-xl p-14 flex flex-col items-center text-center">
+                    <SearchIcon className="w-12 h-12 text-slate-200 mb-4" />
+                    <p className="text-slate-600 font-semibold">No artworks match &ldquo;{search}&rdquo;</p>
+                    <p className="text-slate-400 text-sm mt-1">Try searching by title, medium, or status</p>
+                    <button
+                      onClick={() => setSearch("")}
+                      className="mt-4 text-amber-500 text-sm font-bold hover:text-amber-600 transition-colors"
+                    >
+                      Clear search
+                    </button>
+                  </div>
+                )}
+
+                {/* Empty library */}
+                {!loading && !error && artworks.length === 0 && !search && (
+                  <div className="bg-white border border-dashed border-slate-300 rounded-xl p-14 flex flex-col items-center text-center">
+                    <BrushIcon className="w-12 h-12 text-slate-200 mb-4" />
+                    <p className="text-slate-600 font-semibold">No artworks yet</p>
+                    <p className="text-slate-400 text-sm mt-1">Upload your first artwork to get started</p>
+                    <a
+                      href={`/user/dashboard/upload/3dff7d1a-467b-431f-b4f0-9541e7d6c318`}
+                      className="mt-4 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold px-4 py-2 rounded-lg text-sm transition-colors"
+                    >
+                      Upload Artwork
+                    </a>
+                  </div>
+                )}
+
+                {/*
+                  Artwork cards — ArtDisplayCard imported & unmodified.
+                  Field mapping mirrors ArtSearch.jsx exactly:
+                    art.image_url?.[0]  → image prop
+                    art.title           → formData.title
+                    art.price           → formData.price
+                    art.medium          → formData.category
+                    art.height_in       → formData.height
+                    art.width_in        → formData.width
+                    art.image_url       → formData.images  (truthy check for placeholder)
+                */}
+                {!loading && !error && filtered.length > 0 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {filtered.map((art) => {
+                      const { image, formData } = toCardProps(art);
+                      return (
+                        <div
+                          key={art.id}
+                          className="bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden"
+                        >
+                          <ArtDisplayCard image={image} formData={formData} />
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* ── Recent Sales feed — derived from live backend data ── */}
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold text-slate-900">Recent Sales</h3>
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm divide-y divide-slate-100">
+
+                  {/* Loading skeletons */}
+                  {loading && [1, 2, 3].map((i) => (
+                    <div key={i} className="p-4 flex items-center gap-4 animate-pulse">
+                      <div className="w-12 h-12 rounded-lg bg-slate-200 flex-shrink-0" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-3 bg-slate-200 rounded w-3/4" />
+                        <div className="h-3 bg-slate-200 rounded w-1/2" />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="h-3 bg-slate-200 rounded w-14" />
+                        <div className="h-2 bg-slate-200 rounded w-10 ml-auto" />
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Empty state */}
+                  {!loading && recentSales.length === 0 && (
+                    <div className="p-8 text-center">
+                      <p className="text-slate-400 text-sm">No sales yet</p>
+                    </div>
+                  )}
+
+                  {/* Sale rows — uses same image_url / price / title fields */}
+                  {!loading && recentSales.map((art) => (
+                    <div key={art.id} className="p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors">
+                      <img
+                        className="w-12 h-12 rounded-lg object-cover bg-slate-100 flex-shrink-0"
+                        src={art.image_url?.[0]}
+                        alt={art.title}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold truncate text-slate-900">{art.title}</p>
+                        <p className="text-xs text-slate-500">
+                          {art.buyer_name ? `${art.buyer_name} • ` : ""}
+                          {art.sold_at
+                            ? new Date(art.sold_at).toLocaleDateString()
+                            : ""}
+                        </p>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <p className="text-sm font-bold text-slate-900">
+                          LKR {parseInt(art.price ?? 0).toLocaleString()}
+                        </p>
+                        <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">
+                          Processed
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+
+                </div>
+              </div>
+
+            </div>
+
+            {/* ── Footer — imported & unmodified ── */}
+            <Footer />
+
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default ArtistDashboard;

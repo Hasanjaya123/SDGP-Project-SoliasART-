@@ -9,6 +9,7 @@ import './index.css';
 import Test from './pages/test.jsx';
 import ArtSearch from './pages/ArtSearch.jsx';
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
+import ArtistDashboard from './pages/Dashboard.jsx';
 
 function App() {
   return (
@@ -35,6 +36,8 @@ function App() {
         <Route path="/settings/convert/:userId" element={<ArtistOnboardingPage />} />
 
         <Route path="/user/artist/profile/:artistId" element={<ArtistProfilePage />} />
+
+        <Route path="/user/dashboard/:userId" element={<ArtistDashboard />} />
 
     </Routes>    
     </>
