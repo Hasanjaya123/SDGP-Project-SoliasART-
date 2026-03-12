@@ -31,7 +31,7 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick }) => {
       
       {/* Artist Profile */}
       <Link 
-        to={`/user/artist/profile/${artist.id}`}
+        to={`/artist/profile/${artist.id}`}
         className="flex items-center gap-4 mb-2  rounded-lg dark:border-gray-800 w-max pr-6  transition-colors group cursor-pointer"
       >
         <img 

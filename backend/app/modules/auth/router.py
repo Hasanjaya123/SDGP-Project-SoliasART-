@@ -149,3 +149,8 @@ def verify_email(token: str, db: Session = Depends(get_db)):
         message="Welcome to SoliasArt! Your account has been successfully activated.",
         color="#1F4E79" 
     ))
+    
+@router.get("/verify-role")
+def verify_role(current_user: models.User = Depends(dependencies.get_current_user)):
+    return {"role": current_user.role}
+

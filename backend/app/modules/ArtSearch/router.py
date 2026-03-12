@@ -1,5 +1,6 @@
 
-from fastapi import HTTPException, APIRouter, Form, UploadFile, File
+from fastapi import HTTPException, APIRouter, Form, UploadFile, File, Depends
+from app.modules.auth.dependencies import get_current_user
 from app.modules.ArtUpload.embeddings import generate_image_embedding, generate_text_embedding
 from app.core.supabase import supabase
 from typing import Optional
@@ -20,6 +21,7 @@ async def check_user(user_id: str):
 
 @router.post("/search")
 async def search_artworks(
+    current_user: str = Depends(get_current_user),
     query_text: Optional[str] = Form(None),
     query_image: Optional[UploadFile] = File(None)
 ):
@@ -51,13 +53,10 @@ async def search_artworks(
         print(f"Search Error: {e}")
         raise HTTPException(status_code=500, detail="Search failed.")
 
-@router.get("/{user_id}")
-async def get_art_work(user_id: str):
+@router.get("/")
+async def get_art_work(current_user: str = Depends(get_current_user)):
     
-    veryfying_user = await check_user(user_id)
-    if not veryfying_user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
+   
     get_artwork = supabase.table("artwork").select("id, title, price, image_url, width_in, height_in, medium, artists(display_name)").execute()
     
     if not get_artwork.data:
