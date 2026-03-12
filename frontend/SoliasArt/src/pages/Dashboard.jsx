@@ -97,18 +97,41 @@ const ArtistDashboard = () => {
 
   // ── Fetch artworks — identical pattern to ArtSearch.jsx ──────────────────
   useEffect(() => {
-    if (!userId) return;
-    setLoading(true);
-    setError(null);
+  setLoading(true);
 
-    artworkService
-      .getArtWorks(userId)
-      .then((data) => setArtworks(Array.isArray(data) ? data : []))
-      .catch((err) =>
-        setError(err.response?.data?.detail ?? "Failed to load artworks.")
-      )
-      .finally(() => setLoading(false));
-  }, [userId]);
+  const mockData = [
+    {
+      id: 1,
+      title: "Golden Horizon",
+      price: 25000,
+      medium: "Oil Painting",
+      height_in: 24,
+      width_in: 36,
+      image_url: "https://picsum.photos/400/500",
+      status: "available",
+      views: 120,
+      likes: 35
+    },
+    {
+      id: 2,
+      title: "Ocean Silence",
+      price: 18000,
+      medium: "Acrylic",
+      height_in: 20,
+      width_in: 30,
+      image_url: "https://picsum.photos/401/500",
+      status: "sold",
+      sold_at: "2024-02-10",
+      views: 80,
+      likes: 20
+    }
+  ];
+
+  setTimeout(() => {
+    setArtworks(mockData);
+    setLoading(false);
+  }, 800);
+}, []);
 
   // ── Recent Sales: sold artworks sorted newest-first, max 5 ───────────────
   const recentSales = useMemo(
