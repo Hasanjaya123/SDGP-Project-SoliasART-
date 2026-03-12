@@ -1,14 +1,45 @@
 import axios from 'axios';
 
-// Configure your backend URL
+
 const API_BASE_URL = 'http://localhost:8000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+export const authService = {
+  verifyRole: async () => {
+    const response = await api.get("/auth/verify-role");
+    return response.data;
+  },
+};
+
 export const artistProfileService = {
-  getProfile: async (artistId) => {
+  getProfile: async () => {
+    const response = await api.get("/artists/profile");
+    return response.data;
+  },
+
+  getProfileById: async (artistId) => {
     const response = await api.get(`/artists/profile/${artistId}`);
     return response.data;
   },
@@ -33,7 +64,7 @@ export const artworkService = {
   /**
    * @param {Object} formDataState - The state object from UploadArtPage (formData)
    */
-  uploadArtwork: async (formDataState, artistId) => {
+  uploadArtwork: async (formDataState) => {
     
     const formData = new FormData();
 
@@ -60,7 +91,7 @@ export const artworkService = {
     }
 
     try {
-      const response = await api.post(`/user/dashboard/upload/${artistId}`, formData, {
+      const response = await api.post(`/user/dashboard/upload`, formData, {
         headers: {
           // axios automatically sets boundary for multipart/form-data 
           // when data is an instance of FormData
@@ -76,10 +107,10 @@ export const artworkService = {
     }
   },
 
-  getArtWorks: async (userId) => {
+  getArtWorks: async () => {
     try{
 
-      const response = await api.get(`/explore/${userId}`)
+      const response = await api.get("/explore")
 
       return response.data
 
@@ -117,7 +148,7 @@ export const artworkService = {
 
   },
 
-  uploadArtist: async (formDataState, userId) => {
+  uploadArtist: async (formDataState) => {
 
     const formData = new FormData();
 
@@ -164,7 +195,7 @@ export const artworkService = {
     }
 
     try {
-      const response = await api.post(`/user/settings/convert/${userId}`, formData, {
+      const response = await api.post(`/user/settings/convert`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
