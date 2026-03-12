@@ -16,6 +16,7 @@ import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
 import { jwtDecode } from "jwt-decode";
 import { authService } from './services/uploadApi';
+import ArtMapPage from './pages/ArtMapPage.jsx';
 
 
 // Verifies role against backend, not just the JWT
@@ -92,7 +93,8 @@ function App() {
           <Route path="/artist/profile" element={<ArtistProfilePage />} />
           <Route path="/artist/profile/:artistId" element={<ArtistProfilePage />} />
           <Route path="/cart" element={<CartPage />} />
-          
+          <Route path="/map" element={<ArtMapPage />} />
+
         </Route>
 
       </Routes>
