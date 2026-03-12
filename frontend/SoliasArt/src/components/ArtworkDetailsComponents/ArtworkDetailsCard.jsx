@@ -1,5 +1,5 @@
 import React, { useState ,useEffect} from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 //import icons
 import { FiEye, FiHeart, FiBookmark } from 'react-icons/fi'; 
@@ -10,8 +10,46 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
-  const handleAddToCart = () => alert("Added to cart!");
+  // Initialize the navigation hook
+  const navigate = useNavigate(); 
+  // current
+  const currentUserId = "6362a1a3-0844-4038-9c02-974247c5af28";
+
+  const handleAddToCart = async () => {
+    setIsAddingToCart(true);
+    
+    try {
+      // Send the POST request to backend
+      const response = await fetch('http://localhost:8000/api/cart/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: currentUserId,
+          artwork_id: artwork.id 
+        }),
+      });
+
+      if (!response.ok) {
+        // If the response is not ok
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to add to cart");
+      }
+
+      // If successful navigate to cart page
+      navigate('/cart'); 
+      
+    } catch (error) {
+      console.error("Cart Error:", error);
+      alert(error.message); 
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
   const handleBuyNow = () => alert("Proceeding to checkout!");
 
   return (
@@ -31,7 +69,7 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick }) => {
       
       {/* Artist Profile */}
       <Link 
-        to={`/user/artist/profile/${artist.id}`}
+        to={`/artist/profile/${artist.id}`}
         className="flex items-center gap-4 mb-2  rounded-lg dark:border-gray-800 w-max pr-6  transition-colors group cursor-pointer"
       >
         <img 
@@ -83,8 +121,13 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick }) => {
         <div className="grid grid-cols-2 gap-3">
             
             {/*Add to Cart button */}
-            <button onClick={handleAddToCart} className="w-full py-3.5 bg-amber-500 text-white font-bold text-sm rounded-lg shadow-sm hover:bg-amber-600 transition-all hover:!border-gray-200 dark:hover:!border-gray-800 focus:!outline-none">
-                Add to Cart
+            <button 
+              onClick={handleAddToCart} 
+              disabled={isAddingToCart}
+              className={`w-full py-3.5 text-white font-bold text-sm rounded-lg shadow-sm transition-all focus:!outline-none 
+                ${isAddingToCart ? 'bg-amber-500 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600 hover:!border-gray-200 dark:hover:!border-gray-800'}`}
+            >
+                {isAddingToCart ? 'Adding...' : 'Add to Cart'}
             </button>
             
             {/*Buy Now button */}
@@ -95,7 +138,7 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick }) => {
         <div className="grid grid-cols-2 gap-3">
             
             {/*Save button */}
-            <button onClick={() => setIsSaved(!isSaved)} className="w-full py-3.5 bg-gray-200 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-white text-sm font-bold rounded-lg hover:bg-gray-300 dark:hover:bg-black transition-all flex items-center justify-center gap-2 hover:!border-gray-200 dark:hover:!border-gray-800 focus:!outline-none">
+            <button onClick={() => setIsSaved(!isSaved)} className="w-full py-3.5 bg-gray-200 dark:bg-gray-500 border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-white text-sm font-bold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-400 transition-all flex items-center justify-center gap-2 hover:!border-gray-200 dark:hover:!border-gray-800 focus:!outline-none">
                 {isSaved ? <FaBookmark className="w-4 h-4 text-slate-800 dark:text-white" /> : <FiBookmark className="w-4 h-4" />} {isSaved ? 'Saved' : 'Save'}
             </button>
             

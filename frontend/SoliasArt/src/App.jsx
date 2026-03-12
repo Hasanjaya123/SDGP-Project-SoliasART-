@@ -14,13 +14,60 @@ import LoginPage from './pages/LoginPage.jsx';
 import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
 import './index.css';
 import Test from './pages/test.jsx';
+import Layout from './components/Layout';
+import CartPage from './pages/CartPage';
+import ArtSearch from './pages/ArtSearch.jsx';
+import React, { useState, useEffect } from 'react';
 
 import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
-import Layout from './components/Layout';
-
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
+import { jwtDecode } from "jwt-decode";
+import { authService } from './services/uploadApi';
 
 >>>>>>> 4fcd7786d647fa3918f0162d55f387f73fddef72
+
+// Verifies role against backend, not just the JWT
+function NotArtistGuard({ children }) {
+  const [verified, setVerified] = useState(null); 
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setVerified(false);
+      return;
+    }
+
+    authService.verifyRole()
+      .then((data) => setVerified(data.role === 'artist'))
+      .catch(() => setVerified(false));
+  }, []);
+
+  if (verified === null) return null; 
+  if (verified) return <Navigate to="/search" replace />;
+
+  return children;
+}
+
+function ArtistGuard({ children }) {
+  const [verified, setVerified] = useState(null); 
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setVerified(false);
+      return;
+    }
+
+    authService.verifyRole()
+      .then((data) => setVerified(data.role === 'buyer'))
+      .catch(() => setVerified(false));
+  }, []);
+
+  if (verified === null) return null; 
+  if (verified) return <Navigate to="/search" replace />;
+
+  return children;
+}
 
 function App() {
   const [currentPage, setCurrentPage] = useState('collections');
@@ -97,11 +144,11 @@ function App() {
   );
 =======
     <>
-    <Routes>
+      <Routes>
         <Route path="/home"></Route>
-        {/* Route to Signup page */} 
+        {/* Route to Signup page */}
         <Route path="/signup" element={<SignupPage />} />
-        
+
         {/* Route to Login page */}
         <Route path="/login" element={<LoginPage />} />
 
@@ -112,26 +159,25 @@ function App() {
         <Route path="/" element={<Navigate to="/signup" replace />} />
 
         {/* Route for Art Upload page (for artists) - can be accessed after login */}
-        <Route path='/user/dashboard/upload' element={<UploadArtPage />}></Route>
-
-        <Route path='/user/dashboard/upload/:artistId' element={<UploadArtPage />}></Route>
-
+        <Route path='/dashboard/upload' element={<ArtistGuard><UploadArtPage /></ArtistGuard>}></Route>
+  
         {/* Artist on boarding page */}
-        <Route path="/settings/convert/:userId" element={<ArtistOnboardingPage />} />
-
-        <Route path="/user/artist/profile/:artistId" element={<ArtistProfilePage />} />
+        <Route path="/convert" element={<NotArtistGuard><ArtistOnboardingPage /></NotArtistGuard>} />
 
         {/* Pages within the main layout (pages which have sidebar and footer) */}
         <Route element={<Layout />}>
           {/* Artwork details page */}
           <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
+          <Route path="/search" element={<ArtSearch />} />
+          <Route path="/artist/profile" element={<ArtistProfilePage />} />
+          <Route path="/artist/profile/:artistId" element={<ArtistProfilePage />} />
           
         </Route>
 
-    </Routes>  
+      </Routes>
 
     </>
-         
+
   );
 
 >>>>>>> 4fcd7786d647fa3918f0162d55f387f73fddef72

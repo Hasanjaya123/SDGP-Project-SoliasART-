@@ -1,31 +1,70 @@
 import axios from 'axios';
 
-// Configure your backend URL
+
 const API_BASE_URL = 'http://localhost:8000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-<<<<<<< HEAD
-=======
-export const artistProfileService = {
-  getProfile: async (artistId) => {
-    const response = await api.get(`/artists/profile/${artistId}`);
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+export const authService = {
+  verifyRole: async () => {
+    const response = await api.get("/auth/verify-role");
     return response.data;
   },
 };
 
->>>>>>> 4fcd7786d647fa3918f0162d55f387f73fddef72
+export const artistProfileService = {
+  getProfile: async () => {
+    const response = await api.get("/artists/profile");
+    return response.data;
+  },
+
+  getProfileById: async (artistId) => {
+    const response = await api.get(`/artists/profile/${artistId}`);
+    return response.data;
+  },
+
+  uploadPost: async (artistId, postData) => {
+    const formData = new FormData();
+
+    // Optional text fields
+    if (postData.title?.trim())       formData.append('title', postData.title.trim());
+    if (postData.description?.trim()) formData.append('description', postData.description.trim());
+
+    // Optional image – the backend accepts a list named 'images'
+    if (postData.imageFile) formData.append('images', postData.imageFile);
+
+    const response = await api.post(`/artists/posts/${artistId}`, formData);
+
+    return response.data;
+  },
+};
+
 export const artworkService = {
   /**
    * @param {Object} formDataState - The state object from UploadArtPage (formData)
    */
-<<<<<<< HEAD
   uploadArtwork: async (formDataState) => {
-=======
-  uploadArtwork: async (formDataState, artistId) => {
->>>>>>> 4fcd7786d647fa3918f0162d55f387f73fddef72
     
     const formData = new FormData();
 
@@ -52,11 +91,7 @@ export const artworkService = {
     }
 
     try {
-<<<<<<< HEAD
-      const response = await api.post('/user/dashboard/upload', formData, {
-=======
-      const response = await api.post(`/user/dashboard/upload/${artistId}`, formData, {
->>>>>>> 4fcd7786d647fa3918f0162d55f387f73fddef72
+      const response = await api.post(`/user/dashboard/upload`, formData, {
         headers: {
           // axios automatically sets boundary for multipart/form-data 
           // when data is an instance of FormData
@@ -70,11 +105,50 @@ export const artworkService = {
       console.error("Upload failed:", error.response?.data?.detail || error.message);
       throw error;
     }
-<<<<<<< HEAD
-=======
   },
 
-  uploadArtist: async (formDataState, userId) => {
+  getArtWorks: async () => {
+    try{
+
+      const response = await api.get("/explore")
+
+      return response.data
+
+    } catch (error) {
+      console.log("failed to load artworks", error.response?.data?.detail || error.message)
+      throw error
+
+    }
+  },
+  
+  SearchArtWork: async (textInput, imageFile) => {
+    const formData = new FormData();
+  
+    if (textInput) {
+      formData.append("query_text", textInput);
+    } else if (imageFile) {
+      formData.append("query_image", imageFile);
+    }
+
+    try{
+
+      const response = await api.post(`/explore/search`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      return response.data.results
+
+    } catch (error) {
+      console.log("failed to load artworks", error.response?.data?.detail || error.message)
+      throw error
+
+    }
+
+  },
+
+  uploadArtist: async (formDataState) => {
 
     const formData = new FormData();
 
@@ -121,7 +195,7 @@ export const artworkService = {
     }
 
     try {
-      const response = await api.post(`/user/settings/convert/${userId}`, formData, {
+      const response = await api.post(`/user/settings/convert`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -133,6 +207,5 @@ export const artworkService = {
       throw error;
     }
 
->>>>>>> 4fcd7786d647fa3918f0162d55f387f73fddef72
   }
 };
