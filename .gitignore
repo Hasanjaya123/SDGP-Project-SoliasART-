@@ -3,19 +3,17 @@
 backend/.venv/
 backend/venv/
 venv/
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 
 # Ignore backend AR cache and temp files
 backend/storage/
 backend/temp_*.jpg
 
 _pycache_/
-=======
-=======
->>>>>>> 4fcd7786d647fa3918f0162d55f387f73fddef72
+
+
 __pycache__/
->>>>>>> c81d7140689895b0dd338d085f9470655b44d73c
+
 *.py[cod]      <-- (Optional) Blocks compiled python variants
 *.db           <-- (NEW) Blocks SQLite database files like 'test.db'
 **/.env        <-- (CRITICAL) Blocks your secrets/passwords in ALL directories
@@ -23,15 +21,14 @@ __pycache__/
 
 # Python Logic
 backend/venv/
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 _pycache_/
-=======
+
 __pycache__/
->>>>>>> c81d7140689895b0dd338d085f9470655b44d73c
-=======
+
+
 __pycache__/
->>>>>>> 4fcd7786d647fa3918f0162d55f387f73fddef72
+
 *.py[cod]
 *.db
 
