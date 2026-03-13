@@ -39,7 +39,7 @@ const CartItem = ({ item, onRemove }) => {
 
             <div className="text-right shrink-0">
                 <p className="text-base font-bold text-gray-900 dark:text-white">
-                ${item.price.toLocaleString()}
+                LKR {item.price.toLocaleString()}
                 </p>
             </div>
 
