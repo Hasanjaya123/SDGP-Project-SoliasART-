@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Text, TIMESTAMP, text, UniqueConstraint
+from sqlalchemy import Column, ForeignKey, String, Text, TIMESTAMP, text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from app.core.database import Base
 
@@ -8,7 +8,7 @@ class FeedLike(Base):
 
     id          = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
     created_at  = Column(TIMESTAMP(timezone=True), server_default=text("now()"))
-    user_id     = Column(UUID(as_uuid=True), nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     target_id   = Column(UUID(as_uuid=True), nullable=False)
     target_type = Column(String, nullable=False)
 
@@ -22,7 +22,7 @@ class FeedComment(Base):
 
     id          = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
     created_at  = Column(TIMESTAMP(timezone=True), server_default=text("now()"))
-    user_id     = Column(UUID(as_uuid=True), nullable=False)
+    user_id     = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     target_id   = Column(UUID(as_uuid=True), nullable=False)
     target_type = Column(String, nullable=False)
     content     = Column(Text, nullable=False)
@@ -33,7 +33,7 @@ class FeedSave(Base):
 
     id          = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
     created_at  = Column(TIMESTAMP(timezone=True), server_default=text("now()"))
-    user_id     = Column(UUID(as_uuid=True), nullable=False)
+    user_id     = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     target_id   = Column(UUID(as_uuid=True), nullable=False)
     target_type = Column(String, nullable=False)
 
@@ -47,7 +47,7 @@ class FeedInteraction(Base):
 
     id          = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
     created_at  = Column(TIMESTAMP(timezone=True), server_default=text("now()"))
-    user_id     = Column(UUID(as_uuid=True), nullable=False)
+    user_id     = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     target_id   = Column(UUID(as_uuid=True), nullable=False)
     target_type = Column(String, nullable=False)
     event_type  = Column(String, nullable=False)
