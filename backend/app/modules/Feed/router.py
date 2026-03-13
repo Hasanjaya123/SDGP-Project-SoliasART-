@@ -15,6 +15,23 @@ from app.modules.Feed.ml_ranker import get_unified_feed
 
 router = APIRouter(prefix="/feed", tags=["Feed"])
 
+# Helper to fetch a post/artwork by ID and raise 404 if not found
+def get_target_or_404(target_type: str, target_id: UUID, db: Session):
+    if target_type == "post":
+        item = db.query(Post).filter(Post.id == target_id).first()
+    elif target_type == "artwork":
+        item = db.query(ArtWork).filter(ArtWork.id == target_id).first()
+    else:
+        raise HTTPException(
+            status_code=400, detail="target_type must be 'post' or 'artwork'"
+        )
+
+    if not item:
+        raise HTTPException(
+            status_code=404, detail=f"{target_type} not found"
+        )
+    return item
+
 def _to_card(item : dict) -> FeedCard:
     return FeedCard(**{k: v for k, v in item.items() if k != "score"})
 
@@ -69,6 +86,10 @@ def get_feed(
 #Like Toggle
 @router.post("/{target_type}/{target_id}/like")
 def toggle_like(target_type: str, target_id: UUID, user_id: UUID = Query(...), db: Session = Depends(get_db)):
+
+    # Ensure the target exists
+    get_target_or_404(target_type, target_id, db)
+
     if target_type not in ("post", "artwork"):
         raise HTTPException(status_code=400, detail="target_type must be 'post' or 'artwork'")
 
@@ -94,6 +115,10 @@ def toggle_like(target_type: str, target_id: UUID, user_id: UUID = Query(...), d
 # Save Toggle
 @router.post("/{target_type}/{target_id}/save")
 def toggle_save(target_type: str, target_id: UUID, user_id: UUID = Query(...), db: Session = Depends(get_db)):
+        
+    # Ensure the target exists
+    get_target_or_404(target_type, target_id, db)
+
     if target_type not in ("post", "artwork"):
         raise HTTPException(status_code=400, detail="target_type must be 'post' or 'artwork'")
 
@@ -114,6 +139,10 @@ def toggle_save(target_type: str, target_id: UUID, user_id: UUID = Query(...), d
 # Comment Creation
 @router.post("/{target_type}/{target_id}/comments", response_model=CommentResponse)
 def add_comment(target_type: str, target_id: UUID, body: CommentCreate, db: Session = Depends(get_db)):
+        
+    # Ensure the target exists
+    get_target_or_404(target_type, target_id, db)
+
     if target_type not in ("post", "artwork"):
         raise HTTPException(status_code=400, detail="target_type must be 'post' or 'artwork'")
     comment = FeedComment(user_id=body.user_id, target_id=target_id, target_type=target_type, content=body.content)
@@ -132,6 +161,10 @@ def get_comments(target_type: str, target_id: UUID, db: Session = Depends(get_db
 # Track Views
 @router.post("/{target_type}/{target_id}/view")
 def track_view(target_type: str, target_id: UUID, user_id: UUID = Query(...), db: Session = Depends(get_db)):
+        
+    # Ensure the target exists
+    get_target_or_404(target_type, target_id, db)
+
     """Called silently when a card scrolls into view. Feeds the ML ranker."""
     db.add(FeedInteraction(user_id=user_id, target_id=target_id, target_type=target_type, event_type="view"))
     db.commit()
