@@ -1,0 +1,45 @@
+from pydantic import BaseModel
+from typing import Optional
+from uuid import UUID
+from datetime import datetime
+from decimal import Decimal
+
+class FeedCard(BaseModel):
+    id: UUID
+    created_at: datetime
+    artist_id: Optional[UUID]
+    title: Optional[str]
+    description: str
+    image_url: list[str]
+
+    # Engagement fields
+    like_count: int = 0
+    is_liked_by_me: bool = False
+    comment_count: int = 0
+    is_saved: bool = False
+
+    # Artwork-specific fields
+    price: Optional[Decimal] = None
+    medium: Optional[str] = None
+    is_framed: Optional[bool] = None
+
+class FeedResponse(BaseModel):
+    cards : list[FeedCard]
+    total : int
+    page : int
+    page_size : int
+    total_pages : int
+    has_next : bool
+    has_prev : bool
+    is_personalised : bool = False 
+    
+class CommentCreate(BaseModel):
+    target_id: UUID
+    content: str
+
+class CommentResoponse(BaseModel):
+    user_id : UUID
+    content : str
+
+    class Config:
+        from_attributes = True
