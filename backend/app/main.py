@@ -5,6 +5,8 @@ from app.modules.ArtUpload.router import router as art_upload_router
 from app.modules.auth.router import router as auth_router
 from app.modules.ArtistProfile.router import router as artist_profile_router
 from app.modules.ArtistOnboarding.router import router as artist_router
+from app.modules.Post.router import router as post_router
+from app.modules.Feed.router import router as feed_router
 from app.core.database import Base, engine
 
 # Initialise the API application
@@ -32,5 +34,5 @@ app.include_router(art_upload_router)
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 app.include_router(artist_router)
 app.include_router(artist_profile_router)
-
-
+app.include_router(post_router)
+app.include_router(feed_router)
