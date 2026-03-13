@@ -2,7 +2,11 @@ import React from "react";
 import { FaUsers } from "react-icons/fa";
 import { MdImage } from "react-icons/md";
 
-export const ArtistCard = ({ artist }) => {
+export const ArtistCard = ({ artist, setCurrentPage }) => {
+
+    const handleViewStudio = () => {
+        setCurrentPage("artistProfile", artist.id);
+    };
 
     return (
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
@@ -47,8 +51,11 @@ export const ArtistCard = ({ artist }) => {
 
                 </div>
 
-                {/* Button */}
-                <button className="mt-6 w-full bg-[#1e293b] text-white py-2 rounded-lg hover:bg-[#334155] transition">
+                {/* View Studio Button */}
+                <button
+                    onClick={handleViewStudio}
+                    className="mt-6 w-full bg-[#1e293b] text-white py-2 rounded-lg hover:bg-[#334155] transition"
+                >
                     View Studio
                 </button>
 

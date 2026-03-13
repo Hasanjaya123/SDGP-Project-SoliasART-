@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ArtistCard } from "../components/ArtistCard";
 import { supabase } from "../services/supabase";
 
-const ArtistSearch = () => {
+const ArtistSearch = ({ setCurrentPage }) => {
 
     const [artists, setArtists] = useState([]);
     const [search, setSearch] = useState("");
@@ -26,7 +26,7 @@ const ArtistSearch = () => {
     };
 
     const filteredArtists = artists.filter((artist) =>
-        artist.display_name.toLowerCase().includes(search.toLowerCase())
+        artist.display_name?.toLowerCase().includes(search.toLowerCase())
     );
 
     return (
@@ -44,11 +44,18 @@ const ArtistSearch = () => {
             </div>
 
             {/* Artists Grid */}
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
                 {filteredArtists.map((artist) => (
-                    <ArtistCard key={artist.id} artist={artist} />
+
+                    <ArtistCard
+                        key={artist.id}
+                        artist={artist}
+                        setCurrentPage={setCurrentPage}
+                    />
+
                 ))}
+
             </div>
 
         </div>
