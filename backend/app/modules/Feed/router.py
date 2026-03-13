@@ -8,6 +8,7 @@ from uuid import UUID
 from app.core.database import get_db
 from app.modules.ArtUpload.model import ArtWork
 from app.modules.Post.model import Post
+from app.modules.ArtistProfile.model import Artist
 from app.modules.Feed.model import FeedLike, FeedComment, FeedSave, FeedInteraction
 from app.modules.Feed.schemas import FeedCard, FeedResponse, CommentCreate, CommentResponse
 from app.modules.Feed.ml_ranker import get_unified_feed
