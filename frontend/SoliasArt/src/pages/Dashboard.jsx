@@ -48,21 +48,31 @@ const AlertIcon = ({ className }) => (
   </svg>
 );
 
+// ─── Normalise image_url: backend may send a string OR string[] ───────────────
+// Your mock used a plain string; the real API sends string[].
+// This helper handles both so neither breaks.
+const getImageSrc = (image_url) => {
+  if (!image_url) return null;
+  if (Array.isArray(image_url)) return image_url[0] ?? null;
+  return image_url; // plain string fallback
+};
 
-
-const toCardProps = (art) => ({
-  image: art.image_url?.[0] ?? null,
-  formData: {
-    title:    art.title     ?? "",
-    price:    art.price     ?? "",
-    category: art.medium    ?? "",
-    height:   art.height_in ?? "",
-    width:    art.width_in  ?? "",
-    // ArtDisplayCard uses `formData.images.length > 0` to decide whether
-    // to show the image or the "No Image" placeholder — mirror ArtSearch.jsx exactly
-    images:   art.image_url ? [art.image_url] : [],
-  },
-});
+// ─── Map raw backend JSON → ArtDisplayCard props ─────────────────────────────
+const toCardProps = (art) => {
+  const src = getImageSrc(art.image_url);
+  return {
+    image: src,
+    formData: {
+      title:    art.title     ?? "",
+      price:    art.price     ?? "",
+      category: art.medium    ?? "",
+      height:   art.height_in ?? "",
+      width:    art.width_in  ?? "",
+      // ArtDisplayCard checks `formData.images.length > 0` for the placeholder logic
+      images:   src ? [src] : [],
+    },
+  };
+};
 
 // ─── Derive live metric values from raw artwork array ─────────────────────────
 const deriveMetrics = (artworks) => {
@@ -76,13 +86,35 @@ const deriveMetrics = (artworks) => {
   return { total, sold, totalRevenue, views, likes };
 };
 
-// ─── Loading skeleton for artwork cards ──────────────────────────────────────
+// ─── Skeleton card ────────────────────────────────────────────────────────────
 const SkeletonCard = () => (
   <div className="bg-white border border-slate-200 rounded-lg p-4 animate-pulse">
     <div className="bg-slate-200 rounded aspect-[3/4] mb-4" />
     <div className="h-3 bg-slate-200 rounded w-1/2 mx-auto mb-2" />
     <div className="h-4 bg-slate-200 rounded w-3/4 mx-auto mb-3" />
     <div className="h-3 bg-slate-200 rounded w-1/3 mx-auto" />
+  </div>
+);
+
+// ─── Single metric card ───────────────────────────────────────────────────────
+const MetricCard = ({ label, value, badge, badgeClass, iconClass, Icon, loading, span2 }) => (
+  <div className={`bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow${span2 ? " col-span-2" : ""}`}>
+    <div className="flex items-center justify-between mb-3">
+      <span className={`p-2 rounded-lg ${iconClass}`}>
+        <Icon className="w-5 h-5" />
+      </span>
+      {loading ? (
+        <div className="h-6 w-14 bg-slate-200 rounded animate-pulse" />
+      ) : (
+        <span className={`text-xs font-bold px-2.5 py-1 rounded ${badgeClass}`}>{badge}</span>
+      )}
+    </div>
+    <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">{label}</p>
+    {loading ? (
+      <div className="h-8 w-24 bg-slate-200 rounded animate-pulse mt-1" />
+    ) : (
+      <h3 className="text-2xl font-bold mt-1 text-slate-900">{value}</h3>
+    )}
   </div>
 );
 
@@ -95,45 +127,22 @@ const ArtistDashboard = () => {
   const [error,    setError]    = useState(null);
   const [search,   setSearch]   = useState("");
 
-  // ── Fetch artworks — identical pattern to ArtSearch.jsx ──────────────────
+  // ── Fetch artworks ────────────────────────────────────────────────────────
   useEffect(() => {
-  setLoading(true);
+    if (!userId) return;
+    setLoading(true);
+    setError(null);
 
-  const mockData = [
-    {
-      id: 1,
-      title: "Golden Horizon",
-      price: 25000,
-      medium: "Oil Painting",
-      height_in: 24,
-      width_in: 36,
-      image_url: "https://picsum.photos/400/500",
-      status: "available",
-      views: 120,
-      likes: 35
-    },
-    {
-      id: 2,
-      title: "Ocean Silence",
-      price: 18000,
-      medium: "Acrylic",
-      height_in: 20,
-      width_in: 30,
-      image_url: "https://picsum.photos/401/500",
-      status: "sold",
-      sold_at: "2024-02-10",
-      views: 80,
-      likes: 20
-    }
-  ];
+    artworkService
+      .getArtWorks(userId)
+      .then((data) => setArtworks(Array.isArray(data) ? data : []))
+      .catch((err) =>
+        setError(err?.response?.data?.detail ?? err?.message ?? "Failed to load artworks.")
+      )
+      .finally(() => setLoading(false));
+  }, [userId]);
 
-  setTimeout(() => {
-    setArtworks(mockData);
-    setLoading(false);
-  }, 800);
-}, []);
-
-  // ── Recent Sales: sold artworks sorted newest-first, max 5 ───────────────
+  // ── Recent Sales ──────────────────────────────────────────────────────────
   const recentSales = useMemo(
     () =>
       [...artworks]
@@ -143,7 +152,7 @@ const ArtistDashboard = () => {
     [artworks]
   );
 
-  // ── Search filter: matches title, medium, or status ───────────────────────
+  // ── Search filter ─────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return artworks;
@@ -154,72 +163,26 @@ const ArtistDashboard = () => {
         a.status?.toLowerCase().includes(q)
     );
   }, [search, artworks]);
-  
 
-  // ── Live metrics derived from fetched data ────────────────────────────────
   const { total, sold, totalRevenue, views, likes } = deriveMetrics(artworks);
-
-  const METRICS = [
-    {
-      label:      "Total Revenue",
-      value:      `LKR ${totalRevenue.toLocaleString()}`,
-      badge:      `${sold} sold`,
-      badgeClass: "text-emerald-600 bg-emerald-50",
-      iconClass:  "bg-emerald-50 text-emerald-600",
-      Icon: TrendUpIcon,
-    },
-    {
-      label:      "Listed Artworks",
-      value:      total.toString(),
-      badge:      `+${total}`,
-      badgeClass: "text-blue-600 bg-blue-50",
-      iconClass:  "bg-blue-50 text-blue-600",
-      Icon: BrushIcon,
-    },
-    {
-      label:      "Sold Artworks",
-      value:      sold.toString(),
-      badge:      sold > 0 ? `${sold} New` : "—",
-      badgeClass: "text-amber-600 bg-amber-50",
-      iconClass:  "bg-amber-50 text-amber-600",
-      Icon: ShoppingBagIcon,
-    },
-    {
-      label:      "Store Views",
-      value:      views > 0 ? views.toLocaleString() : "—",
-      badge:      views > 999 ? `${(views / 1000).toFixed(1)}k` : `${views}`,
-      badgeClass: "text-purple-600 bg-purple-50",
-      iconClass:  "bg-purple-50 text-purple-600",
-      Icon: EyeIcon,
-    },
-    {
-      label:      "Profile Likes",
-      value:      likes > 0 ? likes.toLocaleString() : "—",
-      badge:      `+${likes}`,
-      badgeClass: "text-rose-600 bg-rose-50",
-      iconClass:  "bg-rose-50 text-rose-600",
-      Icon: HeartIcon,
-    },
-  ];
 
   return (
     <div className="flex h-screen overflow-hidden bg-stone-50 font-sans">
 
-      {/* ── Sidebar — imported & unmodified ── */}
+      {/* ── Sidebar — unmodified ── */}
       <Sidebar />
 
-      {/* ── Main ── */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
         {/* ── Header ── */}
-        <header className="h-20 flex-shrink-0 bg-white border-b border-slate-200 flex items-center justify-between px-8 gap-4">
+        <header className="h-20 flex-shrink-0 bg-white border-b border-slate-200 flex items-center justify-between px-8 gap-6">
           <div className="flex-shrink-0">
             <h2 className="text-xl font-bold text-slate-900">Good Morning, Hasanjaya!</h2>
             <p className="text-sm text-slate-500">Welcome back to your command center.</p>
           </div>
 
           <div className="flex items-center gap-4 ml-auto">
-            {/* Search — filters live backend data by title / medium / status */}
+            {/* Search bar with placeholder text */}
             <div className="relative hidden lg:block">
               <SearchIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               <input
@@ -239,9 +202,9 @@ const ArtistDashboard = () => {
               )}
             </div>
 
-            {/* Upload — navigates to the upload page */}
+            {/* Upload button */}
             <a
-              href={`/user/dashboard/upload/3dff7d1a-467b-431f-b4f0-9541e7d6c318`}
+              href="/user/dashboard/upload/3dff7d1a-467b-431f-b4f0-9541e7d6c318"
               className="bg-amber-400 hover:bg-amber-500 active:scale-95 text-slate-900 font-bold px-5 py-2.5 rounded-lg flex items-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap"
             >
               <PlusCircleIcon className="w-4 h-4" />
@@ -252,61 +215,78 @@ const ArtistDashboard = () => {
 
         {/* ── Scrollable body ── */}
         <div className="flex-1 overflow-y-auto p-8">
-          <div className="w-full space-y-8">
+          <div className="max-w-[1400px] mx-auto space-y-8">
 
-            {/* ── Metrics grid ── */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 w-full">
-              {METRICS.map(({ label, value, badge, badgeClass, iconClass, Icon }) => (
-                <div
-                  key={label}
-                  className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className={`p-2 rounded-lg ${iconClass}`}>
-                      <Icon className="w-4 h-4" />
-                    </span>
-                    {loading ? (
-                      <div className="h-5 w-12 bg-slate-200 rounded animate-pulse" />
-                    ) : (
-                      <span className={`text-xs font-bold px-2 py-1 rounded ${badgeClass}`}>
-                        {badge}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">{label}</p>
-                  {loading ? (
-                    <div className="h-7 w-20 bg-slate-200 rounded animate-pulse mt-1" />
-                  ) : (
-                    <h3 className="text-xl font-bold mt-1 text-slate-900">{value}</h3>
-                  )}
-                </div>
-              ))}
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <MetricCard
+                label="Total Revenue"
+                value={`LKR ${totalRevenue.toLocaleString()}`}
+                badge={`+12.5%`}
+                badgeClass="text-emerald-600 bg-emerald-50"
+                iconClass="bg-emerald-50 text-emerald-600"
+                Icon={TrendUpIcon}
+                loading={loading}
+              />
+              <MetricCard
+                label="Listed Artworks"
+                value={total.toString()}
+                badge={`+${total}`}
+                badgeClass="text-blue-600 bg-blue-50"
+                iconClass="bg-blue-50 text-blue-600"
+                Icon={BrushIcon}
+                loading={loading}
+              />
+              <MetricCard
+                label="Sold Artworks"
+                value={sold.toString()}
+                badge={sold > 0 ? `${sold} New` : "—"}
+                badgeClass="text-amber-600 bg-amber-50"
+                iconClass="bg-amber-50 text-amber-600"
+                Icon={ShoppingBagIcon}
+                loading={loading}
+              />
+              <MetricCard
+                label="Store Views"
+                value={views > 0 ? views.toLocaleString() : "—"}
+                badge={views > 999 ? `${(views / 1000).toFixed(1)}k` : `${views}`}
+                badgeClass="text-purple-600 bg-purple-50"
+                iconClass="bg-purple-50 text-purple-600"
+                Icon={EyeIcon}
+                loading={loading}
+              />
+              {/* Profile Likes spans only one column, sits on the left — matches reference */}
+              <MetricCard
+                label="Profile Likes"
+                value={likes > 0 ? likes.toLocaleString() : "—"}
+                badge={`+${likes}`}
+                badgeClass="text-rose-600 bg-rose-50"
+                iconClass="bg-rose-50 text-rose-600"
+                Icon={HeartIcon}
+                loading={loading}
+              />
             </div>
 
             {/* ── Active Artworks + Recent Sales ── */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
 
-              {/* ── Active Artworks ── */}
+              {/* Active Artworks */}
               <div className="xl:col-span-2 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold text-slate-900">
-                    Active Artworks
-                    {!loading && search && (
-                      <span className="ml-2 text-sm font-normal text-slate-400">
-                        — {filtered.length} result{filtered.length !== 1 ? "s" : ""} for &ldquo;{search}&rdquo;
-                      </span>
-                    )}
-                  </h3>
-                </div>
+                <h3 className="text-xl font-bold text-slate-900">
+                  Active Artworks
+                  {!loading && search && (
+                    <span className="ml-2 text-sm font-normal text-slate-400">
+                      — {filtered.length} result{filtered.length !== 1 ? "s" : ""} for &ldquo;{search}&rdquo;
+                    </span>
+                  )}
+                </h3>
 
-                {/* Loading state */}
                 {loading && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <SkeletonCard /><SkeletonCard /><SkeletonCard />
                   </div>
                 )}
 
-                {/* Error state */}
                 {!loading && error && (
                   <div className="bg-red-50 border border-red-200 rounded-xl p-8 flex items-center gap-4">
                     <AlertIcon className="w-8 h-8 text-red-400 flex-shrink-0" />
@@ -317,7 +297,6 @@ const ArtistDashboard = () => {
                   </div>
                 )}
 
-                {/* No search results */}
                 {!loading && !error && filtered.length === 0 && search && (
                   <div className="bg-white border border-slate-200 rounded-xl p-14 flex flex-col items-center text-center">
                     <SearchIcon className="w-12 h-12 text-slate-200 mb-4" />
@@ -332,14 +311,13 @@ const ArtistDashboard = () => {
                   </div>
                 )}
 
-                {/* Empty library */}
                 {!loading && !error && artworks.length === 0 && !search && (
                   <div className="bg-white border border-dashed border-slate-300 rounded-xl p-14 flex flex-col items-center text-center">
                     <BrushIcon className="w-12 h-12 text-slate-200 mb-4" />
                     <p className="text-slate-600 font-semibold">No artworks yet</p>
                     <p className="text-slate-400 text-sm mt-1">Upload your first artwork to get started</p>
                     <a
-                      href={`/user/dashboard/upload/3dff7d1a-467b-431f-b4f0-9541e7d6c318`}
+                      href="/user/dashboard/upload/3dff7d1a-467b-431f-b4f0-9541e7d6c318"
                       className="mt-4 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold px-4 py-2 rounded-lg text-sm transition-colors"
                     >
                       Upload Artwork
@@ -347,9 +325,8 @@ const ArtistDashboard = () => {
                   </div>
                 )}
 
-                
                 {!loading && !error && filtered.length > 0 && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filtered.map((art) => {
                       const { image, formData } = toCardProps(art);
                       return (
@@ -365,12 +342,11 @@ const ArtistDashboard = () => {
                 )}
               </div>
 
-              {/* ── Recent Sales feed — derived from live backend data ── */}
+              {/* Recent Sales feed */}
               <div className="space-y-4">
                 <h3 className="text-xl font-bold text-slate-900">Recent Sales</h3>
                 <div className="bg-white rounded-xl border border-slate-200 shadow-sm divide-y divide-slate-100">
 
-                  {/* Loading skeletons */}
                   {loading && [1, 2, 3].map((i) => (
                     <div key={i} className="p-4 flex items-center gap-4 animate-pulse">
                       <div className="w-12 h-12 rounded-lg bg-slate-200 flex-shrink-0" />
@@ -385,47 +361,46 @@ const ArtistDashboard = () => {
                     </div>
                   ))}
 
-                  {/* Empty state */}
                   {!loading && recentSales.length === 0 && (
                     <div className="p-8 text-center">
                       <p className="text-slate-400 text-sm">No sales yet</p>
                     </div>
                   )}
 
-                  {/* Sale rows — uses same image_url / price / title fields */}
-                  {!loading && recentSales.map((art) => (
-                    <div key={art.id} className="p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors">
-                      <img
-                        className="w-12 h-12 rounded-lg object-cover bg-slate-100 flex-shrink-0"
-                        src={art.image_url?.[0]}
-                        alt={art.title}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold truncate text-slate-900">{art.title}</p>
-                        <p className="text-xs text-slate-500">
-                          {art.buyer_name ? `${art.buyer_name} • ` : ""}
-                          {art.sold_at
-                            ? new Date(art.sold_at).toLocaleDateString()
-                            : ""}
-                        </p>
+                  {!loading && recentSales.map((art) => {
+                    const imgSrc = getImageSrc(art.image_url);
+                    return (
+                      <div key={art.id} className="p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors">
+                        <img
+                          className="w-12 h-12 rounded-lg object-cover bg-slate-100 flex-shrink-0"
+                          src={imgSrc}
+                          alt={art.title}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold truncate text-slate-900">{art.title}</p>
+                          <p className="text-xs text-slate-500">
+                            {art.buyer_name ? `${art.buyer_name} • ` : ""}
+                            {art.sold_at ? new Date(art.sold_at).toLocaleDateString() : ""}
+                          </p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-sm font-bold text-slate-900">
+                            LKR {parseInt(art.price ?? 0).toLocaleString()}
+                          </p>
+                          <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">
+                            Processed
+                          </p>
+                        </div>
                       </div>
-                      <div className="text-right flex-shrink-0">
-                        <p className="text-sm font-bold text-slate-900">
-                          LKR {parseInt(art.price ?? 0).toLocaleString()}
-                        </p>
-                        <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">
-                          Processed
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
 
                 </div>
               </div>
 
             </div>
 
-            {/* ── Footer — imported & unmodified ── */}
+            {/* ── Footer — unmodified ── */}
             <Footer />
 
           </div>
