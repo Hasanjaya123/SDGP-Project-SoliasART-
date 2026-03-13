@@ -12,6 +12,7 @@ const Sidebar = ({ currentPage, setCurrentPage, toggleTheme }) => {
     { icon: <BiSearch size={24} />, label: "Search", page: 'search' },
     { icon: <BiCompass size={24} />, label: "Explore", page: 'explore' },
     { icon: <HiOutlineNewspaper size={24} />, label: "Feed", page: 'feed' },
+    { icon: <FaPaintBrush size={22} />, label: "Artists", page: 'artistSearch' },
     { icon: <BiCollection size={24} />, label: "Collections", page: 'collections' },
     { icon: <BiTimeFive size={24} />, label: "Auctions", page: 'auctions' },
     { icon: <BiMap size={24} />, label: "ArtMaps", page: 'artmaps' },

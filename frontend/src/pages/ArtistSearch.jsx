@@ -1,46 +1,56 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ArtistCard } from "../components/ArtistCard";
+import { supabase } from "../services/supabase";
 
-const ArtistSearch = ({ setCurrentPage, artworks, artists }) => {
+const ArtistSearch = () => {
 
-    const handleViewArtist = (id) => {
-        setCurrentPage("artistDetail", id);
+    const [artists, setArtists] = useState([]);
+    const [search, setSearch] = useState("");
+
+    useEffect(() => {
+        fetchArtists();
+    }, []);
+
+    const fetchArtists = async () => {
+
+        const { data, error } = await supabase
+            .from("artists")
+            .select("*");
+
+        if (error) {
+            console.log(error);
+        } else {
+            setArtists(data);
+        }
+
     };
+
+    const filteredArtists = artists.filter((artist) =>
+        artist.display_name.toLowerCase().includes(search.toLowerCase())
+    );
 
     return (
         <div>
-            <div className="text-center mb-12">
-                <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
-                    Meet Our Artists
-                </h1>
 
-                <p className="mt-3 max-w-2xl mx-auto text-xl text-gray-500 dark:text-gray-300">
-                    Discover the creative minds behind the masterpieces. Explore their
-                    stories, studios, and portfolios.
-                </p>
+            {/* Search Bar */}
+            <div className="mb-8 flex justify-center">
+                <input
+                    type="text"
+                    placeholder="Search artists..."
+                    className="px-4 py-2 w-96 border rounded-lg"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {artists.map((artist, index) => {
-                    const artistArtworksCount = artworks.filter(
-                        (a) => a.artistId === artist.id
-                    ).length;
+            {/* Artists Grid */}
 
-                    return (
-                        <div
-                            key={artist.id}
-                            className="opacity-0 animate-fade-in-up"
-                            style={{ animationDelay: `${index * 100}ms` }}
-                        >
-                            <ArtistCard
-                                artist={artist}
-                                artworksCount={artistArtworksCount}
-                                onView={handleViewArtist}
-                            />
-                        </div>
-                    );
-                })}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {filteredArtists.map((artist) => (
+                    <ArtistCard key={artist.id} artist={artist} />
+                ))}
             </div>
+
         </div>
     );
 };
