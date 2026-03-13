@@ -1,7 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { collections } from '../data/mockData';
+import { getArtworks } from '../services/api';
 
-const CollectionsPage = ({ setCurrentPage, artworks }) => {
+const CollectionsPage = ({ setCurrentPage }) => {
+
+    const [artworks, setArtworks] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const data = await getArtworks();
+            setArtworks(data);
+        };
+
+        fetchData();
+    }, []);
+
     return (
         <div>
             <div className="text-center mb-12">
@@ -14,7 +27,7 @@ const CollectionsPage = ({ setCurrentPage, artworks }) => {
             </div>
 
             <div className="space-y-12">
-                {collections.map((collection, index) => (
+                {collections.map((collection) => (
                     <div
                         key={collection.id}
                         className="bg-white dark:bg-gray-900 rounded-lg shadow-lg dark:shadow-none dark:border dark:border-gray-800 overflow-hidden flex flex-col md:flex-row"
