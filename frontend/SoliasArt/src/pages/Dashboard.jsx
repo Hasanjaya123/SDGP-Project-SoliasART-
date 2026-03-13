@@ -218,7 +218,7 @@ const ArtistDashboard = () => {
             <p className="text-sm text-slate-500">Welcome back to your command center.</p>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 ml-auto">
             {/* Search — filters live backend data by title / medium / status */}
             <div className="relative hidden lg:block">
               <SearchIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -227,7 +227,7 @@ const ArtistDashboard = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search your inventory..."
-                className="pl-9 pr-8 py-2 bg-slate-100 border-none rounded-lg focus:ring-2 focus:ring-amber-400 w-64 text-sm outline-none transition-all"
+                className="pl-9 pr-8 py-2.5 bg-slate-100 border-none rounded-lg focus:ring-2 focus:ring-amber-400 w-72 text-sm outline-none transition-all placeholder:text-slate-400"
               />
               {search && (
                 <button
@@ -252,10 +252,10 @@ const ArtistDashboard = () => {
 
         {/* ── Scrollable body ── */}
         <div className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-7xl mx-auto space-y-8">
+          <div className="w-full space-y-8">
 
             {/* ── Metrics grid ── */}
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 w-full">
               {METRICS.map(({ label, value, badge, badgeClass, iconClass, Icon }) => (
                 <div
                   key={label}
@@ -347,17 +347,7 @@ const ArtistDashboard = () => {
                   </div>
                 )}
 
-                {/*
-                  Artwork cards — ArtDisplayCard imported & unmodified.
-                  Field mapping mirrors ArtSearch.jsx exactly:
-                    art.image_url?.[0]  → image prop
-                    art.title           → formData.title
-                    art.price           → formData.price
-                    art.medium          → formData.category
-                    art.height_in       → formData.height
-                    art.width_in        → formData.width
-                    art.image_url       → formData.images  (truthy check for placeholder)
-                */}
+                
                 {!loading && !error && filtered.length > 0 && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {filtered.map((art) => {
