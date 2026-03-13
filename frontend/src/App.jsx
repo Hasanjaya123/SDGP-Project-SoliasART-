@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar';
 import CollectionsPage from './pages/CollectionsPage';
 import CollectionDetailPage from './pages/CollectionDetailPage';
 import { artworks } from './data/mockData';
+import ArtistSearch from "./pages/ArtistSearch";
 
 function App() {
   const [currentPage, setCurrentPage] = useState('collections');
