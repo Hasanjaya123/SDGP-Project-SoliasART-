@@ -37,7 +37,7 @@ class CommentCreate(BaseModel):
     target_id: UUID
     content: str
 
-class CommentResoponse(BaseModel):
+class CommentResponse(BaseModel):
     user_id : UUID
     content : str
 

@@ -21,7 +21,7 @@ def _recency_factor(created_at: datetime) -> float:
     if age_days <= 30: return 0.5
     return 0.2
 
-def get_unfinded_feed(user_id: str, db:Session, page: int = 1, page_size: int = 10):
+def get_unified_feed(user_id: str, db:Session, page: int = 1, page_size: int = 10):
     liked_ids = {
         str(r.target_id): r.target_type
         for r in db.query(FeedLike).filter(FeedLike.user_id == user_id).all()
