@@ -7,6 +7,7 @@ from uuid import UUID
 
 from app.core.database import get_db
 from app.modules.ArtUpload.model import ArtWork
+from app.modules.ArtistOnboarding.model import Artist
 from app.modules.Post.model import Post
 from app.modules.Feed.model import FeedLike, FeedComment, FeedSave, FeedInteraction
 from app.modules.Feed.schemas import FeedCard, FeedResponse, CommentCreate, CommentResponse
@@ -52,6 +53,10 @@ def get_feed(
         # Guest: merge posts + artworks sorted by date
         posts = db.query(Post).all()
         artworks = db.query(ArtWork).all()
+        artist_names = {
+            artist.id: artist.display_name
+            for artist in db.query(Artist.id, Artist.display_name).all()
+        }
         merged = []
         for p in posts:
             merged.append({"type": "post", "obj": p, "created_at": p.created_at})
@@ -69,7 +74,8 @@ def get_feed(
             is_artwork = item["type"] == "artwork"
             cards.append(FeedCard(
                 id=obj.id, type=item["type"], created_at=item["created_at"],
-                artist_id=None if is_artwork else obj.artist_id,
+                artist_id=obj.artist_id,
+                artist_name=artist_names.get(obj.artist_id),
                 title=obj.title, description=obj.description, image_url=obj.image_url,
                 price=obj.price if is_artwork else None,
                 medium=obj.medium if is_artwork else None,
@@ -160,11 +166,20 @@ def get_comments(target_type: str, target_id: UUID, db: Session = Depends(get_db
 # Track Views
 @router.post("/{target_type}/{target_id}/view")
 def track_view(target_type: str, target_id: UUID, user_id: UUID = Query(...), db: Session = Depends(get_db)):
-        
+
     # Ensure the target exists
     get_target_or_404(target_type, target_id, db)
 
-    """Called silently when a card scrolls into view. Feeds the ML ranker."""
-    db.add(FeedInteraction(user_id=user_id, target_id=target_id, target_type=target_type, event_type="view"))
-    db.commit()
+    # Only records one view per user per target to prevent over scoreing
+    already_viewed = db.query(FeedInteraction).filter(
+        FeedInteraction.user_id == user_id,
+        FeedInteraction.target_id == target_id,
+        FeedInteraction.target_type == target_type,
+        FeedInteraction.event_type == "view",
+    ).first()
+
+    if not already_viewed:
+        db.add(FeedInteraction(user_id=user_id, target_id=target_id, target_type=target_type, event_type="view"))
+        db.commit()
+
     return {"message": "view recorded"}
