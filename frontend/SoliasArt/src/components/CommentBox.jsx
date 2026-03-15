@@ -1,9 +1,34 @@
-import { useState } from "react";
-import { addComment } from "../api/feedApi";
+import { useEffect, useState } from "react";
+import { addComment, getComments } from "../api/feedApi";
 
-function CommentBox({ targetType, targetId, userId }) {
+function CommentBox({ targetType, targetId, userId, onCommentCountChange }) {
     const [text, setText] = useState("");
     const [sending, setSending] = useState(false);
+    const [comments, setComments] = useState([]);
+    const [showAllComments, setShowAllComments] = useState(false);
+
+    useEffect(() => {
+        let active = true;
+
+        async function loadComments() {
+            try {
+                const response = await getComments(targetType, targetId);
+                const list = Array.isArray(response.data) ? response.data : [];
+                if (!active) return;
+                setComments(list);
+                if (onCommentCountChange) {
+                    onCommentCountChange(list.length);
+                }
+            } catch (error) {
+                console.error("Failed to load comments:", error);
+            }
+        }
+
+        loadComments();
+        return () => {
+            active = false;
+        };
+    }, [targetType, targetId, onCommentCountChange]);
 
     async function handleSubmit(e) {
         // prevent form from reloading the page
@@ -12,7 +37,15 @@ function CommentBox({ targetType, targetId, userId }) {
 
         setSending(true); // disable button while sending
         try {
-            await addComment(targetType, targetId, userId, text);
+            const response = await addComment(targetType, targetId, userId, text);
+            const created = response?.data;
+            if (created?.content) {
+                setComments((prev) => [created, ...prev]);
+                setShowAllComments(true);
+                if (onCommentCountChange) {
+                    onCommentCountChange((prev) => (Number(prev) || 0) + 1);
+                }
+            }
             setText(""); // clear input after successful comment
         } catch (error) {
             console.error("Failed to add comment: ", error);
@@ -21,30 +54,65 @@ function CommentBox({ targetType, targetId, userId }) {
         }
     }
 
+    function formatHandle(id) {
+        if (!id) return "user";
+        return `user_${String(id).slice(0, 6)}`;
+    }
+
+    const visibleComments = showAllComments ? comments : comments.slice(0, 2);
+
     return (
-        <form onSubmit={handleSubmit} className="mx-3.5 mb-3">
-            <div className="bg-stone-100-round-full px-4 py-2 flex items-center gap-2">
-                <input
-                    type="text"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    placeholder="Write a comment..."
-                    className="bg-transparent text-sm text-stone-500
-                    placeholder:text-stone-400 outline-none flex-1"
-                    disabled={sending}
-                />
-                {/* Only show Send button when there is text */}
-                {text.trim() && (
+        <div className="mx-3.5 mb-3 border-t border-stone-100 pt-2">
+            {comments.length > 0 && (
+                <div className="mb-2">
+                    {comments.length > 2 && (
+                        <button
+                            type="button"
+                            onClick={() => setShowAllComments((prev) => !prev)}
+                            className="mb-1 block w-full text-left text-[11px] leading-4 text-stone-500"
+                        >
+                            {showAllComments ? "Hide comments" : `View all ${comments.length} comments`}
+                        </button>
+                    )}
+
+                    <div className="space-y-1.5">
+                        {visibleComments.map((comment, index) => (
+                            <p key={`${comment.user_id}-${index}`} className="text-sm leading-5 text-stone-800">
+                                <span className="mr-2 font-semibold text-stone-900">
+                                    {formatHandle(comment.user_id)}
+                                </span>
+                                {comment.content}
+                            </p>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            <form onSubmit={handleSubmit}>
+                <div className="flex items-center gap-2 py-1">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-stone-200 text-[10px] font-semibold text-stone-700">
+                        {String(userId || "U").slice(0, 1).toUpperCase()}
+                    </div>
+
+                    <input
+                        type="text"
+                        value={text}
+                        onChange={(e) => setText(e.target.value)}
+                        placeholder="Add a comment..."
+                        className="min-w-0 flex-1 bg-transparent text-sm text-stone-700 placeholder:text-stone-400 outline-none"
+                        disabled={sending}
+                    />
+
                     <button
                         type="submit"
-                        disabled={sending}
-                        className="text-amber-600 text-sm font-semibold"
+                        disabled={sending || !text.trim()}
+                        className="text-sm font-semibold text-amber-600 transition disabled:cursor-not-allowed disabled:text-stone-300"
                     >
-                        {sending ? "Posting..." : "Post"}
+                        {sending ? "Posting" : "Post"}
                     </button>
-                )}
-            </div>
-        </form>
+                </div>
+            </form>
+        </div>
     )
 }
 
