@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { getUserIdFromToken } from '../utils/auth'
 
 const STORAGE_KEY = 'following_artist_ids_by_user'
+const FOLLOW_EVENT = 'follow-state-changed'
 
 function readFollowMap() {
     try {
@@ -34,13 +35,30 @@ function FollowButton({ artistId }) {
     const [isFollowing, setIsFollowing] = useState(false)
 
     useEffect(() => {
-        if (!artistId) {
-            setIsFollowing(false)
-            return
+        function syncFollowState() {
+            if (!artistId) {
+                setIsFollowing(false)
+                return
+            }
+
+            const followed = readFollowedArtistsForUser(userKey)
+            setIsFollowing(followed.includes(String(artistId)))
         }
 
-        const followed = readFollowedArtistsForUser(userKey)
-        setIsFollowing(followed.includes(String(artistId)))
+        function handleStorage(event) {
+            if (!event.key || event.key === STORAGE_KEY) {
+                syncFollowState()
+            }
+        }
+
+        syncFollowState()
+        window.addEventListener('storage', handleStorage)
+        window.addEventListener(FOLLOW_EVENT, syncFollowState)
+
+        return () => {
+            window.removeEventListener('storage', handleStorage)
+            window.removeEventListener(FOLLOW_EVENT, syncFollowState)
+        }
     }, [artistId, userKey])
 
     function handleToggleFollow() {
@@ -62,6 +80,7 @@ function FollowButton({ artistId }) {
 
         followMap[userKey] = next
         writeFollowMap(followMap)
+        window.dispatchEvent(new Event(FOLLOW_EVENT))
     }
 
     return (
