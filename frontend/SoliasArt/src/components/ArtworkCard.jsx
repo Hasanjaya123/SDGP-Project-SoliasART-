@@ -7,6 +7,7 @@ import FollowButton from './FollowButton'
 function ArtworkCard({ card, userId }) {
     const [commentCount, setCommentCount] = useState(card.comment_count ?? 0)
     const artistName = card.artist_name || 'Unknown Artist'
+    const imageSrc = Array.isArray(card.image_url) ? card.image_url[0] : card.image_url
 
     useEffect(() => {
         setCommentCount(card.comment_count ?? 0)
@@ -32,7 +33,7 @@ function ArtworkCard({ card, userId }) {
             {/*Image*/}
             <div className='aspect-square overflow-hidden bg-stone-900'>
                 <img
-                    src={card.image_url[0]}
+                    src={imageSrc}
                     alt={card.description}
                     className='h-full w-full object-contain'
                     onError={(e) => e.target.src = 'https://placehold.co/600x400'}
