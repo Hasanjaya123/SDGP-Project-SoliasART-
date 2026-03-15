@@ -5,6 +5,7 @@ from sqlalchemy import func
 from sklearn.metrics.pairwise import cosine_similarity
 
 from app.modules.ArtUpload.model import ArtWork
+from app.modules.ArtistOnboarding.model import Artist
 from app.modules.Post.model import Post
 from app.modules.Feed.model import FeedLike, FeedSave, FeedInteraction
 
@@ -38,26 +39,48 @@ def get_unified_feed(user_id: str, db:Session, page: int = 1, page_size: int = 1
     all_interacted = set(liked_ids) | set(saved_ids) | set(viewed_ids)
     is_new_user = len(all_interacted) == 0
 
-    # get like counts for posts and artworks
-    like_count = dict(db.query(FeedLike.target_id, FeedLike.target_type, func.count(FeedLike.id))
-                      .group_by(FeedLike.target_id).all())
+    # get like counts for posts and artworks keyed by (target_id, target_type)
+    like_count = {
+        (target_id, target_type): count
+        for target_id, target_type, count in db.query(
+            FeedLike.target_id,
+            FeedLike.target_type,
+            func.count(FeedLike.id)
+        ).group_by(FeedLike.target_id, FeedLike.target_type).all()
+    }
     
-    #get view counts for posts and artworks
-    view_counts = dict(
-        db.query(FeedInteraction.target_id, func.count(FeedInteraction.id))
+    #get view counts for posts and artworks — count distinct users to prevent inflation
+    view_counts = {
+        (target_id, target_type): count
+        for target_id, target_type, count in db.query(
+            FeedInteraction.target_id,
+            FeedInteraction.target_type,
+            func.count(FeedInteraction.user_id.distinct())
+        )
         .filter(FeedInteraction.event_type == "view")
-        .group_by(FeedInteraction.target_id).all())
+        .group_by(FeedInteraction.target_id, FeedInteraction.target_type).all()
+    }
     
     # get all comments for posts and artworks
     from app.modules.Feed.model import FeedComment
-    comment_counts = dict(
-        db.query(FeedComment.target_id, func.count(FeedComment.id))
-        .group_by(FeedComment.target_id).all())
+    comment_counts = {
+        (target_id, target_type): count
+        for target_id, target_type, count in db.query(
+            FeedComment.target_id,
+            FeedComment.target_type,
+            func.count(FeedComment.id)
+        ).group_by(FeedComment.target_id, FeedComment.target_type).all()
+    }
     
     scored_items = []
+    artist_names = {
+        artist.id: artist.display_name
+        for artist in db.query(Artist.id, Artist.display_name).all()
+    }
 
     #score the artworks using embedding similarity
     artworks = db.query(ArtWork).all()
+    taste_profile = None
 
     #base on user interest create with their interaction history
     if not is_new_user:
@@ -84,26 +107,29 @@ def get_unified_feed(user_id: str, db:Session, page: int = 1, page_size: int = 1
     for artwork in artworks:
         aid = str(artwork.id)
         recency = _recency_factor(artwork.create_at)
-        likes = like_count.get(artwork.id, 0)
-        views = view_counts.get(artwork.id, 0)
+        likes = like_count.get((artwork.id, "artwork"), 0)
+        views = view_counts.get((artwork.id, "artwork"), 0)
 
         if taste_profile is not None and artwork.embedding is not None:
             similarity = cosine_similarity(taste_profile, np.array(artwork.embedding).reshape(1, -1))[0][0]
+            score = (similarity * 5 + likes * 3 + views * 1 + 1.0) * recency
         else:
-            score = (likes * 3 + views * 1) * recency
+            # +1.0 baseline ensures new/unseen content surfaces instead of scoring 0
+            score = (likes * 3 + views * 1 + 1.0) * recency
 
         scored_items.append({
             "score": score,
             "type": "artwork",
             "id": artwork.id,
             "created_at": artwork.create_at,
-            "artist_id": None,
+            "artist_id": artwork.artist_id,
+            "artist_name": artist_names.get(artwork.artist_id),
             "title": artwork.title,
             "description": artwork.description,
             "image_url": artwork.image_url,
             "like_count": int(likes),
             "is_liked_by_me": aid in liked_ids and liked_ids[aid] == "artwork",
-            "comment_count": int(comment_counts.get(artwork.id, 0)),
+            "comment_count": int(comment_counts.get((artwork.id, "artwork"), 0)),
             "is_saved": aid in saved_ids and saved_ids[aid] == "artwork",
             "price": artwork.price,
             "medium": artwork.medium,
@@ -135,10 +161,11 @@ def get_unified_feed(user_id: str, db:Session, page: int = 1, page_size: int = 1
     for post in posts:
         pid = str(post.id)
         recency = _recency_factor(post.created_at)
-        likes = like_count.get(post.id, 0)
-        views = view_counts.get(post.id, 0)
+        likes = like_count.get((post.id, "post"), 0)
+        views = view_counts.get((post.id, "post"), 0)
         bonus = 2 if pid in bonus_post_ids else 0
-        score = (likes * 3 + views * 1 + bonus) * recency
+        # +1.0 baseline ensures new posts surface regardless of engagement
+        score = (likes * 3 + views * 1 + bonus + 1.0) * recency
 
         scored_items.append({
             "score"       : score,
@@ -146,12 +173,13 @@ def get_unified_feed(user_id: str, db:Session, page: int = 1, page_size: int = 1
             "id"          : post.id,
             "created_at"  : post.created_at,
             "artist_id"   : post.artist_id,
+            "artist_name" : artist_names.get(post.artist_id),
             "title"       : post.title,
             "description" : post.description,
             "image_url"   : post.image_url,
             "like_count"      : int(likes),
             "is_liked_by_me"  : pid in liked_ids and liked_ids[pid] == "post",
-            "comment_count"   : int(comment_counts.get(post.id, 0)),
+            "comment_count"   : int(comment_counts.get((post.id, "post"), 0)),
             "is_saved"        : pid in saved_ids and saved_ids[pid] == "post",
             "price"       : None,    # posts never have price or buy button
             "medium"      : None,
@@ -162,6 +190,23 @@ def get_unified_feed(user_id: str, db:Session, page: int = 1, page_size: int = 1
     scored_items.sort(key=lambda x: x["score"], reverse=True)
     start = (page - 1) * page_size
     paged = scored_items[start: start + page_size]
+
+    # Keep a small content mix on page 1 so posts do not disappear behind artwork ranking.
+    if page == 1 and paged and not any(item["type"] == "post" for item in paged):
+        post_candidates = [item for item in scored_items if item["type"] == "post"]
+        existing_ids = {item["id"] for item in paged}
+        injected_posts = []
+
+        for post_item in post_candidates:
+            if post_item["id"] not in existing_ids:
+                injected_posts.append(post_item)
+            if len(injected_posts) == 2:
+                break
+
+        if injected_posts:
+            keep_count = max(len(paged) - len(injected_posts), 0)
+            paged = paged[:keep_count] + injected_posts
+
     total = len(scored_items)
 
     return paged, total, not is_new_user
