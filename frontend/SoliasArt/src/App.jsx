@@ -8,21 +8,22 @@ import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
 import './index.css';
 import Test from './pages/test.jsx';
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
+import FeedPage from './pages/FeedPage.jsx'
 
 function App() {
   return (
     <>
-    <Routes>
+      <Routes>
         <Route path="/home"></Route>
         {/* Route to Signup page */}
         <Route path="/signup" element={<SignupPage />} />
-        
+
         {/* Route to Login page */}
         <Route path="/login" element={<LoginPage />} />
 
         {/* Test route for ArtDisplayCard */}
         <Route path="/test" element={<Test />} />
-        
+
         {/* Default route - redirect to signup */}
         <Route path="/" element={<Navigate to="/signup" replace />} />
 
@@ -33,9 +34,12 @@ function App() {
 
         <Route path="/user/artist/profile/:artistId" element={<ArtistProfilePage />} />
 
-    </Routes>    
+        {/* Feed page */}
+        <Route path="/feed" element={<FeedPage />} />
+
+      </Routes>
     </>
-         
+
   );
 
 }
