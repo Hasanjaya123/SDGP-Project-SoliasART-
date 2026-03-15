@@ -11,7 +11,7 @@ export const getFeed = (page = 1, userId =null) => {
     if (userId) {
         params.user_id = userId
     }
-    return api.get("/feed", { params });
+    return api.get("/feed/", { params });
     }
 
     // Add like to a post or artwork
