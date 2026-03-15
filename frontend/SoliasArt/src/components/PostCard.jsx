@@ -1,21 +1,25 @@
 import LikeButton from './LikeButton'
 import SaveButton from './SaveButton'
 import CommentBox from './CommentBox'
+import FollowButton from './FollowButton'
 
 function PostCard({ card, userId }) {
+    const imageSrc = Array.isArray(card.image_url) ? card.image_url[0] : card.image_url
+    const artistName = card.artist_name || 'Artist'
+
     return (
-        <div className="bg-white mb-2.5">
-            <div className="flex items-center px-3.5 gap-2.5">
-                <div className="w-9 h-9 rounded-fully bg-amber-100 flex items-center
-                justify-center text-amber-800 font-semibold text-sm flex-shrink-0">
+        <div className='mx-4 mb-5 overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm md:mx-0'>
+            <div className='flex items-center px-3.5 py-3 gap-2.5'>
+                <div className='w-9 h-9 rounded-full bg-stone-200 flex items-center
+                justify-center text-stone-700 font-semibold text-sm flex-shrink-0'>
                     {/*get the first letter ofthe name*/}
-                    {card.title ? card.title.split(' ').map(w => w[0]).join('').slice(0, 2).toUppercase() : 'AR'}
+                    {artistName ? artistName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : 'AR'}
                 </div>
 
                 {/*Name and time*/}
                 <div className="flex-1">
                     <p className='text-sm font-semibold text-stone-800'>
-                        {card.title || 'Artist'}
+                        {artistName}
                     </p>
                     <p className="text-xs text-stone-400">
                         {new Date(card.created_at).toLocaleDateString()}
@@ -23,18 +27,15 @@ function PostCard({ card, userId }) {
                 </div>
 
                 {/*Follow Button*/}
-                <button className="text-xs font-semibold text-amber-600 border
-                                    border-amber-600 rounded-full px-3 py-1">
-                    Follow
-                </button>
+                <FollowButton artistId={card.artist_id} />
             </div>
 
             {/*Image*/}
-            <div className='bg-stone-900'>
+            <div className='aspect-square overflow-hidden bg-stone-900'>
                 <img
-                    src={card.image_url[0]}
+                    src={imageSrc}
                     alt={card.description}
-                    className='w-full object-cover max-h-96'
+                    className='h-full w-full object-contain'
                     onError={(e) => e.target.src = 'https://placehold.co/600x400'} //image fail to load show placeholder
                 />
             </div>
@@ -70,8 +71,7 @@ function PostCard({ card, userId }) {
             {/*Description*/}
             <div className='px-3.5 pb-2'>
                 <p className="text-sm text-stone-800">
-                    <span className="font-semibold">Artist </span>
-                    <span className="text-stone-500 text-xs">@artist_handle</span>
+                    <span className="font-semibold">{artistName} </span>
                 </p>
                 <p className="text-sm text-stone-700 mt-0.5 leading-snug">
                     {card.description}
