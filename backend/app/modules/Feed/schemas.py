@@ -6,10 +6,12 @@ from decimal import Decimal
 
 class FeedCard(BaseModel):
     id: UUID
+    type: str
     created_at: datetime
     artist_id: Optional[UUID]
-    title: Optional[str]
-    description: str
+    artist_name: Optional[str] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
     image_url: list[str]
 
     # Engagement fields
@@ -34,7 +36,7 @@ class FeedResponse(BaseModel):
     is_personalised : bool = False 
     
 class CommentCreate(BaseModel):
-    target_id: UUID
+    user_id: UUID
     content: str
 
 class CommentResponse(BaseModel):
