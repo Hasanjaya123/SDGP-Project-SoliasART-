@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ICONS } from "../constants";
 import { artistProfileService } from "../services/uploadApi";
 import ArtDisplayCard from "../components/Art-card";

@@ -11,6 +11,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
 import CartPage from './pages/CartPage';
 import ArtSearch from './pages/ArtSearch.jsx';
+import { ArtistSearch } from './components/ArtistSearch.jsx';
 import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx";
 
@@ -140,6 +141,7 @@ function App() {
         <Route path="/feed" element={<ArtSearch />} />
         <Route path="/search" element={<ArtSearch />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/artist-search" element={<ArtistSearch />} />
 
         <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
 
