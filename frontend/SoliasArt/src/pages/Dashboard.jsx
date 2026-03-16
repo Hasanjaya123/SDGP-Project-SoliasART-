@@ -48,8 +48,6 @@ const AlertIcon = ({ className }) => (
   </svg>
 );
 
-// ─── Normalise image_url: backend may send a string OR string[] ───────────────
-// Your mock used a plain string; the real API sends string[].
 // This helper handles both so neither breaks.
 const getImageSrc = (image_url) => {
   if (!image_url) return null;
@@ -57,7 +55,6 @@ const getImageSrc = (image_url) => {
   return image_url; // plain string fallback
 };
 
-// ─── Map raw backend JSON → ArtDisplayCard props ─────────────────────────────
 const toCardProps = (art) => {
   const src = getImageSrc(art.image_url);
   return {
@@ -68,13 +65,12 @@ const toCardProps = (art) => {
       category: art.medium    ?? "",
       height:   art.height_in ?? "",
       width:    art.width_in  ?? "",
-      // ArtDisplayCard checks `formData.images.length > 0` for the placeholder logic
+      // ArtDisplayCard checks for the placeholder logic
       images:   src ? [src] : [],
     },
   };
 };
 
-// ─── Derive live metric values from raw artwork array ─────────────────────────
 const deriveMetrics = (artworks) => {
   const total        = artworks.length;
   const sold         = artworks.filter((a) => a.status?.toLowerCase() === "sold").length;
@@ -123,6 +119,8 @@ const ArtistDashboard = () => {
   const { userId } = useParams();
 
   const [artworks, setArtworks] = useState([]);
+  const [artist, setArtist] = useState(null);
+  const [statistics, setStatistics] = useState(null);
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState(null);
   const [search,   setSearch]   = useState("");
@@ -134,13 +132,18 @@ const ArtistDashboard = () => {
     setError(null);
 
     artworkService
-      .getArtWorks(userId)
-      .then((data) => setArtworks(Array.isArray(data) ? data : []))
+      .getdashboardData()
+      .then((data) => {
+        setArtworks(Array.isArray(data.artworks) ? data.artworks : []);
+        setArtist(data.artist || null);
+        setStatistics(data.Statistics || null);
+      })
       .catch((err) =>
         setError(err?.response?.data?.detail ?? err?.message ?? "Failed to load artworks.")
       )
       .finally(() => setLoading(false));
-  }, [userId]);
+
+  }, []);
 
   // ── Recent Sales ──────────────────────────────────────────────────────────
   const recentSales = useMemo(
@@ -164,7 +167,12 @@ const ArtistDashboard = () => {
     );
   }, [search, artworks]);
 
-  const { total, sold, totalRevenue, views, likes } = deriveMetrics(artworks);
+  // statistics 
+  const total = statistics?.listed_art_works ?? artworks.length;
+  const sold = statistics?.sold_artworks ?? deriveMetrics(artworks).sold;
+  const totalRevenue = statistics?.total_revenue ?? deriveMetrics(artworks).totalRevenue;
+  const views = statistics?.total_views ?? deriveMetrics(artworks).views;
+  const likes = statistics?.total_likes ?? deriveMetrics(artworks).likes;
 
   return (
     <div className="flex h-screen overflow-hidden bg-stone-50 font-sans">
@@ -177,9 +185,18 @@ const ArtistDashboard = () => {
         {/* ── Header ── */}
         <header className="h-20 flex-shrink-0 bg-white border-b border-slate-200 flex items-center justify-between px-8 gap-6">
           <div className="flex-shrink-0">
-            <h2 className="text-xl font-bold text-slate-900">Good Morning, Hasanjaya!</h2>
+            <h2 className="text-xl font-bold text-slate-900">
+              {artist ? `Good Morning, ${artist.name}!` : "Good Morning!"}
+            </h2>
             <p className="text-sm text-slate-500">Welcome back to your command center.</p>
           </div>
+          {artist && (
+            <img
+              src={artist.profileImageUrl}
+              alt={artist.name}
+              className="w-12 h-12 rounded-full object-cover border border-slate-200"
+            />
+          )}
 
           <div className="flex items-center gap-4 ml-auto">
             {/* Search bar with placeholder text */}

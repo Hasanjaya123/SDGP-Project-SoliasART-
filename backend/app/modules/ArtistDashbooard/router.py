@@ -1,6 +1,6 @@
-from fastapi import APIRouter, HTTPException
-
+from fastapi import APIRouter, HTTPException, Depends
 from app.core.supabase import supabase
+from app.modules.auth.dependencies import get_current_user
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
@@ -14,16 +14,20 @@ async def check_user(artist_id: str):
     return True
 
 @router.get("/{artist_id}")
-async def get_full_artist_profile(artist_id: str):
+async def get_full_artist_profile(current_user: str = Depends(get_current_user)):
     """
     Fetches everything needed for the ArtistProfilePage in one single request.
     """
     try:
-       
-        veryfy_user = await check_user(artist_id)
+        user_id = str(current_user.id)
+        #veryfy_user = await check_user(artist_id)
         
-        if not veryfy_user:
+        profile_response = supabase.table('artists').select('*').eq('user_id', user_id).execute()
+        
+        if not profile_response:
             raise HTTPException(status_code=404, detail="Artist not found")
+        
+        artist_id = profile_response.data[0].get("artist_id")               
         
         artist = supabase.table("artists").select("id", "display_name", "profile_image_url").eq("id", artist_id).execute()
        

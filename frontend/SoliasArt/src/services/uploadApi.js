@@ -12,6 +12,11 @@ export const artistProfileService = {
     const response = await api.get(`/artists/profile/${artistId}`);
     return response.data;
   },
+
+  getdashboardData: async () =>{
+    const response = await api.get(`/dashboard`);
+    return response.data;
+  }
 };
 
 export const artworkService = {
