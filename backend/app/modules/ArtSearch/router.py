@@ -1,3 +1,4 @@
+# Import FastAPI utilities for routing, exceptions, file uploads, and dependency injection
 
 from fastapi import HTTPException, APIRouter, Form, UploadFile, File, Depends
 from app.modules.auth.dependencies import get_current_user
@@ -5,6 +6,7 @@ from app.modules.ArtUpload.embeddings import generate_image_embedding, generate_
 from app.core.supabase import supabase
 from typing import Optional
 
+# Create a router for explore/search related endpoints
 
 router = APIRouter(prefix="/explore", tags=["ArtSearch"])
 
