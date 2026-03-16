@@ -42,6 +42,7 @@ function EventCard({ event, selected, onSelect }) {
 
   return (
     <button
+      // Toggle event selection
       data-id={event.id}
       onClick={() => onSelect(selected ? null : event)}
       className="w-full text-left rounded-xl border transition-all duration-200 focus:outline-none group overflow-hidden"
@@ -57,6 +58,7 @@ function EventCard({ event, selected, onSelect }) {
         style={{ backgroundColor: selected ? '#FFC247' : 'transparent' }}
       />
 
+      {/* Event details */}
       <div className="p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
           <span
@@ -69,6 +71,7 @@ function EventCard({ event, selected, onSelect }) {
           </span>
         </div>
 
+        {/* Event location and date */}
         <div className="flex items-center gap-3 text-xs text-zinc-500">
           <span className="flex items-center gap-1">
             <span className="material-symbols-outlined text-[16px]">location_on</span>
@@ -83,6 +86,7 @@ function EventCard({ event, selected, onSelect }) {
           </span>
         </div>
 
+        {/* Event description and artist */}
         <div
           className="overflow-hidden transition-all duration-300"
           style={{ maxHeight: selected ? '200px' : '0px', opacity: selected ? 1 : 0 }}
