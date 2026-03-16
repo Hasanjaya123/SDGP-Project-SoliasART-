@@ -27,16 +27,16 @@ const UploadButton = ({ onImageUpload }) => {
     e.preventDefault();
     setDragging(false);
     const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith("image/"));
-    const newFiles = files.map((f) => ({ name: f.name, url: URL.createObjectURL(f) }));
+    const newFiles = files.map((f) => ({ name: f.name, url: URL.createObjectURL(f), file: f }));
     setUploaded((prev) => [...prev, ...newFiles]);
-    if (newFiles.length > 0 && onImageUpload) onImageUpload(newFiles[0].url);
+    if (newFiles.length > 0 && onImageUpload) onImageUpload(newFiles[0].url, files[0]);
   };
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files).filter((f) => f.type.startsWith("image/"));
-    const newFiles = files.map((f) => ({ name: f.name, url: URL.createObjectURL(f) }));
+    const newFiles = files.map((f) => ({ name: f.name, url: URL.createObjectURL(f), file: f }));
     setUploaded((prev) => [...prev, ...newFiles]);
-    if (newFiles.length > 0 && onImageUpload) onImageUpload(newFiles[0].url);
+    if (newFiles.length > 0 && onImageUpload) onImageUpload(newFiles[0].url, files[0]);
   };
 
   const handleClose = () => {

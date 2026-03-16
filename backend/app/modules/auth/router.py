@@ -6,7 +6,6 @@ from app.modules.auth import dependencies
 from jose import JWTError, jwt
 from app.core.config import settings
 from . import utils as email_utils  
-from app.core.config import settings
 from fastapi.responses import HTMLResponse
 
 router = APIRouter()
@@ -149,3 +148,8 @@ def verify_email(token: str, db: Session = Depends(get_db)):
         message="Welcome to SoliasArt! Your account has been successfully activated.",
         color="#1F4E79" 
     ))
+    
+@router.get("/verify-role")
+def verify_role(current_user: models.User = Depends(dependencies.get_current_user)):
+    return {"role": current_user.role}
+

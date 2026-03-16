@@ -3,7 +3,8 @@ import { useParams } from "react-router-dom";
 import ArtDisplayCard from "../components/Art-card";
 import Sidebar from "../components/Nav-bar";
 import Footer from "../components/Footer";
-import { artworkService } from "../services/uploadApi";
+// 1. FIXED IMPORT: We need artistProfileService for the dashboard data
+import { artistProfileService } from "../services/uploadApi"; 
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 const SearchIcon = ({ className }) => (
@@ -48,11 +49,10 @@ const AlertIcon = ({ className }) => (
   </svg>
 );
 
-// This helper handles both so neither breaks.
 const getImageSrc = (image_url) => {
   if (!image_url) return null;
   if (Array.isArray(image_url)) return image_url[0] ?? null;
-  return image_url; // plain string fallback
+  return image_url; 
 };
 
 const toCardProps = (art) => {
@@ -65,7 +65,6 @@ const toCardProps = (art) => {
       category: art.medium    ?? "",
       height:   art.height_in ?? "",
       width:    art.width_in  ?? "",
-      // ArtDisplayCard checks for the placeholder logic
       images:   src ? [src] : [],
     },
   };
@@ -82,7 +81,6 @@ const deriveMetrics = (artworks) => {
   return { total, sold, totalRevenue, views, likes };
 };
 
-// ─── Skeleton card ────────────────────────────────────────────────────────────
 const SkeletonCard = () => (
   <div className="bg-white border border-slate-200 rounded-lg p-4 animate-pulse">
     <div className="bg-slate-200 rounded aspect-[3/4] mb-4" />
@@ -92,7 +90,6 @@ const SkeletonCard = () => (
   </div>
 );
 
-// ─── Single metric card ───────────────────────────────────────────────────────
 const MetricCard = ({ label, value, badge, badgeClass, iconClass, Icon, loading, span2 }) => (
   <div className={`bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow${span2 ? " col-span-2" : ""}`}>
     <div className="flex items-center justify-between mb-3">
@@ -114,7 +111,6 @@ const MetricCard = ({ label, value, badge, badgeClass, iconClass, Icon, loading,
   </div>
 );
 
-// ─── Dashboard Page ───────────────────────────────────────────────────────────
 const ArtistDashboard = () => {
   const { userId } = useParams();
 
@@ -125,13 +121,13 @@ const ArtistDashboard = () => {
   const [error,    setError]    = useState(null);
   const [search,   setSearch]   = useState("");
 
-  // ── Fetch artworks ────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!userId) return;
+    // 2. FIXED: Removed 'if (!userId) return;' because the API uses the JWT token, not the URL param
     setLoading(true);
     setError(null);
 
-    artworkService
+    // 3. FIXED: Changed from artworkService to artistProfileService
+    artistProfileService
       .getdashboardData()
       .then((data) => {
         setArtworks(Array.isArray(data.artworks) ? data.artworks : []);
@@ -143,9 +139,8 @@ const ArtistDashboard = () => {
       )
       .finally(() => setLoading(false));
 
-  }, []);
+  }, []); // Run once on mount
 
-  // ── Recent Sales ──────────────────────────────────────────────────────────
   const recentSales = useMemo(
     () =>
       [...artworks]
@@ -155,7 +150,6 @@ const ArtistDashboard = () => {
     [artworks]
   );
 
-  // ── Search filter ─────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return artworks;
@@ -167,7 +161,6 @@ const ArtistDashboard = () => {
     );
   }, [search, artworks]);
 
-  // statistics 
   const total = statistics?.listed_art_works ?? artworks.length;
   const sold = statistics?.sold_artworks ?? deriveMetrics(artworks).sold;
   const totalRevenue = statistics?.total_revenue ?? deriveMetrics(artworks).totalRevenue;
@@ -176,13 +169,8 @@ const ArtistDashboard = () => {
 
   return (
     <div className="flex h-screen overflow-hidden bg-stone-50 font-sans">
-
-      {/* ── Sidebar — unmodified ── */}
       <Sidebar />
-
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-
-        {/* ── Header ── */}
         <header className="h-20 flex-shrink-0 bg-white border-b border-slate-200 flex items-center justify-between px-8 gap-6">
           <div className="flex-shrink-0">
             <h2 className="text-xl font-bold text-slate-900">
@@ -199,7 +187,6 @@ const ArtistDashboard = () => {
           )}
 
           <div className="flex items-center gap-4 ml-auto">
-            {/* Search bar with placeholder text */}
             <div className="relative hidden lg:block">
               <SearchIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               <input
@@ -219,9 +206,8 @@ const ArtistDashboard = () => {
               )}
             </div>
 
-            {/* Upload button */}
             <a
-              href="/user/dashboard/upload/3dff7d1a-467b-431f-b4f0-9541e7d6c318"
+              href="/dashboard/upload"
               className="bg-amber-400 hover:bg-amber-500 active:scale-95 text-slate-900 font-bold px-5 py-2.5 rounded-lg flex items-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap"
             >
               <PlusCircleIcon className="w-4 h-4" />
@@ -230,11 +216,8 @@ const ArtistDashboard = () => {
           </div>
         </header>
 
-        {/* ── Scrollable body ── */}
         <div className="flex-1 overflow-y-auto p-8">
           <div className="max-w-[1400px] mx-auto space-y-8">
-
-            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <MetricCard
                 label="Total Revenue"
@@ -272,7 +255,6 @@ const ArtistDashboard = () => {
                 Icon={EyeIcon}
                 loading={loading}
               />
-              {/* Profile Likes spans only one column, sits on the left — matches reference */}
               <MetricCard
                 label="Profile Likes"
                 value={likes > 0 ? likes.toLocaleString() : "—"}
@@ -284,10 +266,7 @@ const ArtistDashboard = () => {
               />
             </div>
 
-            {/* ── Active Artworks + Recent Sales ── */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-
-              {/* Active Artworks */}
               <div className="xl:col-span-2 space-y-4">
                 <h3 className="text-xl font-bold text-slate-900">
                   Active Artworks
@@ -334,7 +313,7 @@ const ArtistDashboard = () => {
                     <p className="text-slate-600 font-semibold">No artworks yet</p>
                     <p className="text-slate-400 text-sm mt-1">Upload your first artwork to get started</p>
                     <a
-                      href="/user/dashboard/upload/3dff7d1a-467b-431f-b4f0-9541e7d6c318"
+                      href="/dashboard/upload"
                       className="mt-4 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold px-4 py-2 rounded-lg text-sm transition-colors"
                     >
                       Upload Artwork
@@ -348,18 +327,18 @@ const ArtistDashboard = () => {
                       const { image, formData } = toCardProps(art);
                       return (
                         <div
-                          key={art.id}
-                          className="bg-white border border-slate-200 shadow-sm rounded-lg overflow-hidden"
-                        >
-                          <ArtDisplayCard image={image} formData={formData} />
-                        </div>
+                    key={art.id}
+                    onClick={() => handleArtworkClick(art.id)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <ArtDisplayCard image={image} formData={formData} />
+                  </div>
                       );
                     })}
                   </div>
                 )}
               </div>
 
-              {/* Recent Sales feed */}
               <div className="space-y-4">
                 <h3 className="text-xl font-bold text-slate-900">Recent Sales</h3>
                 <div className="bg-white rounded-xl border border-slate-200 shadow-sm divide-y divide-slate-100">
@@ -416,10 +395,7 @@ const ArtistDashboard = () => {
               </div>
 
             </div>
-
-            {/* ── Footer — unmodified ── */}
             <Footer />
-
           </div>
         </div>
       </main>
