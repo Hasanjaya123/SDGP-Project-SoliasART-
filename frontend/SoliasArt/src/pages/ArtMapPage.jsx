@@ -93,6 +93,7 @@ function EventCard({ event, selected, onSelect }) {
         >
           <div className="mt-3 pt-3 border-t border-zinc-800">
             <p className="text-zinc-400 text-sm leading-relaxed font-normal">{event.description}</p>
+            {/* Artist information*/}
             {event.artist && (
               <div className="flex items-center gap-2 mt-3">
                 <div className="w-6 h-6 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
