@@ -2,7 +2,6 @@ from pydantic import BaseModel
 
 # for adding items to cart
 class CartItemAdd(BaseModel):
-    user_id: str
     artwork_id: str
 
 class CartItemResponse(BaseModel):

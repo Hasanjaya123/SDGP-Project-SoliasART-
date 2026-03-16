@@ -13,19 +13,19 @@ const OrderSummary = ({ subtotal, shipping }) => {
           <div className="space-y-2">
             <dl className="flex items-center justify-between gap-4">
               <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Subtotal</dt>
-              <dd className="text-base font-medium text-gray-900 dark:text-white">${subtotal.toLocaleString()}</dd>
+              <dd className="text-base font-medium text-gray-900 dark:text-white">LKR {subtotal.toLocaleString()}</dd>
             </dl>
 
             <dl className="flex items-center justify-between gap-4">
               <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Shipping Estimate</dt>
-              <dd className="text-base font-medium text-gray-900 dark:text-white">${shipping.toLocaleString()}</dd>
+              <dd className="text-base font-medium text-gray-900 dark:text-white">LKR {shipping.toLocaleString()}</dd>
             </dl>
 
           </div>
 
           <dl className="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
             <dt className="text-base font-bold text-gray-900 dark:text-white">Total</dt>
-            <dd className="text-base font-bold text-gray-900 dark:text-white">${total.toLocaleString()}</dd>
+            <dd className="text-base font-bold text-gray-900 dark:text-white">LKR {total.toLocaleString()}</dd>
           </dl>
         </div>
 

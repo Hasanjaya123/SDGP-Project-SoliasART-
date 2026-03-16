@@ -17,6 +17,7 @@ import { ArtistProfilePage } from "./pages/ArtistProfile.jsx";
 
 import { artworks } from './data/mockData';
 import { authService } from './services/uploadApi';
+import ArtMapPage from './pages/ArtMapPage.jsx';
 
 import './App.css'
 import './index.css'
@@ -112,48 +113,57 @@ function App() {
         }
       />
 
-      {/* Main layout pages */}
+      {/* Pages within the main layout (pages which have sidebar and footer) */}
       <Route element={<Layout />}>
-
-        <Route
-          path="/collections"
-          element={
-            <CollectionsPage
-              setCurrentPage={handleSetPage}
-              artworks={artworks}
-            />
-          }
-        />
-
-        <Route
-          path="/collection/:id"
-          element={
-            <CollectionDetailPage
-              artworks={artworks}
-              setCurrentPage={handleSetPage}
-              onToggleSave={handleToggleSave}
-              savedItemIds={savedItemIds}
-              onAddToCartBatch={handleAddToCartBatch}
-            />
-          }
-        />
-
-        <Route path="/feed" element={<ArtSearch />} />
-        <Route path="/search" element={<ArtSearch />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/artist-search" element={<ArtistSearch />} />
-
+        {/* Artwork details page */}
         <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
-
+        <Route path="/search" element={<ArtSearch />} />
         <Route path="/artist/profile" element={<ArtistProfilePage />} />
         <Route path="/artist/profile/:artistId" element={<ArtistProfilePage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/map" element={<ArtMapPage />} />
 
       </Route>
+
+      <Route
+        path="/collections"
+        element={
+          <CollectionsPage
+            setCurrentPage={handleSetPage}
+            artworks={artworks}
+          />
+        }
+      />
+
+      <Route
+        path="/collection/:id"
+        element={
+          <CollectionDetailPage
+            artworks={artworks}
+            setCurrentPage={handleSetPage}
+            onToggleSave={handleToggleSave}
+            savedItemIds={savedItemIds}
+            onAddToCartBatch={handleAddToCartBatch}
+          />
+        }
+      />
+
+      <Route path="/feed" element={<ArtSearch />} />
+      <Route path="/search" element={<ArtSearch />} />
+      <Route path="/cart" element={<CartPage />} />
+      <Route path="/artist-search" element={<ArtistSearch />} />
+
+      <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
+
+      <Route path="/artist/profile" element={<ArtistProfilePage />} />
+      <Route path="/artist/profile/:artistId" element={<ArtistProfilePage />} />
+
+
 
       {/* Default page */}
       <Route path="/" element={<Navigate to="/collections" replace />} />
 
-    </Routes>
+    </Routes >
   );
 }
 
