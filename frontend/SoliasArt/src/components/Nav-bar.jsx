@@ -35,6 +35,7 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
   const linkClass = "flex items-center gap-4 px-4 py-3 text-gray-500 hover:text-[#C58940] hover:bg-yellow-50 rounded-lg transition-colors cursor-pointer group";
 
   return (
+
     // CONTAINER
     <div className="flex h-screen w-64 flex-col border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-6 py-8 transition-colors duration-200">
       
@@ -45,6 +46,7 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
           alt="SoliasArt Logo" 
           className="h-10 w-auto object-contain" 
         />
+
       </div>
 
       {/* MIDDLE: Navigation Links */}
