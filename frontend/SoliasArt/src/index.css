@@ -1,8 +1,33 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
-<<<<<<< HEAD
+/* fade-in-up animation used by artwork cards and onboarding steps */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
 
-=======
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+.material-symbols-outlined.filled {
+  font-variation-settings: 'FILL' 1;
+}
+
+
+.material-symbols-outlined.filled {
+  font-variation-settings: 'FILL' 1;
+}
+
+
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -24,6 +49,7 @@ a {
   color: #D97706;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #ff8902;
 }
@@ -32,6 +58,12 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+}
+
+/* When the 'dark' class is active */
+.dark body {
+  color: #f3f4f6; 
+  background-color: #111827; 
 }
 
 h1 {
@@ -64,8 +96,19 @@ button:focus-visible {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #D97706;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #f3f4f6; /* Tailwind gray-100 for readable light text */
+    background-color: #111827; /* Tailwind gray-900 */
+  }
+  a:hover {
+    color: #D97706; /* Matches your light mode hover */
   }
 }
 
@@ -77,4 +120,3 @@ input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 30px white inset !important;
   -webkit-text-fill-color: #111827 !important;
 }
->>>>>>> d9e130e8560c9aefbd3c606b58940eb8838cfd2b
