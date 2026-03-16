@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { artEvents, artGalleries } from '../data/mockData';
 
+// Google My Maps
 const MAP_URL =
   'https://www.google.com/maps/d/embed?mid=1xQO6M7BnRd-s9GC_7Pih11fibV2Izcg&ehbc=2E312F&noprof=1';
 
-// Per-type dot colour and badge classes - using project's amber #FFC247
+// Per-type dot colour and badge classes -project's amber #FFC247
 const EVENT_TYPES = {
   All: { dot: '#FFC247', badge: 'bg-zinc-800 text-zinc-300 border-zinc-700' },
   Exhibition: { dot: '#FFC247', badge: 'bg-amber-500/10 text-amber-500 border-amber-500/20' },
@@ -13,7 +14,7 @@ const EVENT_TYPES = {
   'Art Walk': { dot: '#10B981', badge: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' },
 };
 
-// Decorative corners rendered over the map iframe
+// Decorative corners for map iframe
 const MAP_CORNERS = [
   ['top-4 left-4', 'border-t border-l rounded-tl'],
   ['top-4 right-4', 'border-t border-r rounded-tr'],
@@ -50,7 +51,7 @@ function EventCard({ event, selected, onSelect }) {
         boxShadow: selected ? '0 4px 20px -4px rgba(0,0,0,0.3)' : 'none',
       }}
     >
-      {/* Amber top bar visible when selected */}
+      {/* Top bar visible when selected */}
       <div
         className="h-1 w-full transition-all duration-300"
         style={{ backgroundColor: selected ? '#FFC247' : 'transparent' }}
