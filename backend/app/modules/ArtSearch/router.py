@@ -10,6 +10,7 @@ from typing import Optional
 
 router = APIRouter(prefix="/explore", tags=["ArtSearch"])
 
+# Function to check whether a user exists either in the artists table or users table
 
 async def check_user(user_id: str):
     artist_res = supabase.table("artists").select("user_id").eq("user_id", user_id).execute()
@@ -54,6 +55,7 @@ async def search_artworks(
     except Exception as e:
         print(f"Search Error: {e}")
         raise HTTPException(status_code=500, detail="Search failed.")
+# Endpoint to retrieve artworks for the explore page
 
 @router.get("/")
 async def get_art_work(current_user: str = Depends(get_current_user)):
