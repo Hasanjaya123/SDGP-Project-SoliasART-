@@ -4,9 +4,11 @@ import { BsGrid } from 'react-icons/bs';
 import { HiOutlineNewspaper } from 'react-icons/hi';
 import logoImage from '../assets/soliasartlogo.png';
 
+
 const Sidebar = ({ isDarkMode, toggleTheme }) => {
   
   // Main Navigation
+
   const mainLinks = [
     { icon: <BiSearch size={24} />, label: "Search" },
     { icon: <BiCompass size={24} />, label: "Explore" },
@@ -47,12 +49,12 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
 
       {/* MIDDLE: Navigation Links */}
       <nav className="flex flex-col gap-2">
-        
+
         {/* Loop through Main Links */}
         {mainLinks.map((item, index) => (
           <div key={index} className={linkClass}>
             {/* The Icon */}
-            <span className="group-hover:text-[#C58940]">{item.icon}</span> 
+            <span className="group-hover:text-[#C58940]">{item.icon}</span>
             {/* The Text */}
             <span className="text-lg font-medium">{item.label}</span>
           </div>
@@ -74,14 +76,14 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
       {/*  FOOTER: User Profile */}
       <div className="mt-auto border-t border-gray-200 dark:border-gray-800 pt-6">
         <div className="flex items-center gap-3">
-          
+
           {/* Avatar Image */}
-          <img 
-            src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" 
-            alt="User" 
+          <img
+            src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
+            alt="User"
             className="h-10 w-10 rounded-full object-cover"
           />
-          
+
           {/* Text Info */}
           <div>
             <h4 className="font-bold text-gray-900 dark:text-white">Hasanjaya</h4>

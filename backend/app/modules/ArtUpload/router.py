@@ -8,12 +8,13 @@ from fastapi.concurrency import run_in_threadpool
 from app.modules.ArtUpload.model import ArtWork
 from app.core.supabase import supabase
 from app.modules.ArtUpload.embeddings import generate_image_embedding
+from app.modules.auth.dependencies import get_current_artist
 
 router = APIRouter(prefix="/user/dashboard", tags=["ArtUpload"])
 
-@router.post("/upload/{artist__id}", response_model=ArtWorkResponse)
+@router.post("/upload", response_model=ArtWorkResponse)
 async def upload(
-    artist__id: str,
+    current_user: str = Depends(get_current_artist),
     form_data: ArtUploadRequest = Depends(ArtUploadRequest), 
     images: List[UploadFile] = File(...),
     db: Session = Depends(get_db)
@@ -23,7 +24,9 @@ async def upload(
     
     try:
         
-        profile_response = supabase.table('artists').select('*').eq('id', artist__id).execute()
+        user_id = str(current_user.id)
+        
+        profile_response = supabase.table('artists').select('*').eq('user_id', user_id).execute()
         
         
         if (len(profile_response.data) == 0):
@@ -71,7 +74,7 @@ async def upload(
             
             image_url=image_links,
             embedding=vector_embedding,
-            artist_id= artist__id
+            artist_id= artist_data.get('id')
         )
 
         db.add(new_artwork)

@@ -3,35 +3,29 @@ import CartItem from '../components/CartComponents/CartItem';
 import OrderSummary from '../components/CartComponents/OrderSummery'; 
 import { motion, AnimatePresence } from 'framer-motion';
 
-// mock data
-// const initialCartItems = [
-//   {
-//     id: "art-123",
-//     title: "test artwork",
-//     artist: "Kamal Perera",
-//     price: 1200,
-//     imageUrl: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&q=80&w=400&h=400"
-//   },
-//   {
-//     id: "art-456",
-//     title: "Abstract",
-//     artist: "Nimal ",
-//     price: 850,
-//     imageUrl: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?auto=format&fit=crop&q=80&w=400&h=400"
-//   }
-// ];
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const currentUserId = "6362a1a3-0844-4038-9c02-974247c5af28";
 
   useEffect(() => {
     const fetchCartItems = async () => {
+
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        setIsLoading(false);
+        return;
+      }
+
       try {
         
-        const response = await fetch(`http://localhost:8000/api/cart/${currentUserId}`);
+        const response = await fetch(`http://localhost:8000/api/cart/`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -48,10 +42,12 @@ const CartPage = () => {
     };
 
     fetchCartItems();
-  }, [currentUserId]);
+  }, []);
 
   // remove art
   const handleRemoveItem = async (cartItemId) => {
+
+    const token = localStorage.getItem('token');
     // save the latest cart version
     const previousCart = [...cartItems];
 
@@ -61,10 +57,15 @@ const CartPage = () => {
     try {
       const response = await fetch(`http://localhost:8000/api/cart/remove/${cartItemId}`, {
         method: 'DELETE',
+        headers: {
+        // Add the token to the Authorization header
+        'Authorization': `Bearer ${token}` 
+       }
       });
 
       if (!response.ok) {
-        throw new Error("Failed to delete item from database");
+        const data = await response.json();
+        throw new Error(data.detail || "Failed to delete item from database");
       }
 
       //  remove art from the cart
@@ -80,7 +81,7 @@ const CartPage = () => {
 
   // Calculate Subtotal
   const subtotal = cartItems.reduce((sum, item) => sum + item.price, 0);
-  const shipping = cartItems.length > 0 ? 50 : 0; 
+  const shipping = cartItems.length > 0 ? 1000 : 0; 
 
   // loading ui
   if (isLoading) {

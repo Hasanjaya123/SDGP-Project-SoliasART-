@@ -14,10 +14,16 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick }) => {
 
   // Initialize the navigation hook
   const navigate = useNavigate(); 
-  // current
-  const currentUserId = "6362a1a3-0844-4038-9c02-974247c5af28";
+
 
   const handleAddToCart = async () => {
+    const token = localStorage.getItem('token'); // Get your saved JWT
+
+    if (!token) {
+      alert("Please log in first!");
+      return;
+    }
+
     setIsAddingToCart(true);
     
     try {
@@ -26,17 +32,18 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          user_id: currentUserId,
           artwork_id: artwork.id 
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
         // If the response is not ok
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Failed to add to cart");
+        throw new Error(data.detail || "Failed to add to cart");
       }
 
       // If successful navigate to cart page
@@ -69,7 +76,7 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick }) => {
       
       {/* Artist Profile */}
       <Link 
-        to={`/user/artist/profile/${artist.id}`}
+        to={`/artist/profile/${artist.id}`}
         className="flex items-center gap-4 mb-2  rounded-lg dark:border-gray-800 w-max pr-6  transition-colors group cursor-pointer"
       >
         <img 
