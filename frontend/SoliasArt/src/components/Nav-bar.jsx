@@ -37,7 +37,7 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
   return (
 
     // CONTAINER
-    <div className="flex h-screen w-64 flex-col border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-6 py-8 transition-colors duration-200">
+    <div className="flex h-screen w-64 flex-col border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-black px-6 py-8 transition-colors duration-200">
       
       {/* LOGO AREA */}
       <div className="mb-10 flex items-center gap-2">

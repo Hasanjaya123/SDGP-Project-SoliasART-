@@ -89,7 +89,7 @@ function App() {
         <Route element={<Layout />}>
           {/* Artwork details page */}
           <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
-          <Route path="/search" element={<ArtSearch />} />
+          <Route path="/explore" element={<ArtSearch />} />
           <Route path="/artist/profile" element={<ArtistProfilePage />} />
           <Route path="/artist/profile/:artistId" element={<ArtistProfilePage />} />
           <Route path="/cart" element={<CartPage />} />
