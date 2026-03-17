@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import ArtworkGallery from '../components/ArtworkDetailsComponents/ArtworkGallery';
 import ArtworkDetailsCard from '../components/ArtworkDetailsComponents/ArtworkDetailsCard';
+import ArtistOtherArtworks from '../components/ArtworkDetailsComponents/OtherArtworks';
 
 const ArtworkDetailsPage = () => {
 
@@ -143,6 +144,12 @@ const ArtworkDetailsPage = () => {
           </div>
         </div>
       )}
+
+      {/* Related Artworks from the same artist */}
+      <ArtistOtherArtworks 
+    artistId={artwork.artist?.id} 
+    currentArtworkId={artwork.id} 
+      />
     </div>
   );
 };
