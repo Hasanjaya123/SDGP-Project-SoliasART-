@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     # "HS256" is the industry standard math formula for signing JWTs.
     ALGORITHM: str = "HS256"
     # Token active time
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 300
 
     model_config = SettingsConfigDict(
         env_file=".env",
