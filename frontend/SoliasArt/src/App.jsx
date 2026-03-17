@@ -77,11 +77,8 @@ function App() {
         {/* Test route for ArtDisplayCard */}
         <Route path="/test" element={<Test />} />
 
-<<<<<<< HEAD
-=======
         <Route path="/search/:userId" element={<ArtSearch />} />
-        
->>>>>>> 324186f9d57483df9483ab436544a33776eb78f4
+
         {/* Default route - redirect to signup */}
         <Route path="/" element={<Navigate to="/signup" replace />} />
 
@@ -107,7 +104,7 @@ function App() {
 
       </Routes>
 
-     
+
     </>
 
   );
