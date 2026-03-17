@@ -67,7 +67,7 @@ const LoginPage = () => {
       //save the token in local storage
       localStorage.setItem('token', data.access_token);
 
-      navigate('/feed'); // Redirect to feed page after successful login
+      navigate('/search'); // Redirect to feed page after successful login
 
     } catch (err) {
       // Catch and display any errors that occurred during login

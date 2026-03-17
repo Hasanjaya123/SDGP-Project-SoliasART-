@@ -11,6 +11,7 @@ import Layout from './components/Layout';
 import CartPage from './pages/CartPage';
 import ArtSearch from './pages/ArtSearch.jsx';
 import React, { useState, useEffect } from 'react';
+import ArtistDashboard from './pages/Dashboard.jsx';
 
 import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
@@ -75,6 +76,8 @@ function App() {
 
         {/* Test route for ArtDisplayCard */}
         <Route path="/test" element={<Test />} />
+
+        <Route path="/search/:userId" element={<ArtSearch />} />
         
         {/* Default route - redirect to signup */}
         <Route path="/" element={<Navigate to="/signup" replace />} />
@@ -84,6 +87,8 @@ function App() {
   
         {/* Artist on boarding page */}
         <Route path="/convert" element={<NotArtistGuard><ArtistOnboardingPage /></NotArtistGuard>} />
+
+        <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
 
         {/* Pages within the main layout (pages which have sidebar and footer) */}
         <Route element={<Layout />}>
@@ -99,6 +104,7 @@ function App() {
 
       </Routes>
 
+     
     </>
 
   );
