@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.modules.ArtUpload.model import ArtWork
@@ -102,3 +102,28 @@ async def toggle_artwork_like(artwork_id: str, payload: LikeRequest, db: Session
         "message": message,
         "new_likes": new_total
     }
+
+@router.get("/")
+def get_all_artworks(
+    artist_id: str = Query(None), 
+    db: Session = Depends(get_db)
+):
+    query = db.query(ArtWork)
+    if artist_id is not None:
+        query = query.filter(ArtWork.artist_id == artist_id)
+    
+    artworks = query.all()
+    
+    return [
+        {
+            "id": str(art.id),
+            "title": art.title,
+            "price": art.price,
+            "imageUrls": art.image_url,
+            "medium": art.medium,
+            "height_in": art.height_in,
+            "width_in": art.width_in,
+            "artist_id": art.artist_id
+        }
+        for art in artworks
+    ]
