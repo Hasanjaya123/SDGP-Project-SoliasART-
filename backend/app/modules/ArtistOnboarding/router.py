@@ -1,4 +1,6 @@
 from fastapi import HTTPException, APIRouter, Depends, File, UploadFile
+from fastapi.responses import RedirectResponse
+from app.modules.auth.models import User
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
@@ -7,14 +9,15 @@ from app.modules.ArtistOnboarding.schemas import ArtistUploadRequest
 from app.modules.ArtistOnboarding.model import Artist
 from app.core.image_kit import imagekit
 from app.core.supabase import supabase
+from app.modules.auth.dependencies import get_current_user
 
 
 router = APIRouter(prefix="/user/settings", tags=["ConvertToArtist"])
 
 
-@router.post("/convert/{user_id}")
+@router.post("/convert")
 async def convert_to_artist_profile(
-    user_id: str,
+    current_user: User = Depends(get_current_user),
     form_data: ArtistUploadRequest = Depends(ArtistUploadRequest),
     profile_image: UploadFile = File(...),
     identy_card: UploadFile = File(...),
@@ -23,11 +26,25 @@ async def convert_to_artist_profile(
     
     try:
         
+        user_id = str(current_user.id)
+        
         profile_response = supabase.table('users').select('*').eq('id', user_id).execute()
         
+        if profile_response.data[0].get("role") == "artist":
+            raise HTTPException(status_code=409, detail="User is already an artist")
         
         if (len(profile_response.data) == 0):
             raise HTTPException(statis_code=404, details="Artist not found")
+        
+        response = (
+            supabase.table("users")
+            .update({"role": "artist"})  
+            .eq("id", user_id)            
+            .execute()
+        )
+    
+        if not response.data:
+            raise HTTPException(status_code=404, detail="User not found")
         
         
         profile_image_content = await profile_image.read()

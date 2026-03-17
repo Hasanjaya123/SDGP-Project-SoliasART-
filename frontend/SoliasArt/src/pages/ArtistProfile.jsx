@@ -1,11 +1,9 @@
-
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+﻿import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ICONS } from '../constants';
 import { artistProfileService } from '../services/uploadApi';
 import ArtDisplayCard from '../components/Art-card';
-import Sidebar from '../components/Nav-bar';
-import Footer from '../components/Footer';
+
 
 // --- Upload Post Modal ---
 
@@ -183,8 +181,9 @@ const PortfolioTab = ({ artworks, onArtworkClick }) => (
   </div>
 );
 
-const UploadsTab = ({ posts, onCreatePost }) => (
+const UploadsTab = ({ posts, onCreatePost, isOwner }) => (
   <div>
+    {isOwner && (
     <div className="flex justify-end mb-4">
       <button
         onClick={onCreatePost}
@@ -194,6 +193,8 @@ const UploadsTab = ({ posts, onCreatePost }) => (
         New Post
       </button>
     </div>
+    )}
+
     <div className="grid grid-cols-2 md:grid-cols-3 gap-1">
     {posts.map((post) => {
       const thumb = post.imageUrl || post.image_url?.[0] || null;
@@ -292,12 +293,12 @@ export const ArtistProfilePage = ({
   currentUser = { followingIds: [] },
   onToggleFollow = () => {},
 }) => {
-  const { artistId } = useParams();
+  const { artistId: artistIdParam } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('portfolio');
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
   const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
-
+  const [artistId, setArtistId] = useState(artistIdParam || null)
   const [artist, setArtist] = useState(null);
   const [artworks, setArtworks] = useState([]);
   const [posts, setPosts] = useState([]);
@@ -309,9 +310,10 @@ export const ArtistProfilePage = ({
   // This is the main data-fetching hook â€” it calls the backend once and
   // populates all three pieces of state (artist, artworks, posts).
   useEffect(() => {
-    if (!artistId) {
-      setError('No artist ID provided.');
-      setLoading(false);
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login', { replace: true });
       return;
     }
 
@@ -319,10 +321,14 @@ export const ArtistProfilePage = ({
     setLoading(true);
     setError(null);
 
-    artistProfileService
-      .getProfile(artistId)
+    const fetchProfile = artistIdParam
+      ? artistProfileService.getProfileById(artistIdParam)
+      : artistProfileService.getProfile();
+
+    fetchProfile
       .then((data) => {
         if (cancelled) return;
+        setArtistId(data.artist.id)
         setArtist(data.artist);
         setArtworks(Array.isArray(data.artworks) ? data.artworks : []);
         setPosts(Array.isArray(data.posts) ? data.posts : []);
@@ -336,7 +342,7 @@ export const ArtistProfilePage = ({
       });
 
     return () => { cancelled = true; };
-  }, [artistId]);
+  }, [artistIdParam]);
 
   const isFollowing = currentUser?.followingIds?.includes(artistId) ?? false;
 
@@ -365,45 +371,28 @@ export const ArtistProfilePage = ({
   // Loading & Error states
   if (loading) {
     return (
-      <div className="flex min-h-screen">
-        <div className="fixed top-0 left-0 h-screen z-50">
-          <Sidebar />
-        </div>
-        <div className="ml-64 flex-1 flex items-center justify-center bg-white dark:bg-black">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FFC247]"></div>
-        </div>
+      <div className="flex min-h-screen items-center justify-center bg-white dark:bg-black">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FFC247]"></div>
       </div>
     );
   }
 
   if (error || !artist) {
     return (
-      <div className="flex min-h-screen">
-        <div className="fixed top-0 left-0 h-screen z-50">
-          <Sidebar />
-        </div>
-        <div className="ml-64 flex-1 flex flex-col items-center justify-center bg-white dark:bg-black gap-4">
-          <p className="text-slate-600 dark:text-slate-400 text-lg">{error || 'Artist not found.'}</p>
-          <button
-            onClick={() => setCurrentPage('home')}
-            className="text-[#FFC247] font-bold hover:underline"
-          >
-            Go Home
-          </button>
-        </div>
+      <div className="flex min-h-screen flex-col items-center justify-center bg-white dark:bg-black gap-4">
+        <p className="text-slate-600 dark:text-slate-400 text-lg">{error || 'Artist not found.'}</p>
+        <button
+          onClick={() => navigate('/search')}
+          className="text-[#FFC247] font-bold hover:underline"
+        >
+          Go Home
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <div className="fixed top-0 left-0 h-screen z-50">
-        <Sidebar />
-      </div>
-
-      <div className="ml-64 flex-1">
-        <div className="min-h-screen bg-white dark:bg-black font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-white dark:bg-black font-sans transition-colors duration-300">
 
       {/* Cover Image */}
       <div className="h-48 md:h-64 w-full relative bg-slate-200 dark:bg-zinc-800">
@@ -528,7 +517,7 @@ export const ArtistProfilePage = ({
             {activeTab === 'portfolio' && (
               <PortfolioTab artworks={artworks} onArtworkClick={handleArtworkClick} />
             )}
-            {activeTab === 'uploads' && <UploadsTab posts={posts} onCreatePost={openCreatePost} />}
+            {activeTab === 'uploads' && <UploadsTab posts={posts} onCreatePost={openCreatePost} isOwner={artist?.owner} />}
             {activeTab === 'about' && <AboutTab artist={artist} />}
           </div>
         </div>
@@ -545,10 +534,6 @@ export const ArtistProfilePage = ({
           onPostCreated={handlePostCreated}
         />
       )}
-        </div>
-
-        <Footer />
-      </div>
     </div>
   );
 };
