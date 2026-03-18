@@ -42,6 +42,7 @@ class CommentCreate(BaseModel):
 class CommentResponse(BaseModel):
     user_id : UUID
     content : str
+    user_name : Optional[str] = None
 
     class Config:
         from_attributes = True

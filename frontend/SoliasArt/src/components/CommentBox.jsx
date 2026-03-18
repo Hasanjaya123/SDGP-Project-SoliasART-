@@ -54,10 +54,6 @@ function CommentBox({ targetType, targetId, userId, onCommentCountChange }) {
         }
     }
 
-    function formatHandle(id) {
-        if (!id) return "user";
-        return `user_${String(id).slice(0, 6)}`;
-    }
 
     const visibleComments = showAllComments ? comments : comments.slice(0, 2);
 
@@ -79,7 +75,7 @@ function CommentBox({ targetType, targetId, userId, onCommentCountChange }) {
                         {visibleComments.map((comment, index) => (
                             <p key={`${comment.user_id}-${index}`} className="text-sm leading-5 text-stone-800">
                                 <span className="mr-2 font-semibold text-stone-900">
-                                    {formatHandle(comment.user_id)}
+                                    {comment.user_name || "Unknown User"}
                                 </span>
                                 {comment.content}
                             </p>

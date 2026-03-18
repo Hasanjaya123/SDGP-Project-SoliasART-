@@ -8,6 +8,7 @@ from uuid import UUID
 from app.core.database import get_db
 from app.modules.ArtUpload.model import ArtWork
 from app.modules.ArtistOnboarding.model import Artist
+from app.modules.auth.models import User
 from app.modules.Post.model import Post
 from app.modules.Feed.model import FeedLike, FeedComment, FeedSave, FeedInteraction
 from app.modules.Feed.schemas import FeedCard, FeedResponse, CommentCreate, CommentResponse
@@ -154,14 +155,28 @@ def add_comment(target_type: str, target_id: UUID, body: CommentCreate, db: Sess
     db.add(comment)
     db.commit()
     db.refresh(comment)
-    return comment
+
+    user_name = db.query(User.full_name).filter(User.id == comment.user_id).scalar()
+    return {
+        "user_id": comment.user_id,
+        "user_name": user_name or "Unknown User",
+        "content": comment.content,
+    }
 
 
 @router.get("/{target_type}/{target_id}/comments", response_model=list[CommentResponse])
 def get_comments(target_type: str, target_id: UUID, db: Session = Depends(get_db)):
-    return db.query(FeedComment).filter(
+    rows = db.query(FeedComment, User.full_name).outerjoin(User, User.id == FeedComment.user_id).filter(
         FeedComment.target_id == target_id, FeedComment.target_type == target_type
-    ).order_by(desc(FeedComment.created_at)).all()
+    )
+    return [
+        {
+            "user_id": comment.user_id,
+            "user_name": user_name or "Unknown User",
+            "content": comment.content,
+        }
+        for comment, user_name in rows
+    ]
 
 # Track Views
 @router.post("/{target_type}/{target_id}/view")
