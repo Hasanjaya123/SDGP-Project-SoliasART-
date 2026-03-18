@@ -7,6 +7,10 @@ import LoginPage from './pages/LoginPage.jsx';
 import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
 import './index.css';
 import Test from './pages/test.jsx';
+
+import ARViewer from './pages/ARViewer.jsx';
+import MobilePreview from './pages/MobilePreview.jsx';
+
 import Layout from './components/Layout';
 import CartPage from './pages/CartPage';
 import ArtSearch from './pages/ArtSearch.jsx';
@@ -63,6 +67,7 @@ function ArtistGuard({ children }) {
   return children;
 }
 
+
 function App() {
   return (
     <>
@@ -78,6 +83,12 @@ function App() {
         <Route path="/test" element={<Test />} />
 
         <Route path="/search/:userId" element={<ArtSearch />} />
+
+        {/* AR Viewer - Desktop AR generation and QR code */}
+        <Route path="/ar" element={<ARViewer />} />
+
+        {/* Mobile AR preview - shows 3D model and AR button when accessed via QR code */}
+        <Route path="/preview" element={<MobilePreview />} />
 
         {/* Default route - redirect to signup */}
         <Route path="/" element={<Navigate to="/signup" replace />} />
