@@ -15,29 +15,33 @@ const ArtworkDetailsPage = () => {
   const [isLiked, setIsLiked] = useState(false);
   const [isArLoading, setIsArLoading] = useState(false); 
   const [arError, setArError] = useState("");            
-  const [qrReady, setQrReady] = useState(false);      
+  const [qrReady, setQrReady] = useState(false);  
+  const [generatedMobileUrl, setGeneratedMobileUrl] = useState("");   
   
-  // CHANGE: New function to trigger backend GLB generation before showing QR
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+  
+  // Function to handle AR Modal opening and GLB preparation
   const handleOpenArModal = async () => {
     setArModalOpen(true);
     setIsArLoading(true);
     setArError("");
     setQrReady(false);
 
-    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+  const mobileLink = `http://${window.location.hostname}:5173/preview?glb=${BACKEND_URL}/ar/generate-ar/${id}`;
+    setGeneratedMobileUrl(mobileLink);
 
     try {
-      // 1. Trigger backend to process/cache the GLB file
+      // Trigger backend to process/cache the GLB file
       const res = await fetch(`${BACKEND_URL}/ar/generate-ar/${id}`, {
         headers: { "ngrok-skip-browser-warning": "true" }
       });
 
       if (!res.ok) throw new Error("Could not prepare 3D model.");
 
-      // 2. Wait for the blob to ensure the file is ready on the server
+    
       await res.blob(); 
 
-      // 3. Set QR as ready
+      // Set QR 
       setQrReady(true);
     } catch (err) {
       setArError(err.message);
@@ -53,7 +57,7 @@ const ArtworkDetailsPage = () => {
       try {
         setLoading(true);
         // fetch artwork details from backend API using the 'id' from URL params
-        const response = await fetch(`http://localhost:8000/api/artworks/${id}`);
+        const response = await fetch(`${BACKEND_URL}/api/artworks/${id}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch artwork details');
@@ -69,17 +73,17 @@ const ArtworkDetailsPage = () => {
     };
 
     fetchArtwork();
-  }, [id]);
+  }, [id, BACKEND_URL]);
 
   const handleToggleLike = async () => {
-    // Change it instantly on screen
+    
     const wasLiked = isLiked;
     setLiveLikesCount(prev => wasLiked ? prev - 1 : prev + 1);
     setIsLiked(!wasLiked);
 
     try {
       // The API Call
-      const response = await fetch(`http://localhost:8000/api/artworks/${id}/like`, {
+      const response = await fetch(`${BACKEND_URL}/api/artworks/${id}/like`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: "temp-user-id" }) // Matches your LikeRequest schema
@@ -98,7 +102,7 @@ const ArtworkDetailsPage = () => {
     }
   };
 
-  // Page states: loading, error, or display artwork details
+  // Page states - loading, error, or display artwork details
   if (loading) {
     return (
       <div className="min-h-screen dark:bg-gray-900 flex items-center justify-center pb-24 pt-12 md:pt-16">
@@ -164,7 +168,7 @@ const ArtworkDetailsPage = () => {
             <div className="text-center mt-4">
               <h3 className="text-xl font-black uppercase tracking-tight mb-2 text-gray-900 dark:text-white">View in Your Space</h3>
               
-              {/* CHANGE: Added Conditional Rendering for Loading, Error, and QR Ready states */}
+              {/*Conditional Rendering for Loading, Error, and QR Ready states */}
               {isArLoading ? (
                 <div className="py-12 flex flex-col items-center">
                   <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-amber-500 mb-4"></div>
@@ -175,12 +179,11 @@ const ArtworkDetailsPage = () => {
               ) : qrReady ? (
                 <>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Scan the QR code to place this artwork on your wall.</p>
-                  <div className="flex justify-center p-4 bg-white rounded-lg border-2 border-gray-100 inline-block">
-                      {/* CHANGE: Use the URL format from teammate's code logic */}
+                  <div className="flex justify-center p-4 bg-white rounded-lg border-2 border-gray-100 inline-block mb-5">
+                    
+                      {/* Display QR */}
                       <img 
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
-                              `http://192.168.1.8:5173/preview?glb=http://192.168.1.8:8000/ar/generate-ar/${id}`
-                            )}`}
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(generatedMobileUrl)}`}
                         alt="AR QR Code" 
                         className="w-56 h-56" 
                       />
@@ -188,9 +191,6 @@ const ArtworkDetailsPage = () => {
                 </>
               ) : null}
               
-              <p className="mt-6 text-xs font-bold text-amber-600 bg-amber-50 dark:bg-amber-900/20 p-3 rounded-md">
-                  Ensure your phone is connected to the same Wi-Fi network as this computer to view the 3D model.
-              </p>
             </div>
           </div>
         </div>
