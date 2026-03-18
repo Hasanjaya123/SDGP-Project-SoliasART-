@@ -6,7 +6,7 @@ import { HiOutlineNewspaper } from 'react-icons/hi';
 import { FaPaintBrush } from 'react-icons/fa'; // For the logo icon
 
 const Sidebar = () => {
-  
+
   // --- DATA: Group 1 (Main Navigation) ---
   const mainLinks = [
     { icon: <BiSearch size={24} />, label: "Search" },
@@ -31,12 +31,12 @@ const Sidebar = () => {
   return (
     // 1. CONTAINER: Fixed height, fixed width, border on right
     <div className="flex h-screen w-64 flex-col border-r border-gray-200 bg-white px-6 py-8">
-      
+
       {/* 2. LOGO AREA */}
       <div className="mb-10 flex items-center gap-2">
         {/* I'm using an icon here, but you can replace this <FaPaintBrush> with your <img src="..." /> */}
         <div className="text-3xl text-[#C58940]">
-            <FaPaintBrush /> 
+          <FaPaintBrush />
         </div>
         <div className="text-2xl font-bold text-[#0F2C59]">
           Solias<span className="text-[#0F2C59]">ART</span>
@@ -45,12 +45,12 @@ const Sidebar = () => {
 
       {/* 3. MIDDLE: Navigation Links */}
       <nav className="flex flex-col gap-2">
-        
+
         {/* Loop through Main Links */}
         {mainLinks.map((item, index) => (
           <div key={index} className={linkClass}>
             {/* The Icon */}
-            <span className="group-hover:text-[#C58940]">{item.icon}</span> 
+            <span className="group-hover:text-[#C58940]">{item.icon}</span>
             {/* The Text */}
             <span className="text-lg font-medium">{item.label}</span>
           </div>
@@ -73,14 +73,14 @@ const Sidebar = () => {
       {/* 'mt-auto' is the MAGIC CLASS. It pushes this box to the very bottom. */}
       <div className="mt-auto border-t border-gray-200 pt-6">
         <div className="flex items-center gap-3">
-          
+
           {/* Avatar Image */}
-          <img 
-            src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" 
-            alt="User" 
+          <img
+            src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
+            alt="User"
             className="h-10 w-10 rounded-full object-cover"
           />
-          
+
           {/* Text Info */}
           <div>
             <h4 className="font-bold text-gray-900">Hasanjaya</h4>
