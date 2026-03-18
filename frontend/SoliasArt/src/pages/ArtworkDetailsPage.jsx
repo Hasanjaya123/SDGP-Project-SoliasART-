@@ -15,12 +15,12 @@ const ArtworkDetailsPage = () => {
   const [isLiked, setIsLiked] = useState(false);
   const [isArLoading, setIsArLoading] = useState(false); 
   const [arError, setArError] = useState("");            
+
   const [qrReady, setQrReady] = useState(false);  
   const [generatedMobileUrl, setGeneratedMobileUrl] = useState("");   
   
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
   
-  // Function to handle AR Modal opening and GLB preparation
   const handleOpenArModal = async () => {
     setArModalOpen(true);
     setIsArLoading(true);
@@ -32,6 +32,7 @@ const ArtworkDetailsPage = () => {
 
     try {
       // Trigger backend to process/cache the GLB file
+
       const res = await fetch(`${BACKEND_URL}/ar/generate-ar/${id}`, {
         headers: { "ngrok-skip-browser-warning": "true" }
       });
@@ -41,7 +42,7 @@ const ArtworkDetailsPage = () => {
     
       await res.blob(); 
 
-      // Set QR 
+
       setQrReady(true);
     } catch (err) {
       setArError(err.message);
@@ -168,7 +169,9 @@ const ArtworkDetailsPage = () => {
             <div className="text-center mt-4">
               <h3 className="text-xl font-black uppercase tracking-tight mb-2 text-gray-900 dark:text-white">View in Your Space</h3>
               
+
               {/*Conditional Rendering for Loading, Error, and QR Ready states */}
+
               {isArLoading ? (
                 <div className="py-12 flex flex-col items-center">
                   <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-amber-500 mb-4"></div>
@@ -179,11 +182,13 @@ const ArtworkDetailsPage = () => {
               ) : qrReady ? (
                 <>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Scan the QR code to place this artwork on your wall.</p>
+
                   <div className="flex justify-center p-4 bg-white rounded-lg border-2 border-gray-100 inline-block mb-5">
                     
                       {/* Display QR */}
                       <img 
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(generatedMobileUrl)}`}
+
                         alt="AR QR Code" 
                         className="w-56 h-56" 
                       />
