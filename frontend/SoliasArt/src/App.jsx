@@ -68,7 +68,13 @@ function ArtistGuard({ children }) {
 }
 
 
+import SaveWork from './pages/SaveWork.jsx';
+
+
+
+
 function App() {
+  
   return (
     <>
       <Routes>
@@ -81,6 +87,8 @@ function App() {
 
         {/* Test route for ArtDisplayCard */}
         <Route path="/test" element={<Test />} />
+
+        
 
         <Route path="/search/:userId" element={<ArtSearch />} />
         
@@ -110,6 +118,7 @@ function App() {
           <Route path="/artist/profile/:artistId" element={<ArtistProfilePage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/map" element={<ArtMapPage />} />
+          <Route path="/buyer/profile" element={<SaveWork />} />
 
         </Route>
 
@@ -119,7 +128,6 @@ function App() {
     </>
 
   );
-
 }
 
 export default App;
