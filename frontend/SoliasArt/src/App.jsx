@@ -102,17 +102,6 @@ function App() {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/login" element={<LoginPage />} />
 
-<<<<<<< HEAD
-  {/* Artist upload */ }
-  <Route
-    path="/dashboard/upload"
-    element={
-      <ArtistGuard>
-        <UploadArtPage />
-      </ArtistGuard>
-    }
-  />
-=======
         {/* Test route for ArtDisplayCard */}
         <Route path="/test" element={<Test />} />
 
@@ -126,7 +115,6 @@ function App() {
 
         {/* Default route - redirect to signup */}
         <Route path="/" element={<Navigate to="/signup" replace />} />
->>>>>>> b90de241eed2b9fb98da667c73ccbafc2e4f0adb
 
   {/* Artist onboarding */ }
   <Route
@@ -138,10 +126,6 @@ function App() {
     }
   />
 
-<<<<<<< HEAD
-  {/* Main layout pages */ }
-  <Route element={<Layout />}>
-=======
         <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
 
     {/* Pages within the main layout (pages which have sidebar and footer) */}
@@ -155,7 +139,6 @@ function App() {
       <Route path="/map" element={<ArtMapPage />} />
 
     </Route>
->>>>>>> b90de241eed2b9fb98da667c73ccbafc2e4f0adb
 
     <Route
       path="/collections"
@@ -167,23 +150,8 @@ function App() {
       }
     />
 
-<<<<<<< HEAD
-        <Route
-          path="/collection/:id"
-          element={
-            <CollectionDetailPage
-              artworks={artworks}
-              setCurrentPage={handleSetPage}
-              onToggleSave={handleToggleSave}
-              savedItemIds={savedItemIds}
-              onAddToCartBatch={handleAddToCartBatch}
-            />
-          }
-        />
-=======
      
     </>
->>>>>>> b90de241eed2b9fb98da667c73ccbafc2e4f0adb
 
         <Route path="/feed" element={<ArtSearch />} />
         <Route path="/search" element={<ArtSearch />} />
