@@ -3,6 +3,11 @@
 backend/.venv/
 backend/venv/
 venv/
+
+# Ignore backend AR cache and temp files
+backend/storage/
+backend/temp_*.jpg
+
 __pycache__/
 *.py[cod]      <-- (Optional) Blocks compiled python variants
 *.db           <-- (NEW) Blocks SQLite database files like 'test.db'
@@ -22,3 +27,5 @@ dist/
 
 backend/.env
 backend/storage/
+
+frontend/SoliasArt/.env

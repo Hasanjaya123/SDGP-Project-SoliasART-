@@ -133,10 +133,10 @@ async def get_single_artwork(artwork_id: str):
 @router.post("/save/{artwork_id}")
 async def save_artwork(artwork_id: str, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
 
-    user_id = current_user.id
+    user_id_str = str(current_user.id)
     # Check if already saved to prevent duplicates
     existing_save = db.query(UserSave).filter(
-        UserSave.user_id == user_id, 
+        UserSave.user_id == user_id_str, 
         UserSave.artwork_id == artwork_id
     ).first()
 
@@ -145,7 +145,7 @@ async def save_artwork(artwork_id: str, db: Session = Depends(get_db), current_u
         db.commit()
         return {"status": "unsaved", "message": "Removed from collection"}
 
-    new_save = UserSave(user_id=str(current_user.id), artwork_id=artwork_id)
+    new_save = UserSave(user_id=user_id_str, artwork_id=artwork_id)
     db.add(new_save)
     db.commit()
     return {"status": "saved", "message": "Added to collection"}
