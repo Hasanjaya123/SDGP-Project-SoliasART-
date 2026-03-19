@@ -126,6 +126,16 @@ export const artworkService = {
     }
   },
 
+  getArtworksByArtist: async (artistId) => {
+    try {
+      const response = await api.get(`/api/artworks?artist_id=${artistId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to load artist artworks:", error.response?.data?.detail || error.message);
+      throw error;
+    }
+  },
+
   uploadArtist: async (formDataState) => {
     const formData = new FormData();
 
@@ -176,5 +186,27 @@ export const artworkService = {
       console.error("Upload failed:", error.response?.data?.detail || error.message);
       throw error;
     }
+  }
+};
+
+export const collectionService = {
+  createCollection: async (collectionData) => {
+    const response = await api.post("/api/collections/", collectionData);
+    return response.data;
+  },
+
+  getCollectionsByArtist: async (artistId) => {
+    const response = await api.get(`/api/collections/artist/${artistId}`);
+    return response.data;
+  },
+
+  getCollectionById: async (collectionId) => {
+    const response = await api.get(`/api/collections/${collectionId}`);
+    return response.data;
+  },
+
+  deleteCollection: async (collectionId) => {
+    const response = await api.delete(`/api/collections/${collectionId}`);
+    return response.data;
   }
 };

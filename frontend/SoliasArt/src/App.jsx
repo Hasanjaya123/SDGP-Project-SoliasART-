@@ -2,35 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 import Layout from './components/Layout';
-
 import CollectionsPage from './pages/CollectionsPage';
 import CollectionDetailPage from './pages/CollectionDetailPage';
 import UploadArtPage from './pages/ArtUpload';
 import SignupPage from './pages/SignupPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
-import './index.css';
 import Test from './pages/test.jsx';
-
 import ARViewer from './pages/ARViewer.jsx';
 import MobilePreview from './pages/MobilePreview.jsx';
-
-import Layout from './components/Layout';
 import CartPage from './pages/CartPage';
 import ArtSearch from './pages/ArtSearch.jsx';
-import React, { useState, useEffect } from 'react';
 import ArtistDashboard from './pages/Dashboard.jsx';
-
 import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx";
-
 import { artworks } from './data/mockData';
 import { authService } from './services/uploadApi';
 import ArtMapPage from './pages/ArtMapPage.jsx';
+import BuildCollections from './pages/BuildCollections.jsx';
 
 import './App.css'
-import './index.css'
-
+import './index.css';
 
 function NotArtistGuard({ children }) {
   const [verified, setVerified] = useState(null);
@@ -53,7 +45,6 @@ function NotArtistGuard({ children }) {
   return children;
 }
 
-
 function ArtistGuard({ children }) {
   const [verified, setVerified] = useState(null);
 
@@ -75,9 +66,7 @@ function ArtistGuard({ children }) {
   return children;
 }
 
-
 function App() {
-
   const [selectedCollectionId, setSelectedCollectionId] = useState(null);
   const [savedItemIds, setSavedItemIds] = useState([]);
 
@@ -97,77 +86,51 @@ function App() {
 
   return (
     <Routes>
-
       {/* Public routes */}
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/test" element={<Test />} />
+      <Route path="/ar" element={<ARViewer />} />
+      <Route path="/preview" element={<MobilePreview />} />
+      
+      {/* Artist onboarding */}
+      <Route
+        path="/convert"
+        element={
+          <NotArtistGuard>
+            <ArtistOnboardingPage />
+          </NotArtistGuard>
+        }
+      />
 
-        {/* Test route for ArtDisplayCard */}
-        <Route path="/test" element={<Test />} />
+      <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
 
-        <Route path="/search/:userId" element={<ArtSearch />} />
-
-        {/* AR Viewer - Desktop AR generation and QR code */}
-        <Route path="/ar" element={<ARViewer />} />
-
-        {/* Mobile AR preview - shows 3D model and AR button when accessed via QR code */}
-        <Route path="/preview" element={<MobilePreview />} />
-
-        {/* Default route - redirect to signup */}
-        <Route path="/" element={<Navigate to="/signup" replace />} />
-
-  {/* Artist onboarding */ }
-  <Route
-    path="/convert"
-    element={
-      <NotArtistGuard>
-        <ArtistOnboardingPage />
-      </NotArtistGuard>
-    }
-  />
-
-        <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
-
-    {/* Pages within the main layout (pages which have sidebar and footer) */}
-    <Route element={<Layout />}>
-      {/* Artwork details page */}
-      <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
-      <Route path="/search" element={<ArtSearch />} />
-      <Route path="/artist/profile" element={<ArtistProfilePage />} />
-      <Route path="/artist/profile/:artistId" element={<ArtistProfilePage />} />
-      <Route path="/cart" element={<CartPage />} />
-      <Route path="/map" element={<ArtMapPage />} />
-
-    </Route>
-
-    <Route
-      path="/collections"
-      element={
-        <CollectionsPage
-          setCurrentPage={handleSetPage}
-          artworks={artworks}
-        />
-      }
-    />
-
-     
-    </>
-
-        <Route path="/feed" element={<ArtSearch />} />
-        <Route path="/search" element={<ArtSearch />} />
-        <Route path="/cart" element={<CartPage />} />
-
+      {/* Pages within the main layout */}
+      <Route element={<Layout />}>
         <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
-
+        <Route path="/search" element={<ArtSearch />} />
+        <Route path="/search/:userId" element={<ArtSearch />} />
         <Route path="/artist/profile" element={<ArtistProfilePage />} />
         <Route path="/artist/profile/:artistId" element={<ArtistProfilePage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/map" element={<ArtMapPage />} />
+        <Route path="/build-collections" element={<ArtistGuard><BuildCollections /></ArtistGuard>} />
+        <Route path="/feed" element={<ArtSearch />} />
+      </Route>
 
-      </Route >
+      <Route
+        path="/collections"
+        element={
+          <CollectionsPage
+            setCurrentPage={handleSetPage}
+            artworks={artworks}
+          />
+        }
+      />
 
-    {/* Default page */ }
-    < Route path = "/" element = {< Navigate to = "/collections" replace />} />
-
-    </Routes >
+      {/* Default route */}
+      <Route path="/" element={<Navigate to="/collections" replace />} />
+    </Routes>
   );
 }
 
