@@ -7,10 +7,15 @@ import LoginPage from './pages/LoginPage.jsx';
 import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
 import './index.css';
 import Test from './pages/test.jsx';
+
+import ARViewer from './pages/ARViewer.jsx';
+import MobilePreview from './pages/MobilePreview.jsx';
+
 import Layout from './components/Layout';
 import CartPage from './pages/CartPage';
 import ArtSearch from './pages/ArtSearch.jsx';
 import React, { useState, useEffect } from 'react';
+import ArtistDashboard from './pages/Dashboard.jsx';
 
 import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
@@ -62,7 +67,14 @@ function ArtistGuard({ children }) {
   return children;
 }
 
+
+import SaveWork from './pages/SaveWork.jsx';
+
+
+
+
 function App() {
+  
   return (
     <>
       <Routes>
@@ -75,7 +87,17 @@ function App() {
 
         {/* Test route for ArtDisplayCard */}
         <Route path="/test" element={<Test />} />
+
         
+
+        <Route path="/search/:userId" element={<ArtSearch />} />
+        
+        {/* AR Viewer - Desktop AR generation and QR code */}
+        <Route path="/ar" element={<ARViewer />} />
+
+        {/* Mobile AR preview - shows 3D model and AR button when accessed via QR code */}
+        <Route path="/preview" element={<MobilePreview />} />
+
         {/* Default route - redirect to signup */}
         <Route path="/" element={<Navigate to="/signup" replace />} />
 
@@ -84,6 +106,8 @@ function App() {
   
         {/* Artist on boarding page */}
         <Route path="/convert" element={<NotArtistGuard><ArtistOnboardingPage /></NotArtistGuard>} />
+
+        <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
 
         {/* Pages within the main layout (pages which have sidebar and footer) */}
         <Route element={<Layout />}>
@@ -94,15 +118,16 @@ function App() {
           <Route path="/artist/profile/:artistId" element={<ArtistProfilePage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/map" element={<ArtMapPage />} />
+          <Route path="/buyer/profile" element={<SaveWork />} />
 
         </Route>
 
       </Routes>
 
+     
     </>
 
   );
-
 }
 
 export default App;
