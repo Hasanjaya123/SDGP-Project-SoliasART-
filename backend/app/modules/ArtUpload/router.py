@@ -1,22 +1,20 @@
 from fastapi import APIRouter, HTTPException, File, UploadFile, Form, Depends
 from app.modules.ArtUpload.schemas import ArtWorkResponse, ArtUploadRequest
-from app.modules.ArtUpload.image_kit import imagekit, IMAGEKIT_URL_ENDPOINT
+from app.core.image_kit import imagekit
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
 from fastapi.concurrency import run_in_threadpool
 from app.modules.ArtUpload.model import ArtWork
-
-#-----------Test-------------------------
-import numpy as np
-np.random.seed(42)
-consistent_embedding = np.random.uniform(-1, 1, 512).tolist()
-#-----------Test-------------------------
+from app.core.supabase import supabase
+from app.modules.ArtUpload.embeddings import generate_image_embedding
+from app.modules.auth.dependencies import get_current_artist
 
 router = APIRouter(prefix="/user/dashboard", tags=["ArtUpload"])
 
 @router.post("/upload", response_model=ArtWorkResponse)
 async def upload(
+    current_user: str = Depends(get_current_artist),
     form_data: ArtUploadRequest = Depends(ArtUploadRequest), 
     images: List[UploadFile] = File(...),
     db: Session = Depends(get_db)
@@ -25,6 +23,23 @@ async def upload(
     image_links = []
     
     try:
+        
+        user_id = str(current_user.id)
+        
+        profile_response = supabase.table('artists').select('*').eq('user_id', user_id).execute()
+        
+        
+        if (len(profile_response.data) == 0):
+            raise HTTPException(statis_code=404, details="Artist not found")
+        
+        artist_data = profile_response.data[0]
+        
+        #Taking the first image to convert into Embeddings
+        first_image_bytes = await images[0].read()
+        await images[0].seek(0)
+        
+        vector_embedding = await run_in_threadpool(generate_image_embedding, first_image_bytes)
+        
         
         for image in images:
             image_content = await image.read()
@@ -58,8 +73,8 @@ async def upload(
             is_framed=form_data.framing,    
             
             image_url=image_links,
-            embedding=consistent_embedding,
-            #artist_id="00000000-0000-0000-0000-000000000000"
+            embedding=vector_embedding,
+            artist_id= artist_data.get('id')
         )
 
         db.add(new_artwork)
@@ -67,8 +82,6 @@ async def upload(
         db.refresh(new_artwork)
 
         return new_artwork
-        
-
         
     except Exception as e:
         db.rollback()

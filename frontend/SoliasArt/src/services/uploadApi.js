@@ -1,21 +1,70 @@
 import axios from 'axios';
 
-// Configure your backend URL
 const API_BASE_URL = 'http://localhost:8000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-export const artworkService = {
-  /**
-   * @param {Object} formDataState - The state object from UploadArtPage (formData)
-   */
-  uploadArtwork: async (formDataState) => {
-    
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+export const authService = {
+  verifyRole: async () => {
+    const response = await api.get("/auth/verify-role");
+    return response.data;
+  },
+};
+
+export const artistProfileService = {
+  getProfile: async () => {
+    const response = await api.get("/artists/profile");
+    return response.data;
+  },
+
+  getProfileById: async (artistId) => {
+    const response = await api.get(`/artists/profile/${artistId}`);
+    return response.data;
+  },
+
+  getdashboardData: async () => {
+    // Calling the dashboard without an ID because the backend uses the token
+    const response = await api.get(`/dashboard`);
+    return response.data;
+  },
+
+  uploadPost: async (artistId, postData) => {
     const formData = new FormData();
 
-    // We iterate over keys to handle the simple strings
+    if (postData.title?.trim()) formData.append('title', postData.title.trim());
+    if (postData.description?.trim()) formData.append('description', postData.description.trim());
+    if (postData.imageFile) formData.append('images', postData.imageFile);
+
+    const response = await api.post(`/artists/posts/${artistId}`, formData);
+    return response.data;
+  },
+};
+
+export const artworkService = {
+  uploadArtwork: async (formDataState) => {
+    const formData = new FormData();
+
     const textFields = [
       'title', 'description', 'year', 'medium', 'category',
       'height', 'width', 'depth', 'framing', 'price', 
@@ -23,32 +72,107 @@ export const artworkService = {
     ];
 
     textFields.forEach(field => {
-      // Ensure we don't send null/undefined, send empty string instead if missing
       formData.append(field, formDataState[field] || '');
     });
 
-    // 2. Append Images
-    // Note: React state has [{ file, preview }, ...], we need just the .file property
     if (formDataState.images && formDataState.images.length > 0) {
-
       formDataState.images.forEach((imgObj) => {
-        
         formData.append('images', imgObj.file);
       });
     }
 
     try {
-      const response = await api.post('/user/dashboard/upload', formData, {
+      const response = await api.post(`/user/dashboard/upload`, formData, {
         headers: {
-          // axios automatically sets boundary for multipart/form-data 
-          // when data is an instance of FormData
           'Content-Type': 'multipart/form-data',
         },
       });
       return response.data;
-
     } catch (error) {
+      console.error("Upload failed:", error.response?.data?.detail || error.message);
+      throw error;
+    }
+  },
 
+  getArtWorks: async () => {
+    try {
+      const response = await api.get("/explore")
+      return response.data
+    } catch (error) {
+      console.log("failed to load artworks", error.response?.data?.detail || error.message)
+      throw error
+    }
+  },
+  
+  SearchArtWork: async (textInput, imageFile) => {
+    const formData = new FormData();
+  
+    if (textInput) {
+      formData.append("query_text", textInput);
+    } else if (imageFile) {
+      formData.append("query_image", imageFile);
+    }
+
+    try {
+      const response = await api.post(`/explore/search`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data.results
+    } catch (error) {
+      console.log("failed to load artworks", error.response?.data?.detail || error.message)
+      throw error
+    }
+  },
+
+  uploadArtist: async (formDataState) => {
+    const formData = new FormData();
+
+    const fieldMapping = {
+      displayName: 'display_name',
+      bio: 'artist_bio',
+      ig: 'other_social_media_username',
+      website: 'other_social_nedia_link',
+      primaryMedium: 'primary_medium',
+      yearsExperience: 'years_experience',
+      legalName: 'legal_name',
+      bankName: 'bank_name',
+      branchName: 'branch_name',
+      accountNumber: 'account_number',
+      dispatchAddress: 'dispatch_address',
+      phone: 'phone',
+    };
+
+    Object.entries(fieldMapping).forEach(([frontendKey, backendKey]) => {
+      formData.append(backendKey, formDataState[frontendKey] || '');
+    });
+
+    formData.append('agreed_to_terms', formDataState.agreedToTerms ?? false);
+    formData.append('verified_artist', false);
+
+    if (formDataState.artisticStyles && formDataState.artisticStyles.length > 0) {
+      formDataState.artisticStyles.forEach(style => {
+        formData.append('artistic_styles', style);
+      });
+    }
+
+    if (formDataState.profileImageFile) {
+      formData.append('profile_image', formDataState.profileImageFile);
+    }
+
+    if (formDataState.identityDocument) {
+      formData.append('identy_card', formDataState.identityDocument);
+    }
+
+    try {
+      const response = await api.post(`/user/settings/convert`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
       console.error("Upload failed:", error.response?.data?.detail || error.message);
       throw error;
     }
