@@ -5,12 +5,14 @@ from app.modules.ArtUpload.model import ArtWork
 from app.core.database import get_db
 from app.modules.Purchase.schemas import CartItemAdd
 from app.modules.Purchase.models import CartItem
+from app.modules.auth.dependencies import get_current_user
+from app.modules.auth.models import User
 
-# Setup router
+
 router = APIRouter(prefix="/cart", tags=["Cart"])
 
 @router.post("/add")
-def add_to_cart(cart_request: CartItemAdd, db: Session = Depends(get_db)):
+def add_to_cart(cart_request: CartItemAdd, db: Session = Depends(get_db),current_user: User = Depends(get_current_user)):
     # Check if the artwork exists and is available
     artwork = db.query(ArtWork).filter(ArtWork.id == cart_request.artwork_id).first()
     
@@ -22,7 +24,7 @@ def add_to_cart(cart_request: CartItemAdd, db: Session = Depends(get_db)):
 
     # Create the new cart item
     new_cart_item =CartItem(
-        user_id=cart_request.user_id,
+        user_id=current_user.id,
         artwork_id=cart_request.artwork_id
     )
     
@@ -37,10 +39,10 @@ def add_to_cart(cart_request: CartItemAdd, db: Session = Depends(get_db)):
         db.rollback() 
         raise HTTPException(status_code=400, detail="This item is already in your cart.")
 
-@router.get("/{user_id}")
-def get_user_cart(user_id: str, db: Session = Depends(get_db)):
+@router.get("/")
+def get_user_cart(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     # Fetch all cart items for this user
-    cart_items = db.query(CartItem).filter(CartItem.user_id == user_id).all()
+    cart_items = db.query(CartItem).filter(CartItem.user_id == current_user.id).all()
     
     response_data = []
     for item in cart_items:
@@ -60,9 +62,9 @@ def get_user_cart(user_id: str, db: Session = Depends(get_db)):
     return response_data
 
 @router.delete("/remove/{cart_item_id}")
-def remove_from_cart(cart_item_id: str, db: Session = Depends(get_db)):
+def remove_from_cart(cart_item_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     # Find the specific cart item
-    cart_item = db.query(CartItem).filter(CartItem.id == cart_item_id).first()
+    cart_item = db.query(CartItem).filter(CartItem.id == cart_item_id, CartItem.user_id == current_user.id).first()
 
     if not cart_item:
         raise HTTPException(status_code=404, detail="Item not found in cart.")

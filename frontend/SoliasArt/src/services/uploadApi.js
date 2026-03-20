@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-
 const API_BASE_URL = 'http://localhost:8000';
 
 const api = axios.create({
@@ -44,31 +43,28 @@ export const artistProfileService = {
     return response.data;
   },
 
+  getdashboardData: async () => {
+    // Calling the dashboard without an ID because the backend uses the token
+    const response = await api.get(`/dashboard`);
+    return response.data;
+  },
+
   uploadPost: async (artistId, postData) => {
     const formData = new FormData();
 
-    // Optional text fields
-    if (postData.title?.trim())       formData.append('title', postData.title.trim());
+    if (postData.title?.trim()) formData.append('title', postData.title.trim());
     if (postData.description?.trim()) formData.append('description', postData.description.trim());
-
-    // Optional image – the backend accepts a list named 'images'
     if (postData.imageFile) formData.append('images', postData.imageFile);
 
     const response = await api.post(`/artists/posts/${artistId}`, formData);
-
     return response.data;
   },
 };
 
 export const artworkService = {
-  /**
-   * @param {Object} formDataState - The state object from UploadArtPage (formData)
-   */
   uploadArtwork: async (formDataState) => {
-    
     const formData = new FormData();
 
-    // We iterate over keys to handle the simple strings
     const textFields = [
       'title', 'description', 'year', 'medium', 'category',
       'height', 'width', 'depth', 'framing', 'price', 
@@ -76,16 +72,11 @@ export const artworkService = {
     ];
 
     textFields.forEach(field => {
-      // Ensure we don't send null/undefined, send empty string instead if missing
       formData.append(field, formDataState[field] || '');
     });
 
-    // 2. Append Images
-    // Note: React state has [{ file, preview }, ...], we need just the .file property
     if (formDataState.images && formDataState.images.length > 0) {
-
       formDataState.images.forEach((imgObj) => {
-        
         formData.append('images', imgObj.file);
       });
     }
@@ -93,31 +84,23 @@ export const artworkService = {
     try {
       const response = await api.post(`/user/dashboard/upload`, formData, {
         headers: {
-          // axios automatically sets boundary for multipart/form-data 
-          // when data is an instance of FormData
           'Content-Type': 'multipart/form-data',
         },
       });
       return response.data;
-
     } catch (error) {
-
       console.error("Upload failed:", error.response?.data?.detail || error.message);
       throw error;
     }
   },
 
   getArtWorks: async () => {
-    try{
-
+    try {
       const response = await api.get("/explore")
-
       return response.data
-
     } catch (error) {
       console.log("failed to load artworks", error.response?.data?.detail || error.message)
       throw error
-
     }
   },
   
@@ -130,29 +113,22 @@ export const artworkService = {
       formData.append("query_image", imageFile);
     }
 
-    try{
-
+    try {
       const response = await api.post(`/explore/search`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-
       return response.data.results
-
     } catch (error) {
       console.log("failed to load artworks", error.response?.data?.detail || error.message)
       throw error
-
     }
-
   },
 
   uploadArtist: async (formDataState) => {
-
     const formData = new FormData();
 
-    // Map frontend field names to backend field names
     const fieldMapping = {
       displayName: 'display_name',
       bio: 'artist_bio',
@@ -168,28 +144,23 @@ export const artworkService = {
       phone: 'phone',
     };
 
-    // Append simple text fields with backend-compatible names
     Object.entries(fieldMapping).forEach(([frontendKey, backendKey]) => {
       formData.append(backendKey, formDataState[frontendKey] || '');
     });
 
-    // Append boolean field
     formData.append('agreed_to_terms', formDataState.agreedToTerms ?? false);
     formData.append('verified_artist', false);
 
-    // Append artistic_styles as individual items so backend receives a list
     if (formDataState.artisticStyles && formDataState.artisticStyles.length > 0) {
       formDataState.artisticStyles.forEach(style => {
         formData.append('artistic_styles', style);
       });
     }
 
-    // Append profile image (single File object)
     if (formDataState.profileImageFile) {
       formData.append('profile_image', formDataState.profileImageFile);
     }
 
-    // Append identity document (single File object)
     if (formDataState.identityDocument) {
       formData.append('identy_card', formDataState.identityDocument);
     }
@@ -201,11 +172,35 @@ export const artworkService = {
         },
       });
       return response.data;
-
     } catch (error) {
       console.error("Upload failed:", error.response?.data?.detail || error.message);
       throw error;
     }
-
   }
+};
+
+export const paymentService = {
+  initiatePayment: async (artworkIds) => {
+    try {
+      const response = await api.post('/payhere/initiate', {
+        artwork_ids: artworkIds,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Payment initiation failed:", error.response?.data?.detail || error.message);
+      throw error;
+    }
+  },
+
+  confirmPayment: async (orderId) => {
+    try {
+      const response = await api.post('/payhere/confirm', {
+        order_id: orderId,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Payment confirmation failed:", error.response?.data?.detail || error.message);
+      throw error;
+    }
+  },
 };
