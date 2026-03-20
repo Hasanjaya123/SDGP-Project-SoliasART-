@@ -1,169 +1,156 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 
-import Layout from './components/Layout';
+import Sidebar from "./components/Sidebar";
 
-import CollectionsPage from './pages/CollectionsPage';
-import CollectionDetailPage from './pages/CollectionDetailPage';
-import UploadArtPage from './pages/ArtUpload';
-import SignupPage from './pages/SignupPage.jsx';
-import LoginPage from './pages/LoginPage.jsx';
-import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
-import CartPage from './pages/CartPage';
-import ArtSearch from './pages/ArtSearch.jsx';
-import { ArtistSearch } from './components/ArtistSearch.jsx';
-import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
-import { ArtistProfilePage } from "./pages/ArtistProfile.jsx";
+import CollectionsPage from "./pages/CollectionsPage";
+import CollectionDetailPage from "./pages/CollectionDetailPage";
+import { ArtistSearch } from "./components/ArtistSearch";
+import { ArtistProfilePage } from "./pages/ArtistProfile";
 
-import { artworks } from './data/mockData';
-import { authService } from './services/uploadApi';
-import ArtMapPage from './pages/ArtMapPage.jsx';
+import { artworks } from "./data/mockData";
 
-import './App.css'
-import './index.css'
-
-
-function NotArtistGuard({ children }) {
-  const [verified, setVerified] = useState(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setVerified(false);
-      return;
-    }
-
-    authService.verifyRole()
-      .then((data) => setVerified(data.role === 'artist'))
-      .catch(() => setVerified(false));
-  }, []);
-
-  if (verified === null) return null;
-  if (verified) return <Navigate to="/search" replace />;
-
-  return children;
-}
-
-
-function ArtistGuard({ children }) {
-  const [verified, setVerified] = useState(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setVerified(false);
-      return;
-    }
-
-    authService.verifyRole()
-      .then((data) => setVerified(data.role === 'buyer'))
-      .catch(() => setVerified(false));
-  }, []);
-
-  if (verified === null) return null;
-  if (verified) return <Navigate to="/search" replace />;
-
-  return children;
-}
-
-
-function App() {
+function AppContent() {
+  const [currentPage, setCurrentPage] = useState("collections");
+  const navigate = useNavigate();
 
   const [selectedCollectionId, setSelectedCollectionId] = useState(null);
-  const [savedItemIds, setSavedItemIds] = useState([]);
+  const [selectedArtistId, setSelectedArtistId] = useState(null);
 
+  const [savedItemIds, setSavedItemIds] = useState([]);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  /* ---------------- DEBUG: CHECK ARTIST ID ---------------- */
+  useEffect(() => {
+    console.log("Selected Artist ID (App):", selectedArtistId);
+  }, [selectedArtistId]);
+
+  /* ---------------- DARK MODE ---------------- */
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDarkMode]);
+
+  /* ---------------- PAGE NAVIGATION ---------------- */
   const handleSetPage = (page, id = null) => {
-    if (id) setSelectedCollectionId(id);
+    console.log("Navigating to:", page, "with ID:", id);
+
+    setCurrentPage(page);
+
+    if (page === "collectionDetail") {
+      setSelectedCollectionId(id);
+    }
+
+    if (page === "artistProfile") {
+      setSelectedArtistId(id);
+    }
   };
 
+  /* ---------------- SAVE ARTWORK ---------------- */
   const handleToggleSave = (id) => {
-    setSavedItemIds(prev =>
-      prev.includes(id) ? prev.filter(itemId => itemId !== id) : [...prev, id]
+    setSavedItemIds((prev) =>
+      prev.includes(id)
+        ? prev.filter((itemId) => itemId !== id)
+        : [...prev, id]
     );
   };
 
+  /* ---------------- CART ACTION ---------------- */
   const handleAddToCartBatch = (items) => {
     alert(`Added ${items.length} items to cart!`);
   };
 
   return (
-    <Routes>
-
-      {/* Public routes */}
-      <Route path="/signup" element={<SignupPage />} />
-      <Route path="/login" element={<LoginPage />} />
-
-      {/* Artist upload */}
-      <Route
-        path="/dashboard/upload"
-        element={
-          <ArtistGuard>
-            <UploadArtPage />
-          </ArtistGuard>
-        }
+    <div
+      className={`min-h-screen font-sans flex ${isDarkMode
+          ? "dark bg-gray-900 text-white"
+          : "bg-gray-50 text-gray-900"
+        }`}
+    >
+      {/* SIDEBAR */}
+      <Sidebar
+        currentPage={currentPage}
+        setCurrentPage={handleSetPage}
+        toggleTheme={() => setIsDarkMode(!isDarkMode)}
       />
 
-      {/* Artist onboarding */}
-      <Route
-        path="/convert"
-        element={
-          <NotArtistGuard>
-            <ArtistOnboardingPage />
-          </NotArtistGuard>
-        }
-      />
+      {/* MAIN CONTENT */}
+      <div className="flex-1 ml-64 p-8 md:p-12 overflow-y-auto w-full">
+        <div className="max-w-7xl mx-auto">
 
-      {/* Pages within the main layout (pages which have sidebar and footer) */}
-      <Route element={<Layout />}>
-        {/* Artwork details page */}
-        <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
-        <Route path="/search" element={<ArtSearch />} />
-        <Route path="/artist/profile" element={<ArtistProfilePage />} />
-        <Route path="/artist/profile/:artistId" element={<ArtistProfilePage />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/map" element={<ArtMapPage />} />
+          {/* DEBUG MESSAGE */}
+          <div className="mb-4 p-2 bg-yellow-100 text-yellow-800 text-xs rounded">
+            Rendering:{" "}
+            {window.location.pathname === "/artist-search"
+              ? "artistSearch (Router)"
+              : currentPage}
+          </div>
 
-      </Route>
+          <Routes>
+            <Route
+              path="/artist-search"
+              element={
+                <ArtistSearch
+                  setCurrentPage={handleSetPage}
+                  artworks={artworks}
+                />
+              }
+            />
 
-      <Route
-        path="/collections"
-        element={
-          <CollectionsPage
-            setCurrentPage={handleSetPage}
-            artworks={artworks}
-          />
-        }
-      />
+            <Route
+              path="*"
+              element={
+                <>
+                  {/* COLLECTIONS PAGE */}
+                  {currentPage === "collections" && (
+                    <CollectionsPage
+                      setCurrentPage={handleSetPage}
+                      artworks={artworks}
+                    />
+                  )}
 
-      <Route
-        path="/collection/:id"
-        element={
-          <CollectionDetailPage
-            artworks={artworks}
-            setCurrentPage={handleSetPage}
-            onToggleSave={handleToggleSave}
-            savedItemIds={savedItemIds}
-            onAddToCartBatch={handleAddToCartBatch}
-          />
-        }
-      />
+                  {/* COLLECTION DETAIL */}
+                  {currentPage === "collectionDetail" && (
+                    <CollectionDetailPage
+                      collectionId={selectedCollectionId}
+                      artworks={artworks}
+                      setCurrentPage={handleSetPage}
+                      onToggleSave={handleToggleSave}
+                      savedItemIds={savedItemIds}
+                      onAddToCartBatch={handleAddToCartBatch}
+                    />
+                  )}
 
-      <Route path="/feed" element={<ArtSearch />} />
-      <Route path="/search" element={<ArtSearch />} />
-      <Route path="/cart" element={<CartPage />} />
-      <Route path="/artist-search" element={<ArtistSearch />} />
+                  {/* ARTIST SEARCH (fallback) */}
+                  {currentPage === "artistSearch" && (
+                    <ArtistSearch setCurrentPage={handleSetPage} />
+                  )}
 
-      <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
+                  {/* ✅ ARTIST PROFILE */}
+                  {currentPage === "artistProfile" && (
+                    <ArtistProfilePage
+                      artistId={selectedArtistId}
+                      setCurrentPage={handleSetPage}
+                    />
+                  )}
+                </>
+              }
+            />
+          </Routes>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-      <Route path="/artist/profile" element={<ArtistProfilePage />} />
-      <Route path="/artist/profile/:artistId" element={<ArtistProfilePage />} />
-
-
-
-      {/* Default page */}
-      <Route path="/" element={<Navigate to="/collections" replace />} />
-
-    </Routes >
+function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
   );
 }
 

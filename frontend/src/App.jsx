@@ -49,9 +49,7 @@ function AppContent() {
     }
 
     // Redirect to home if they use the sidebar to navigate away from /artist-search
-    if (window.location.pathname === '/artist-search') {
-      navigate('/');
-    }
+
 
   };
 

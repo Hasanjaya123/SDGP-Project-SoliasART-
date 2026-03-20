@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { ICONS } from "../constants";
+﻿import React, { useState, useEffect, useCallback } from "react";
 import { artistProfileService } from "../services/uploadApi";
 import ArtDisplayCard from "../components/Art-card";
 import Sidebar from "../components/Nav-bar";
@@ -11,14 +10,12 @@ const PortfolioTab = ({ artworks, onArtworkClick }) => (
   <div className="flex flex-wrap gap-6 items-start justify-start">
 
     {artworks.map((artwork, idx) => (
-
       <div
         key={artwork.id}
         className="opacity-0 animate-fade-in-up cursor-pointer"
         style={{ animationDelay: `${idx * 100}ms` }}
         onClick={() => onArtworkClick(artwork.id)}
       >
-
         <ArtDisplayCard
           image={artwork.image_url?.[0]}
           formData={{
@@ -30,13 +27,11 @@ const PortfolioTab = ({ artworks, onArtworkClick }) => (
             images: artwork.image_url ? [artwork.image_url] : [],
           }}
         />
-
       </div>
-
     ))}
 
     {artworks.length === 0 && (
-      <div className="w-full text-center py-20 text-slate-500 dark:text-slate-400">
+      <div className="w-full text-center py-20 text-slate-500">
         No artworks in portfolio yet.
       </div>
     )}
@@ -52,14 +47,14 @@ const AboutTab = ({ artist }) => (
     <h3 className="text-xl font-bold mb-4">About the Artist</h3>
 
     <p className="leading-relaxed mb-8">
-      {artist.artist_bio}
+      {artist.artist_bio || "No bio available."}
     </p>
 
     <div className="grid grid-cols-2 gap-6">
 
       <div>
         <h4 className="font-bold mb-2">Specialty</h4>
-        <p>{artist.primary_medium}</p>
+        <p>{artist.primary_medium || "N/A"}</p>
       </div>
 
       <div>
@@ -89,11 +84,22 @@ export const ArtistProfilePage = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  /* -------- FETCH ARTIST PROFILE -------- */
+  /* ---------------- DEBUG ---------------- */
+
+  useEffect(() => {
+    console.log("Artist ID in Profile Page:", artistId);
+  }, [artistId]);
+
+  /* ---------------- FETCH ARTIST PROFILE ---------------- */
 
   useEffect(() => {
 
-    if (!artistId) return;
+    if (!artistId) {
+      console.log("❌ No artistId received!");
+      setError("Invalid artist ID");
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
 
@@ -101,12 +107,19 @@ export const ArtistProfilePage = ({
       .getProfile(artistId)
       .then((data) => {
 
+        console.log("✅ API RESPONSE:", data);
+
+        if (!data || !data.artist) {
+          throw new Error("No artist data returned");
+        }
+
         setArtist(data.artist);
         setArtworks(data.artworks || []);
 
       })
-      .catch(() => {
+      .catch((err) => {
 
+        console.error("❌ API ERROR:", err);
         setError("Failed to load artist profile");
 
       })
@@ -118,53 +131,46 @@ export const ArtistProfilePage = ({
 
   }, [artistId]);
 
+  /* ---------------- FOLLOW LOGIC ---------------- */
+
   const isFollowing = currentUser?.followingIds?.includes(artistId);
 
   const handleFollowClick = useCallback(() => {
-
     onToggleFollow(artistId);
-
   }, [artistId, onToggleFollow]);
 
   const handleArtworkClick = useCallback(
-
     (id) => setCurrentPage("artworkDetail", id),
-
     [setCurrentPage]
-
   );
 
-  /* -------- LOADING -------- */
+  /* ---------------- LOADING ---------------- */
 
   if (loading) {
     return (
       <div className="flex min-h-screen">
-
         <Sidebar />
-
         <div className="flex-1 flex items-center justify-center">
           Loading...
         </div>
-
       </div>
     );
   }
+
+  /* ---------------- ERROR ---------------- */
 
   if (error || !artist) {
     return (
       <div className="flex min-h-screen">
-
         <Sidebar />
-
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center text-red-500">
           {error || "Artist not found"}
         </div>
-
       </div>
     );
   }
 
-  /* -------- MAIN UI -------- */
+  /* ---------------- MAIN UI ---------------- */
 
   return (
     <div className="flex min-h-screen">
@@ -174,9 +180,7 @@ export const ArtistProfilePage = ({
       <div className="flex-1 ml-64">
 
         {/* COVER IMAGE */}
-
         <div className="h-56 w-full bg-gray-200">
-
           <img
             src={
               artist.cover_image_url ||
@@ -185,11 +189,9 @@ export const ArtistProfilePage = ({
             alt="cover"
             className="w-full h-full object-cover"
           />
-
         </div>
 
         {/* PROFILE SECTION */}
-
         <div className="max-w-6xl mx-auto px-6 -mt-16">
 
           <div className="flex justify-between items-end">
@@ -206,7 +208,6 @@ export const ArtistProfilePage = ({
               />
 
               <div>
-
                 <h1 className="text-4xl font-bold">
                   {artist.display_name}
                 </h1>
@@ -218,20 +219,16 @@ export const ArtistProfilePage = ({
                 <p className="text-gray-500 mt-2">
                   {artist.artist_bio}
                 </p>
-
               </div>
 
             </div>
 
             {/* ACTION BUTTONS */}
-
             <div className="flex gap-3">
 
               <button
                 onClick={handleFollowClick}
-                className={`px-6 py-2 rounded-full font-bold ${isFollowing
-                    ? "bg-gray-200"
-                    : "bg-yellow-400"
+                className={`px-6 py-2 rounded-full font-bold ${isFollowing ? "bg-gray-200" : "bg-yellow-400"
                   }`}
               >
                 {isFollowing ? "Following" : "Follow"}
@@ -246,7 +243,6 @@ export const ArtistProfilePage = ({
           </div>
 
           {/* STATS */}
-
           <div className="flex gap-6 mt-8 border-t pt-6">
 
             <div>
@@ -266,7 +262,6 @@ export const ArtistProfilePage = ({
           </div>
 
           {/* TABS */}
-
           <div className="flex gap-8 mt-8 border-b pb-3">
 
             <button
@@ -286,7 +281,6 @@ export const ArtistProfilePage = ({
           </div>
 
           {/* TAB CONTENT */}
-
           <div className="mt-8">
 
             {activeTab === "portfolio" && (
