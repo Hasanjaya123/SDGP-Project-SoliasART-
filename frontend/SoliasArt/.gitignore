@@ -1,7 +1,19 @@
+<<<<<<< HEAD
 # Python
 backend/.venv/
 backend/venv/
 venv/
+=======
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.env
+>>>>>>> abc06ba8f3adc500235b511ae482bb99c42c0199
 
 # Ignore backend AR cache and temp files
 backend/storage/

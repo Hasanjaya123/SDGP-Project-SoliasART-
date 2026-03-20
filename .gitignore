@@ -1,14 +1,26 @@
 # Python
 .venv/
 venv/
+
+# Ignore backend AR cache and temp files
+backend/storage/
+backend/temp_*.jpg
+
 __pycache__/
 
 # Node
 node_modules/
 
+<<<<<<< HEAD
 # Environment
 .env
 
 # Build
 dist/
 build/
+=======
+backend/.env
+backend/storage/
+
+frontend/SoliasArt/.env
+>>>>>>> abc06ba8f3adc500235b511ae482bb99c42c0199

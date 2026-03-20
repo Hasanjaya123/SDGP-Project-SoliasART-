@@ -104,7 +104,7 @@ const ArtistOnboardingPage = () => {
 
   const exit = () => {
     const result = window.confirm("Do you really want to exit? (Entered data will be deleted)");
-    if (result) navigate("/home");
+    if (result) navigate("/search");
     else return;
   };
 
