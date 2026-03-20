@@ -1,7 +1,5 @@
-import { useState, useEffect } from 'react';
-import Sidebar from '../components/Nav-bar'           
-import ArtDisplayCard from '../components/Art-card';   
-import Footer from '../components/Footer';
+import { useState, useEffect } from 'react';        
+import ArtDisplayCard from '../components/Art-card';  
 import UserProfile from '../comp/UserProfile';
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL ||"http://localhost:8000";
