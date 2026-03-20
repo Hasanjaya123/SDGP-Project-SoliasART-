@@ -14,12 +14,65 @@ const ArtworkDetailsPage = () => {
   const [liveLikesCount, setLiveLikesCount] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [isArLoading, setIsArLoading] = useState(false); 
-  const [arError, setArError] = useState("");            
-
+  const [arError, setArError] = useState("");    
+  const [isSaved, setIsSaved] = useState(false);        
   const [qrReady, setQrReady] = useState(false);  
   const [generatedMobileUrl, setGeneratedMobileUrl] = useState("");   
   
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+
+  useEffect(() => {
+    const checkSaveStatus = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/savework/user/saved`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const savedArtworks = await res.json();
+          // Check if this specific artwork ID exists in the user's saved list
+          setIsSaved(savedArtworks.some(art => art.id === id));
+        }
+      } catch (err) {
+        console.error("Error checking save status:", err);
+      }
+    };
+
+    if (id) checkSaveStatus();
+  }, [id, BACKEND_URL]);
+
+  // NEW: Function to handle the Save/Unsave toggle
+  const handleToggleSave = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert("Please log in to save artworks!");
+      return;
+    }
+
+    // Optimistic UI update
+    const previousSaveStatus = isSaved;
+    setIsSaved(!previousSaveStatus);
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/savework/save/${id}`, {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json' 
+        }
+      });
+
+      if (!response.ok) throw new Error('Failed to toggle save');
+      
+      const data = await response.json();
+      setIsSaved(data.status === 'saved'); // Sync with actual backend response
+    } catch (err) {
+      setIsSaved(previousSaveStatus); // Revert UI if request fails
+      console.error("Save error:", err);
+    }
+  };
   
   const handleOpenArModal = async () => {
     setArModalOpen(true);
@@ -149,6 +202,8 @@ const ArtworkDetailsPage = () => {
               artwork={artwork} 
               artist={artwork.artist} 
               onArClick = {handleOpenArModal}
+              onSaveClick={handleToggleSave} 
+              isSaved={isSaved}
             />
           </div>
 
