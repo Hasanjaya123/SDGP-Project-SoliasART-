@@ -163,7 +163,6 @@ const ArtworkDetailsPage = () => {
 
     try {
       // The API Call
-      console.log("My Token Is:", token);
       const response = await fetch(`${BACKEND_URL}/api/artworks/${id}/like`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json',
