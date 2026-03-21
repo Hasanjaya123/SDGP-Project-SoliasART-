@@ -1,12 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import ArtDisplayCard from "../components/Art-card";
-import Sidebar from "../components/Nav-bar";
 import Footer from "../components/Footer";
-// 1. FIXED IMPORT: We need artistProfileService for the dashboard data
-import { artistProfileService } from "../services/uploadApi"; 
+import { artistProfileService } from "../services/uploadApi";
 
-// ─── SVG Icons ────────────────────────────────────────────────────────────────
+// SVG Icons
 const SearchIcon = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -52,7 +50,7 @@ const AlertIcon = ({ className }) => (
 const getImageSrc = (image_url) => {
   if (!image_url) return null;
   if (Array.isArray(image_url)) return image_url[0] ?? null;
-  return image_url; 
+  return image_url;
 };
 
 const toCardProps = (art) => {
@@ -60,24 +58,27 @@ const toCardProps = (art) => {
   return {
     image: src,
     formData: {
-      title:    art.title     ?? "",
-      price:    art.price     ?? "",
-      category: art.medium    ?? "",
-      height:   art.height_in ?? "",
-      width:    art.width_in  ?? "",
-      images:   src ? [src] : [],
+      title: art.title ?? "",
+      price: art.price ?? "",
+      category: art.medium ?? "",
+      height: art.height_in ?? "",
+      width: art.width_in ?? "",
+      images: src ? [src] : [],
+      artist_name: art.artists?.display_name || art.artist_name || "",
+      views: art.view_count || art.views || 0,
+      likes: art.likes || 0,
     },
   };
 };
 
 const deriveMetrics = (artworks) => {
-  const total        = artworks.length;
-  const sold         = artworks.filter((a) => a.status?.toLowerCase() === "sold").length;
+  const total = artworks.length;
+  const sold = artworks.filter((a) => a.status?.toLowerCase() === "sold").length;
   const totalRevenue = artworks
     .filter((a) => a.status?.toLowerCase() === "sold")
     .reduce((sum, a) => sum + (parseFloat(a.price) || 0), 0);
-  const views = artworks.reduce((sum, a) => sum + (parseInt(a.views)  || 0), 0);
-  const likes = artworks.reduce((sum, a) => sum + (parseInt(a.likes)  || 0), 0);
+  const views = artworks.reduce((sum, a) => sum + (parseInt(a.view_count || a.views) || 0), 0);
+  const likes = artworks.reduce((sum, a) => sum + (parseInt(a.likes) || 0), 0);
   return { total, sold, totalRevenue, views, likes };
 };
 
@@ -115,22 +116,23 @@ const ArtistDashboard = () => {
   const { userId } = useParams();
 
   const [artworks, setArtworks] = useState([]);
+  const [recentSales, setRecentSales] = useState([]);
   const [artist, setArtist] = useState(null);
   const [statistics, setStatistics] = useState(null);
-  const [loading,  setLoading]  = useState(true);
-  const [error,    setError]    = useState(null);
-  const [search,   setSearch]   = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    // 2. FIXED: Removed 'if (!userId) return;' because the API uses the JWT token, not the URL param
+
     setLoading(true);
     setError(null);
 
-    // 3. FIXED: Changed from artworkService to artistProfileService
     artistProfileService
       .getdashboardData()
       .then((data) => {
         setArtworks(Array.isArray(data.artworks) ? data.artworks : []);
+        setRecentSales(Array.isArray(data.recent_sales) ? data.recent_sales : []);
         setArtist(data.artist || null);
         setStatistics(data.Statistics || null);
       })
@@ -139,23 +141,14 @@ const ArtistDashboard = () => {
       )
       .finally(() => setLoading(false));
 
-  }, []); // Run once on mount
-
-  const recentSales = useMemo(
-    () =>
-      [...artworks]
-        .filter((a) => a.status?.toLowerCase() === "sold")
-        .sort((a, b) => new Date(b.sold_at ?? 0) - new Date(a.sold_at ?? 0))
-        .slice(0, 5),
-    [artworks]
-  );
+  }, []);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return artworks;
     return artworks.filter(
       (a) =>
-        a.title?.toLowerCase().includes(q)  ||
+        a.title?.toLowerCase().includes(q) ||
         a.medium?.toLowerCase().includes(q) ||
         a.status?.toLowerCase().includes(q)
     );
@@ -168,247 +161,243 @@ const ArtistDashboard = () => {
   const likes = statistics?.total_likes ?? deriveMetrics(artworks).likes;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-stone-50 font-sans">
-      <Sidebar />
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="h-20 flex-shrink-0 bg-white border-b border-slate-200 flex items-center justify-between px-8 gap-6">
-          <div className="flex-shrink-0">
-            <h2 className="text-xl font-bold text-slate-900">
-              {artist ? `Good Morning, ${artist.name}!` : "Good Morning!"}
-            </h2>
-            <p className="text-sm text-slate-500">Welcome back to your command center.</p>
-          </div>
-          {artist && (
-            <img
-              src={artist.profileImageUrl}
-              alt={artist.name}
-              className="w-12 h-12 rounded-full object-cover border border-slate-200"
+    <div className="flex flex-col min-h-full bg-stone-50 font-sans">
+      <header className="h-20 flex-shrink-0 bg-white border-b border-slate-200 flex items-center justify-between px-8 gap-6 sticky top-0 z-10">
+        <div className="flex-shrink-0">
+          <h2 className="text-xl font-bold text-slate-900">
+            {artist ? `Good Morning, ${artist.name}!` : "Good Morning!"}
+          </h2>
+          <p className="text-sm text-slate-500">Welcome back to your command center.</p>
+        </div>
+        {artist && (
+          <img
+            src={artist.profileImageUrl}
+            alt={artist.name}
+            className="w-12 h-12 rounded-full object-cover border border-slate-200"
+          />
+        )}
+
+        <div className="flex items-center gap-4 ml-auto">
+          <div className="relative hidden lg:block">
+            <SearchIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search your inventory..."
+              className="pl-9 pr-8 py-2.5 bg-slate-100 border-none rounded-lg focus:ring-2 focus:ring-amber-400 w-72 text-sm outline-none transition-all placeholder:text-slate-400"
             />
-          )}
-
-          <div className="flex items-center gap-4 ml-auto">
-            <div className="relative hidden lg:block">
-              <SearchIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search your inventory..."
-                className="pl-9 pr-8 py-2.5 bg-slate-100 border-none rounded-lg focus:ring-2 focus:ring-amber-400 w-72 text-sm outline-none transition-all placeholder:text-slate-400"
-              />
-              {search && (
-                <button
-                  onClick={() => setSearch("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-
-            <a
-              href="/dashboard/commissions"
-              className="border-2 border-amber-400 text-amber-600 hover:bg-amber-50 active:scale-95 font-bold px-5 py-2 rounded-lg flex items-center gap-2 transition-all text-sm whitespace-nowrap"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              See Commissions
-            </a>
-
-            <a
-              href="/dashboard/upload"
-              className="bg-amber-400 hover:bg-amber-500 active:scale-95 text-slate-900 font-bold px-5 py-2.5 rounded-lg flex items-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap"
-            >
-              <PlusCircleIcon className="w-4 h-4" />
-              Upload New Artwork
-            </a>
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
+              >
+                ✕
+              </button>
+            )}
           </div>
-        </header>
 
-        <div className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-[1400px] mx-auto space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <MetricCard
-                label="Total Revenue"
-                value={`LKR ${totalRevenue.toLocaleString()}`}
-                badge={`+12.5%`}
-                badgeClass="text-emerald-600 bg-emerald-50"
-                iconClass="bg-emerald-50 text-emerald-600"
-                Icon={TrendUpIcon}
-                loading={loading}
-              />
-              <MetricCard
-                label="Listed Artworks"
-                value={total.toString()}
-                badge={`+${total}`}
-                badgeClass="text-blue-600 bg-blue-50"
-                iconClass="bg-blue-50 text-blue-600"
-                Icon={BrushIcon}
-                loading={loading}
-              />
-              <MetricCard
-                label="Sold Artworks"
-                value={sold.toString()}
-                badge={sold > 0 ? `${sold} New` : "—"}
-                badgeClass="text-amber-600 bg-amber-50"
-                iconClass="bg-amber-50 text-amber-600"
-                Icon={ShoppingBagIcon}
-                loading={loading}
-              />
-              <MetricCard
-                label="Store Views"
-                value={views > 0 ? views.toLocaleString() : "—"}
-                badge={views > 999 ? `${(views / 1000).toFixed(1)}k` : `${views}`}
-                badgeClass="text-purple-600 bg-purple-50"
-                iconClass="bg-purple-50 text-purple-600"
-                Icon={EyeIcon}
-                loading={loading}
-              />
-              <MetricCard
-                label="Profile Likes"
-                value={likes > 0 ? likes.toLocaleString() : "—"}
-                badge={`+${likes}`}
-                badgeClass="text-rose-600 bg-rose-50"
-                iconClass="bg-rose-50 text-rose-600"
-                Icon={HeartIcon}
-                loading={loading}
-              />
-            </div>
+          <a
+            href="/dashboard/commissions"
+            className="border-2 border-amber-400 text-amber-600 hover:bg-amber-50 active:scale-95 font-bold px-5 py-2 rounded-lg flex items-center gap-2 transition-all text-sm whitespace-nowrap"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            See Commissions
+          </a>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-              <div className="xl:col-span-2 space-y-4">
-                <h3 className="text-xl font-bold text-slate-900">
-                  Active Artworks
-                  {!loading && search && (
-                    <span className="ml-2 text-sm font-normal text-slate-400">
-                      — {filtered.length} result{filtered.length !== 1 ? "s" : ""} for &ldquo;{search}&rdquo;
-                    </span>
-                  )}
-                </h3>
+          <a
+            href="/dashboard/upload"
+            className="bg-amber-400 hover:bg-amber-500 active:scale-95 text-slate-900 font-bold px-5 py-2.5 rounded-lg flex items-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap"
+          >
+            <PlusCircleIcon className="w-4 h-4" />
+            Upload New Artwork
+          </a>
+        </div>
+      </header>
 
-                {loading && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <SkeletonCard /><SkeletonCard /><SkeletonCard />
-                  </div>
+      <div className="flex-1 p-8">
+        <div className="max-w-[1400px] mx-auto space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <MetricCard
+              label="Total Revenue"
+              value={`LKR ${totalRevenue.toLocaleString()}`}
+              badge={`+12.5%`}
+              badgeClass="text-emerald-600 bg-emerald-50"
+              iconClass="bg-emerald-50 text-emerald-600"
+              Icon={TrendUpIcon}
+              loading={loading}
+            />
+            <MetricCard
+              label="Listed Artworks"
+              value={total.toString()}
+              badge={`+${total}`}
+              badgeClass="text-blue-600 bg-blue-50"
+              iconClass="bg-blue-50 text-blue-600"
+              Icon={BrushIcon}
+              loading={loading}
+            />
+            <MetricCard
+              label="Sold Artworks"
+              value={sold.toString()}
+              badge={sold > 0 ? `${sold} New` : "—"}
+              badgeClass="text-amber-600 bg-amber-50"
+              iconClass="bg-amber-50 text-amber-600"
+              Icon={ShoppingBagIcon}
+              loading={loading}
+            />
+            <MetricCard
+              label="Store Views"
+              value={views.toLocaleString()}
+              badge={views > 999 ? `${(views / 1000).toFixed(1)}k` : `${views}`}
+              badgeClass="text-purple-600 bg-purple-50"
+              iconClass="bg-purple-50 text-purple-600"
+              Icon={EyeIcon}
+              loading={loading}
+            />
+            <MetricCard
+              label="Profile Likes"
+              value={likes.toLocaleString()}
+              badge={`+${likes}`}
+              badgeClass="text-rose-600 bg-rose-50"
+              iconClass="bg-rose-50 text-rose-600"
+              Icon={HeartIcon}
+              loading={loading}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <div className="xl:col-span-2 space-y-4">
+              <h3 className="text-xl font-bold text-slate-900">
+                Active Artworks
+                {!loading && search && (
+                  <span className="ml-2 text-sm font-normal text-slate-400">
+                    — {filtered.length} result{filtered.length !== 1 ? "s" : ""} for &ldquo;{search}&rdquo;
+                  </span>
                 )}
+              </h3>
 
-                {!loading && error && (
-                  <div className="bg-red-50 border border-red-200 rounded-xl p-8 flex items-center gap-4">
-                    <AlertIcon className="w-8 h-8 text-red-400 flex-shrink-0" />
-                    <div>
-                      <p className="text-red-700 font-semibold">Failed to load artworks</p>
-                      <p className="text-red-500 text-sm mt-0.5">{error}</p>
-                    </div>
+              {loading && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <SkeletonCard /><SkeletonCard /><SkeletonCard />
+                </div>
+              )}
+
+              {!loading && error && (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-8 flex items-center gap-4">
+                  <AlertIcon className="w-8 h-8 text-red-400 flex-shrink-0" />
+                  <div>
+                    <p className="text-red-700 font-semibold">Failed to load artworks</p>
+                    <p className="text-red-500 text-sm mt-0.5">{error}</p>
                   </div>
-                )}
+                </div>
+              )}
 
-                {!loading && !error && filtered.length === 0 && search && (
-                  <div className="bg-white border border-slate-200 rounded-xl p-14 flex flex-col items-center text-center">
-                    <SearchIcon className="w-12 h-12 text-slate-200 mb-4" />
-                    <p className="text-slate-600 font-semibold">No artworks match &ldquo;{search}&rdquo;</p>
-                    <p className="text-slate-400 text-sm mt-1">Try searching by title, medium, or status</p>
-                    <button
-                      onClick={() => setSearch("")}
-                      className="mt-4 text-amber-500 text-sm font-bold hover:text-amber-600 transition-colors"
-                    >
-                      Clear search
-                    </button>
-                  </div>
-                )}
-
-                {!loading && !error && artworks.length === 0 && !search && (
-                  <div className="bg-white border border-dashed border-slate-300 rounded-xl p-14 flex flex-col items-center text-center">
-                    <BrushIcon className="w-12 h-12 text-slate-200 mb-4" />
-                    <p className="text-slate-600 font-semibold">No artworks yet</p>
-                    <p className="text-slate-400 text-sm mt-1">Upload your first artwork to get started</p>
-                    <a
-                      href="/dashboard/upload"
-                      className="mt-4 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold px-4 py-2 rounded-lg text-sm transition-colors"
-                    >
-                      Upload Artwork
-                    </a>
-                  </div>
-                )}
-
-                {!loading && !error && filtered.length > 0 && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filtered.map((art) => {
-                      const { image, formData } = toCardProps(art);
-                      return (
-                        <div
-                    key={art.id}
-                    onClick={() => handleArtworkClick(art.id)}
-                    style={{ cursor: 'pointer' }}
+              {!loading && !error && filtered.length === 0 && search && (
+                <div className="bg-white border border-slate-200 rounded-xl p-14 flex flex-col items-center text-center">
+                  <SearchIcon className="w-12 h-12 text-slate-200 mb-4" />
+                  <p className="text-slate-600 font-semibold">No artworks match &ldquo;{search}&rdquo;</p>
+                  <p className="text-slate-400 text-sm mt-1">Try searching by title, medium, or status</p>
+                  <button
+                    onClick={() => setSearch("")}
+                    className="mt-4 text-amber-500 text-sm font-bold hover:text-amber-600 transition-colors"
                   >
-                    <ArtDisplayCard image={image} formData={formData} />
-                  </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+                    Clear search
+                  </button>
+                </div>
+              )}
 
-              <div className="space-y-4">
-                <h3 className="text-xl font-bold text-slate-900">Recent Sales</h3>
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm divide-y divide-slate-100">
+              {!loading && !error && artworks.length === 0 && !search && (
+                <div className="bg-white border border-dashed border-slate-300 rounded-xl p-14 flex flex-col items-center text-center">
+                  <BrushIcon className="w-12 h-12 text-slate-200 mb-4" />
+                  <p className="text-slate-600 font-semibold">No artworks yet</p>
+                  <p className="text-slate-400 text-sm mt-1">Upload your first artwork to get started</p>
+                  <a
+                    href="/dashboard/upload"
+                    className="mt-4 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold px-4 py-2 rounded-lg text-sm transition-colors"
+                  >
+                    Upload Artwork
+                  </a>
+                </div>
+              )}
 
-                  {loading && [1, 2, 3].map((i) => (
-                    <div key={i} className="p-4 flex items-center gap-4 animate-pulse">
-                      <div className="w-12 h-12 rounded-lg bg-slate-200 flex-shrink-0" />
-                      <div className="flex-1 space-y-2">
-                        <div className="h-3 bg-slate-200 rounded w-3/4" />
-                        <div className="h-3 bg-slate-200 rounded w-1/2" />
-                      </div>
-                      <div className="space-y-2">
-                        <div className="h-3 bg-slate-200 rounded w-14" />
-                        <div className="h-2 bg-slate-200 rounded w-10 ml-auto" />
-                      </div>
-                    </div>
-                  ))}
-
-                  {!loading && recentSales.length === 0 && (
-                    <div className="p-8 text-center">
-                      <p className="text-slate-400 text-sm">No sales yet</p>
-                    </div>
-                  )}
-
-                  {!loading && recentSales.map((art) => {
-                    const imgSrc = getImageSrc(art.image_url);
+              {!loading && !error && filtered.length > 0 && (
+                <div className="flex flex-wrap gap-6 items-start justify-start">
+                  {filtered.map((art) => {
+                    const { image, formData } = toCardProps(art);
                     return (
-                      <div key={art.id} className="p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors">
-                        <img
-                          className="w-12 h-12 rounded-lg object-cover bg-slate-100 flex-shrink-0"
-                          src={imgSrc}
-                          alt={art.title}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold truncate text-slate-900">{art.title}</p>
-                          <p className="text-xs text-slate-500">
-                            {art.buyer_name ? `${art.buyer_name} • ` : ""}
-                            {art.sold_at ? new Date(art.sold_at).toLocaleDateString() : ""}
-                          </p>
-                        </div>
-                        <div className="text-right flex-shrink-0">
-                          <p className="text-sm font-bold text-slate-900">
-                            LKR {parseInt(art.price ?? 0).toLocaleString()}
-                          </p>
-                          <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">
-                            Processed
-                          </p>
-                        </div>
+                      <div
+                        key={art.id}
+                        onClick={() => handleArtworkClick(art.id)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <ArtDisplayCard image={image} formData={formData} />
                       </div>
                     );
                   })}
-
                 </div>
-              </div>
-
+              )}
             </div>
-            <Footer />
+
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-slate-900">Recent Sales</h3>
+              <div className="bg-white rounded-xl border border-slate-200 shadow-sm divide-y divide-slate-100">
+
+                {loading && [1, 2, 3].map((i) => (
+                  <div key={i} className="p-4 flex items-center gap-4 animate-pulse">
+                    <div className="w-12 h-12 rounded-lg bg-slate-200 flex-shrink-0" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-3 bg-slate-200 rounded w-3/4" />
+                      <div className="h-3 bg-slate-200 rounded w-1/2" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-3 bg-slate-200 rounded w-14" />
+                      <div className="h-2 bg-slate-200 rounded w-10 ml-auto" />
+                    </div>
+                  </div>
+                ))}
+
+                {!loading && recentSales.length === 0 && (
+                  <div className="p-8 text-center">
+                    <p className="text-slate-400 text-sm">No sales yet</p>
+                  </div>
+                )}
+
+                {!loading && recentSales.map((art) => {
+                  const imgSrc = getImageSrc(art.image_url);
+                  return (
+                    <div key={art.id} className="p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors">
+                      <img
+                        className="w-12 h-12 rounded-lg object-cover bg-slate-100 flex-shrink-0"
+                        src={imgSrc}
+                        alt={art.title}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold truncate text-slate-900">{art.title}</p>
+                        <p className="text-xs text-slate-500">
+                          {art.buyer_name ? `${art.buyer_name} • ` : ""}
+                          {art.sold_at ? new Date(art.sold_at).toLocaleDateString() : ""}
+                        </p>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <p className="text-sm font-bold text-slate-900">
+                          LKR {parseInt(art.price ?? 0).toLocaleString()}
+                        </p>
+                        <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">
+                          Processed
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+
+              </div>
+            </div>
+
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

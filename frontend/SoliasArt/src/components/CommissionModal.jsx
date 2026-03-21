@@ -171,10 +171,14 @@ export default function CommissionModal({ isOpen, onClose, artistId }) {
 
         {/* ── Success overlay ─────────────────── */}
         {success && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-2xl bg-white/90">
-            <span className="text-5xl mb-4">🎉</span>
-            <p className="text-xl font-semibold text-gray-800">Request Submitted!</p>
-            <p className="text-gray-500 mt-1">The artist will be notified shortly.</p>
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-2xl bg-white/95 backdrop-blur-sm transition-opacity duration-300">
+            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-5 shadow-sm">
+              <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <p className="text-2xl font-bold text-slate-800 tracking-tight">Request Submitted!</p>
+            <p className="text-slate-500 mt-2 font-medium">You will get notified after this.</p>
           </div>
         )}
 

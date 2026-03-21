@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react';
-import Sidebar from '../components/Nav-bar';
 import { commissionService } from '../services/uploadApi';
 
 // ─── SVG Icons ─────────────────────────────────────────────────────────────────
@@ -269,14 +268,10 @@ const CommissionRequestsPage = () => {
     return { total, avgBudget };
   }, [commissions]);
 
-  // ── Render ────────────────────────────────
   return (
-    <div className="flex h-screen overflow-hidden bg-stone-50 font-sans">
-      <Sidebar />
-
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <div className="flex flex-col min-h-full bg-stone-50 font-sans">
         {/* ── Header ───────────────────────── */}
-        <header className="h-20 flex-shrink-0 bg-white border-b border-slate-200 flex items-center justify-between px-8 gap-6">
+        <header className="h-20 flex-shrink-0 bg-white border-b border-slate-200 flex items-center justify-between px-8 gap-6 sticky top-0 z-10">
           <div className="flex-shrink-0">
             <h2 className="text-xl font-bold text-slate-900">Commission Requests</h2>
             <p className="text-sm text-slate-500">Review and manage custom artwork inquiries.</p>
@@ -315,7 +310,7 @@ const CommissionRequestsPage = () => {
         </header>
 
         {/* ── Main Content ─────────────────── */}
-        <div className="flex-1 overflow-y-auto p-8">
+        <div className="flex-1 p-8">
           <div className="max-w-[1100px] mx-auto space-y-6">
 
             {/* Section: Accepted Requests */}
@@ -464,7 +459,6 @@ const CommissionRequestsPage = () => {
 
           </div>
         </div>
-      </main>
     </div>
   );
 };

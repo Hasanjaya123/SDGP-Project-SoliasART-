@@ -1,5 +1,4 @@
-// src/pages/ARViewer.jsx
-//
+
 // DESKTOP flow:
 //   1. User types artwork ID → clicks Generate
 //   2. Fetch GLB from backend (just to trigger server cache)

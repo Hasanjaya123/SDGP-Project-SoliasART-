@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Text, TIMESTAMP, text, ForeignKey, ARRAY
 from sqlalchemy.dialects.postgresql import UUID
 from app.core.database import Base
-
+from pgvector.sqlalchemy import Vector
 
 class Post(Base):
 
@@ -28,3 +28,4 @@ class Post(Base):
 
     # Engagement counters (updated separately, start at 0)
     likes = Column(String, nullable=False, server_default=text("'0'"))
+    embedding = Column(Vector(512))

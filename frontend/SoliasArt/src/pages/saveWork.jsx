@@ -48,28 +48,14 @@ function CardWithRealInfo({ artwork }) {
     height:   artwork.height_in ? artwork.height_in * 25.4 : 400, // inches → mm approx
     width:    artwork.width_in  ? artwork.width_in  * 25.4 : 300,
     images:   artwork.image_url || [],
+    artist_name: artwork.artist_name || 'Unknown Artist',
+    views: seededRandom(artwork.id + 'v', 300, 5000), 
+    likes: seededRandom(artwork.id + 'l', 80, 1200),
   };
 
   return (
     <div className="relative">
       <ArtDisplayCard image={image} formData={formData} />
-      {/* Overlay real artist name + stats over ArtDisplayCard's hardcoded placeholders */}
-      <div
-        className="absolute left-0 right-0 flex flex-col items-center gap-1 pointer-events-none"
-        style={{ bottom: '68px' }}
-      >
-        <p className="text-[11px] font-medium text-gray-400 bg-gray-950 w-full text-center py-0.5">
-          {artwork.artist_name || 'Unknown Artist'}
-        </p>
-        <div className="flex items-center justify-center gap-3 text-gray-400 text-[11px] font-medium bg-gray-950 w-full py-0.5">
-          <span className="flex items-center gap-1">
-            <EyeIcon />{seededRandom(artwork.id + 'v', 300, 5000).toLocaleString()}
-          </span>
-          <span className="flex items-center gap-1">
-            <HeartIcon />{seededRandom(artwork.id + 'l', 80, 1200).toLocaleString()}
-          </span>
-        </div>
-      </div>
     </div>
   );
 }

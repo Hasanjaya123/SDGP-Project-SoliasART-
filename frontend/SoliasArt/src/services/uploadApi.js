@@ -43,6 +43,21 @@ export const artistProfileService = {
     return response.data;
   },
 
+  checkIsFollowing: async (artistId) => {
+    const response = await api.get(`/artists/profile/${artistId}/is-following`);
+    return response.data;
+  },
+  
+  followArtist: async (artistId) => {
+    const response = await api.post(`/artists/profile/${artistId}/follow`);
+    return response.data;
+  },
+
+  unfollowArtist: async (artistId) => {
+    const response = await api.post(`/artists/profile/${artistId}/unfollow`);
+    return response.data;
+  },
+
   getdashboardData: async () => {
     // Calling the dashboard without an ID because the backend uses the token
     const response = await api.get(`/dashboard`);

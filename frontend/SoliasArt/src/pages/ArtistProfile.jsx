@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ICONS } from '../constants';
 import { artistProfileService } from '../services/uploadApi';
@@ -151,7 +151,7 @@ const CreatePostModal = ({ artist, artistId, onClose, onPostCreated }) => {
 
 // --- Sub-components for tab content ---
 
-const PortfolioTab = ({ artworks, onArtworkClick }) => (
+const PortfolioTab = ({ artworks, onArtworkClick, artistName }) => (
   <div className="flex flex-wrap gap-6 items-start justify-start">
     {artworks.map((artwork, idx) => (
       <div
@@ -169,6 +169,9 @@ const PortfolioTab = ({ artworks, onArtworkClick }) => (
             height: artwork.height_in || '',
             width: artwork.width_in || '',
             images: artwork.image_url ? [artwork.image_url] : [],
+            artist_name: artistName || '',
+            views: artwork.view_count || artwork.views || 0,
+            likes: artwork.likes || 0
           }}
         />
       </div>
@@ -275,11 +278,7 @@ const formatFollowerCount = (count) =>
 
 // --- Main Page Component ---
 
-export const ArtistProfilePage = ({
-
-  currentUser = { followingIds: [] },
-  onToggleFollow = () => { },
-}) => {
+export const ArtistProfilePage = () => {
   const { artistId: artistIdParam } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('portfolio');
@@ -289,6 +288,8 @@ export const ArtistProfilePage = ({
   const [artist, setArtist] = useState(null);
   const [artworks, setArtworks] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [isFollowLoading, setIsFollowLoading] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -319,6 +320,13 @@ export const ArtistProfilePage = ({
         setArtist(data.artist);
         setArtworks(Array.isArray(data.artworks) ? data.artworks : []);
         setPosts(Array.isArray(data.posts) ? data.posts : []);
+
+        // Fetch follow status
+        if (data.artist?.id) {
+          artistProfileService.checkIsFollowing(data.artist.id)
+            .then(res => { if (!cancelled) setIsFollowing(res.is_following); })
+            .catch(err => console.error("Follow status check error:", err));
+        }
       })
       .catch((err) => {
         if (cancelled) return;
@@ -331,12 +339,25 @@ export const ArtistProfilePage = ({
     return () => { cancelled = true; };
   }, [artistIdParam]);
 
-  const isFollowing = currentUser?.followingIds?.includes(artistId) ?? false;
-
-  const handleFollowClick = useCallback(() => {
-
-    onToggleFollow(artistId);
-  }, [artistId, onToggleFollow]);
+  const handleFollowClick = async () => {
+    if (!artistId || isFollowLoading) return;
+    setIsFollowLoading(true);
+    try {
+      if (isFollowing) {
+        await artistProfileService.unfollowArtist(artistId);
+        setIsFollowing(false);
+        setArtist(prev => ({ ...prev, followers: Math.max(0, (parseInt(prev.followers) || 0) - 1) }));
+      } else {
+        await artistProfileService.followArtist(artistId);
+        setIsFollowing(true);
+        setArtist(prev => ({ ...prev, followers: (parseInt(prev.followers) || 0) + 1 }));
+      }
+    } catch (err) {
+      console.error('Follow toggle failed:', err);
+    } finally {
+      setIsFollowLoading(false);
+    }
+  };
 
   // When an artwork card is clicked, navigate to that artwork's details page
   const handleArtworkClick = useCallback(
@@ -414,12 +435,13 @@ export const ArtistProfilePage = ({
             <div className="flex flex-row gap-3 mt-4 md:mt-0 self-start md:self-center">
               <button
                 onClick={handleFollowClick}
-                className={`font-bold text-sm px-6 py-2 rounded-full shadow-sm transition-colors ${isFollowing
+                disabled={isFollowLoading}
+                className={`font-bold text-sm px-6 py-2 rounded-full shadow-sm transition-colors disabled:opacity-50 ${isFollowing
                     ? 'bg-slate-200 dark:bg-zinc-800 text-slate-800 dark:text-white'
                     : 'bg-[#FFC247] text-slate-900 hover:bg-yellow-400'
                   }`}
               >
-                {isFollowing ? 'Following' : 'Follow'}
+                {isFollowLoading ? '...' : (isFollowing ? 'Unfollow' : 'Follow')}
               </button>
               <button
                 onClick={openModal}
@@ -501,7 +523,7 @@ export const ArtistProfilePage = ({
           {/* Tab Content */}
           <div className="mt-8 min-h-[400px]">
             {activeTab === 'portfolio' && (
-              <PortfolioTab artworks={artworks} onArtworkClick={handleArtworkClick} />
+              <PortfolioTab artworks={artworks} onArtworkClick={handleArtworkClick} artistName={artist?.display_name || artist?.name || ''} />
             )}
             {activeTab === 'uploads' && <UploadsTab posts={posts} onCreatePost={openCreatePost} isOwner={artist?.owner} />}
             {activeTab === 'about' && <AboutTab artist={artist} />}
