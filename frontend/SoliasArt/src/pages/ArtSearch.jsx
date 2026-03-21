@@ -157,6 +157,9 @@ const ArtSearch = () => {
                       height: art.height_in || '',
                       width: art.width_in || '',
                       images: imgUrl ? [imgUrl] : [],
+                      artist_name: art.artists?.display_name || art.artist_name || "",
+                      views: art.view_count || art.views || 0,
+                      likes: art.likes || 0,
                     }} />
                   </div>
                   );

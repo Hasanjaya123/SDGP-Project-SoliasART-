@@ -15,6 +15,7 @@ import CartPage from './pages/CartPage';
 import ArtSearch from './pages/ArtSearch.jsx';
 import React, { useState, useEffect } from 'react';
 import ArtistDashboard from './pages/Dashboard.jsx';
+import CommissionRequestsPage from './pages/CommissionRequestsPage.jsx';
 
 import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
@@ -71,6 +72,7 @@ function ArtistGuard({ children }) {
 
 
 function App() {
+
   return (
     <>
       <Routes>
@@ -83,6 +85,8 @@ function App() {
 
         {/* Test route for ArtDisplayCard */}
         <Route path="/test" element={<Test />} />
+
+
 
         <Route path="/search/:userId" element={<ArtSearch />} />
 
@@ -101,7 +105,6 @@ function App() {
         {/* Artist on boarding page */}
         <Route path="/convert" element={<NotArtistGuard><ArtistOnboardingPage /></NotArtistGuard>} />
 
-        <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
 
         <Route path="/dashboard/collections/new" element={<ArtistGuard><BuildCollections /></ArtistGuard>} />
 
@@ -116,6 +119,9 @@ function App() {
           <Route path="/map" element={<ArtMapPage />} />
           <Route path="/collections" element={<CollectionsPage />} />
           <Route path="/collections/:id" element={<CollectionDetailPage />} />
+
+          <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
+          <Route path="/dashboard/commissions" element={<ArtistGuard><CommissionRequestsPage /></ArtistGuard>} />
 
         </Route>
 

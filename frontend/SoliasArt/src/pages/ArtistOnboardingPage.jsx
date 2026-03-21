@@ -35,7 +35,7 @@ const ArtistOnboardingPage = () => {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isDraggingId, setIsDraggingId] = useState(false);
 
-  // --- Handlers ---
+
 
 
   const handlePublish = async () => {
@@ -46,7 +46,7 @@ const ArtistOnboardingPage = () => {
         await artworkService.uploadArtist(formData, userId);
         alert("You have created Artist Acount successfully!");
         navigate("/user/artist/profile")
-        // Redirect or reset form
+     
     } catch (error) {
         alert("Failed to convert to an Artist. Please try again.");
     }
@@ -120,7 +120,6 @@ const ArtistOnboardingPage = () => {
     if (step > 1) setStep(prev => prev - 1);
   };
 
-  // --- Render Helpers ---
 
   const renderProgressBar = () => {
     const steps = [
@@ -177,7 +176,6 @@ const ArtistOnboardingPage = () => {
     );
   };
 
-  // --- Step Components ---
 
   const renderStepIdentity = () => (
     <div className="flex flex-col gap-8 animate-fade-in-up">

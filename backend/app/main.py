@@ -21,6 +21,7 @@ from app.modules.ArtistDashbooard.router import router as dashboard_router
 from app.modules.Collection.router import router as collections_router
 from app.modules.ArtistDashbooard.router import router as dashboard_router
 from app.modules.PayHere.router import router as payhere_router
+from app.modules.Commission.router import router as commission_router
 
 
 
@@ -30,7 +31,7 @@ app = FastAPI(title=settings.PROJECT_NAME)
 Base.metadata.create_all(bind=engine)
 
 
-origins = ["http://localhost:5173", "http://localhost:3000", "http://192.168.1.2:5173","http://192.168.1.2:8000"]
+origins = ["http://localhost:5173", "http://localhost:3000", "http://192.168.1.6:5173","http://192.168.1.6:8000"]
 
 
 app.add_middleware(
@@ -63,6 +64,7 @@ app.include_router(art_search_router)
 app.include_router(dashboard_router)
 app.include_router(collections_router)
 app.include_router(payhere_router, prefix="/payhere", tags=["PayHere Payment"])
+app.include_router(commission_router, prefix="/commissions", tags=["Commissions"])
 
 
 

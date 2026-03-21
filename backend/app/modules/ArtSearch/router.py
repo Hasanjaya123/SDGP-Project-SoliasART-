@@ -61,7 +61,7 @@ async def search_artworks(
 async def get_art_work(current_user: str = Depends(get_current_user)):
     
    
-    get_artwork = supabase.table("artwork").select("id, title, price, image_url, width_in, height_in, medium, artists(display_name)").execute()
+    get_artwork = supabase.table("artwork").select("id, title, price, image_url, width_in, height_in, medium, view_count, likes, artists(display_name)").execute()
     
     if not get_artwork.data:
         raise HTTPException(status_code=404, detail="Artist not found")

@@ -8,6 +8,7 @@ from app.core.database import get_db
 from app.core.supabase import supabase
 from app.modules.PostUpload.model import Post
 from app.modules.PostUpload.schemas import PostUploadRequest, PostResponse
+from app.modules.ArtUpload.embeddings import generate_image_embedding
 
 router = APIRouter(prefix="/artists", tags=["PostUpload"])
 
@@ -22,20 +23,26 @@ async def upload_post(
     image_links = []
 
     try:
-        # 1. Verify artist exists
+        #Verify artist exists
         profile_response = supabase.table("artists").select("id").eq("id", artist_id).execute()
         if not profile_response.data:
             raise HTTPException(status_code=404, detail="Artist not found.")
 
-        # 2. Require at least some content
+        #Require at least some content
         has_images = images and images.filename
         if not form_data.title and not form_data.description and not has_images:
             raise HTTPException(
                 status_code=422,
                 detail="A post must have at least a title, description, or image.",
             )
+            
+        first_image_bytes = await images.read()
+        await images.seek(0)
+        
+        #Create embeddings
+        vector_embedding = await run_in_threadpool(generate_image_embedding, first_image_bytes)
 
-        # 3. Upload images to ImageKit → /Posts folder
+        # Upload images to ImageKit Posts folder
         if has_images:
             image_content = await images.read()
 
@@ -50,12 +57,13 @@ async def upload_post(
 
             image_links.append(upload_result.url)
 
-        # 4. Persist to the `post` table
+        #Persist to the post table
         new_post = Post(
             title=form_data.title or None,
             description=form_data.description or None,
             image_url=image_links,
             artist_id=artist_id,
+            embedding=vector_embedding
         )
 
         db.add(new_post)

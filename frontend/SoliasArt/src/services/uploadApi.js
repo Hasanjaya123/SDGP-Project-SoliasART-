@@ -43,6 +43,21 @@ export const artistProfileService = {
     return response.data;
   },
 
+  checkIsFollowing: async (artistId) => {
+    const response = await api.get(`/artists/profile/${artistId}/is-following`);
+    return response.data;
+  },
+
+  followArtist: async (artistId) => {
+    const response = await api.post(`/artists/profile/${artistId}/follow`);
+    return response.data;
+  },
+
+  unfollowArtist: async (artistId) => {
+    const response = await api.post(`/artists/profile/${artistId}/unfollow`);
+    return response.data;
+  },
+
   getdashboardData: async () => {
     // Calling the dashboard without an ID because the backend uses the token
     const response = await api.get(`/dashboard`);
@@ -217,27 +232,65 @@ export const collectionService = {
 };
 
 export const paymentService = {
-    initiatePayment: async (artworkIds) => {
-      try {
-        const response = await api.post('/payhere/initiate', {
-          artwork_ids: artworkIds,
-        });
-        return response.data;
-      } catch (error) {
-        console.error("Payment initiation failed:", error.response?.data?.detail || error.message);
-        throw error;
-      }
-    },
+  initiatePayment: async (artworkIds) => {
+    try {
+      const response = await api.post('/payhere/initiate', {
+        artwork_ids: artworkIds,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Payment initiation failed:", error.response?.data?.detail || error.message);
+      throw error;
+    }
+  },
 
-    confirmPayment: async (orderId) => {
-      try {
-        const response = await api.post('/payhere/confirm', {
-          order_id: orderId,
-        });
-        return response.data;
-      } catch (error) {
-        console.error("Payment confirmation failed:", error.response?.data?.detail || error.message);
-        throw error;
-      }
-    },
-  };
+  confirmPayment: async (orderId) => {
+    try {
+      const response = await api.post('/payhere/confirm', {
+        order_id: orderId,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Payment confirmation failed:", error.response?.data?.detail || error.message);
+      throw error;
+    }
+  },
+};
+};
+
+// ── Commission Requests ────────────────────────
+export const commissionService = {
+  /**
+   * Submit a new commission request (multipart/form-data).
+   * @param {FormData} formData – contains text fields + optional reference_image file
+   */
+  submitCommission: async (formData) => {
+    try {
+      const response = await api.post('/commissions/', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Commission submission failed:", error.response?.data?.detail || error.message);
+      throw error;
+    }
+  },
+
+  /** Fetch all pending commissions for the logged-in artist */
+  getArtistCommissions: async () => {
+    const response = await api.get('/commissions/artist');
+    return response.data;
+  },
+
+  /** Artist accepts a commission */
+  acceptCommission: async (commissionId) => {
+    const response = await api.patch(`/commissions/${commissionId}/accept`);
+    return response.data;
+  },
+
+  /** Artist rejects a commission */
+  rejectCommission: async (commissionId) => {
+    const response = await api.patch(`/commissions/${commissionId}/reject`);
+    return response.data;
+  },
+};
