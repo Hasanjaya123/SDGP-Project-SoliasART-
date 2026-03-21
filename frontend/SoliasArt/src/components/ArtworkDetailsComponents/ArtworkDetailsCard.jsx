@@ -6,8 +6,7 @@ import { FiEye, FiHeart, FiBookmark } from 'react-icons/fi';
 import { FaHeart, FaBookmark } from 'react-icons/fa'; 
 import { MdOutlineViewInAr } from 'react-icons/md';
 
-const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick }) => {
-  const [isSaved, setIsSaved] = useState(false);
+const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick, onSaveClick, isSaved }) => {
   const [likesCount, setLikesCount] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -145,8 +144,8 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick }) => {
         <div className="grid grid-cols-2 gap-3">
             
             {/*Save button */}
-            <button onClick={() => setIsSaved(!isSaved)} className="w-full py-3.5 bg-gray-200 dark:bg-gray-500 border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-white text-sm font-bold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-400 transition-all flex items-center justify-center gap-2 hover:!border-gray-200 dark:hover:!border-gray-800 focus:!outline-none">
-                {isSaved ? <FaBookmark className="w-4 h-4 text-slate-800 dark:text-white" /> : <FiBookmark className="w-4 h-4" />} {isSaved ? 'Saved' : 'Save'}
+            <button onClick={onSaveClick} className="w-full py-3.5 bg-gray-200 dark:bg-gray-500 border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-white text-sm font-bold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-400 transition-all flex items-center justify-center gap-2 hover:!border-gray-200 dark:hover:!border-gray-800 focus:!outline-none">
+                {isSaved ? <FaBookmark className="w-4 h-4 text-slate-800 dark:text-white" /> : <FiBookmark className="w-4 h-4" />} {isSaved ? 'Saved' : 'Save Artwork'}
             </button>
             
             {/* AR button */}

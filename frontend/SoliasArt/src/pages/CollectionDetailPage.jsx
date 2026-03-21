@@ -1,27 +1,28 @@
 import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { collections } from '../data/mockData';
 import { ArtworkCard } from '../components/ArtworkCard';
 import { Heart, Eye, ShoppingCart, ArrowLeft } from 'lucide-react';
 
 export const CollectionDetailPage = ({
-  collectionId,
-  artworks: allArtworks,
-  setCurrentPage,
-  onToggleSave,
-  savedItemIds,
-  onAddToCartBatch
+  artworks: allArtworks = [],
+  onToggleSave = () => {},
+  savedItemIds = [],
+  onAddToCartBatch = () => {}
 }) => {
+  const { id: collectionId } = useParams();
+  const navigate = useNavigate();
   const [likes, setLikes] = useState({});
 
   // Find the specific collection based on the passed ID
-  const collection = collections.find(c => c.id === collectionId);
+  const collection = collections.find(c => c.id === parseInt(collectionId) || c.id === collectionId);
 
   if (!collection) {
     return (
       <div className="text-center py-20">
         <p className="text-gray-500 dark:text-gray-400 mb-6 text-xl">Collection not found</p>
         <button
-          onClick={() => setCurrentPage('collections')}
+          onClick={() => navigate('/collections')}
           className="px-6 py-2 bg-amber-600 text-white rounded-full hover:bg-amber-700 transition-colors"
         >
           Back to Collections
@@ -45,7 +46,7 @@ export const CollectionDetailPage = ({
       {/* Back Button */}
       <div className="mb-8">
         <button
-          onClick={() => setCurrentPage('collections')}
+          onClick={() => navigate('/collections')}
           className="text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-semibold flex items-center gap-2 group transition-all"
         >
           <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
@@ -117,7 +118,7 @@ export const CollectionDetailPage = ({
                 <ArtworkCard
                   key={artwork.id}
                   artwork={artwork}
-                  onView={() => { }}
+                  onView={(id) => navigate(`/artwork/${id}`)}
                   onToggleSave={onToggleSave}
                   isSaved={savedItemIds.includes(artwork.id)}
                 />

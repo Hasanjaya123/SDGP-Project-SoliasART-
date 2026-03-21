@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { collections } from '../data/mockData';
 import { getArtworks } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
-const CollectionsPage = ({ setCurrentPage }) => {
-
+const CollectionsPage = () => {
+    const navigate = useNavigate();
     const [artworks, setArtworks] = useState([]);
 
     useEffect(() => {
@@ -16,7 +17,7 @@ const CollectionsPage = ({ setCurrentPage }) => {
     }, []);
 
     return (
-        <div>
+        <div className="p-6">
             <div className="text-center mb-12">
                 <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
                     Curated Collections
@@ -69,7 +70,7 @@ const CollectionsPage = ({ setCurrentPage }) => {
 
                             <button
                                 onClick={() =>
-                                    setCurrentPage('collectionDetail', collection.id)
+                                    navigate(`/collections/${collection.id}`)
                                 }
                                 className="mt-8 px-6 py-2 bg-[#b67e33] text-white font-semibold rounded-full hover:bg-amber-700 self-start transition-colors shadow-sm"
                             >

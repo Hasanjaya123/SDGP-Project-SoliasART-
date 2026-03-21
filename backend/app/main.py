@@ -15,6 +15,7 @@ from app.modules.Artwork.router import router as artworks_router
 from app.modules.Purchase.router import router as cart_router
 from app.modules.ArtSearch.router import router as art_search_router
 from app.core.database import Base, engine
+from app.modules.savework.router import router as savework_router  
 from app.modules.PostUpload.router import router as post_upload_router
 from app.modules.ArtistDashbooard.router import router as dashboard_router             
 from app.modules.Collection.router import router as collections_router
@@ -27,7 +28,7 @@ app = FastAPI(title=settings.PROJECT_NAME)
 Base.metadata.create_all(bind=engine)
 
 
-origins = ["http://localhost:5173", "http://localhost:3000", "http://10.121.78.134:5173","http://10.121.78.134:8000"]
+origins = ["http://localhost:5173", "http://localhost:3000", "http://192.168.1.2:5173","http://192.168.1.2:8000"]
 
 
 app.add_middleware(
@@ -46,6 +47,7 @@ def read_root():
 # add routers for each module
 app.include_router(art_upload_router)
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
+app.include_router(savework_router, prefix="/savework", tags=["SaveWork"])  
 
 
 app.include_router(ar_router, prefix="/ar", tags=["Augmented Reality"])
