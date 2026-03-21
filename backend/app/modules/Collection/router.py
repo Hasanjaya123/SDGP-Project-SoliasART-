@@ -54,12 +54,23 @@ async def create_collection(
     
     return new_collection
 
+@router.get("/", response_model=List[CollectionOut])
+async def get_all_collections(
+    db: Session = Depends(get_db)
+):
+    collections = db.query(Collection).all()
+    for col in collections:
+        col.curator = col.artist.display_name if col.artist else "Unknown"
+    return collections
+
 @router.get("/artist/{artist_id}", response_model=List[CollectionOut])
 async def get_artist_collections(
     artist_id: UUID,
     db: Session = Depends(get_db)
 ):
     collections = db.query(Collection).filter(Collection.artist_id == artist_id).all()
+    for col in collections:
+        col.curator = col.artist.display_name if col.artist else "Unknown"
     return collections
 
 @router.get("/{collection_id}", response_model=CollectionOut)
@@ -70,6 +81,8 @@ async def get_collection_details(
     collection = db.query(Collection).filter(Collection.id == collection_id).first()
     if not collection:
         raise HTTPException(status_code=404, detail="Collection not found")
+    
+    collection.curator = collection.artist.display_name if collection.artist else "Unknown"
     return collection
 
 @router.delete("/{collection_id}")

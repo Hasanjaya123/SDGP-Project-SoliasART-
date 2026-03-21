@@ -195,6 +195,11 @@ export const collectionService = {
     return response.data;
   },
 
+  getAllCollections: async () => {
+    const response = await api.get("/api/collections/");
+    return response.data;
+  },
+
   getCollectionsByArtist: async (artistId) => {
     const response = await api.get(`/api/collections/artist/${artistId}`);
     return response.data;

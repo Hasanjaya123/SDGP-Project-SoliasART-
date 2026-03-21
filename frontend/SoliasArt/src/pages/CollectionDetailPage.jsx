@@ -1,21 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { collections } from '../data/mockData';
+import { collectionService } from '../services/uploadApi';
 import { ArtworkCard } from '../components/ArtworkCard';
 import { Heart, Eye, ShoppingCart, ArrowLeft } from 'lucide-react';
 
 export const CollectionDetailPage = ({
-  artworks: allArtworks = [],
   onToggleSave = () => {},
   savedItemIds = [],
   onAddToCartBatch = () => {}
 }) => {
   const { id: collectionId } = useParams();
   const navigate = useNavigate();
+  const [collection, setCollection] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [likes, setLikes] = useState({});
 
-  // Find the specific collection based on the passed ID
-  const collection = collections.find(c => c.id === parseInt(collectionId) || c.id === collectionId);
+  useEffect(() => {
+    const fetchCollection = async () => {
+      try {
+        const data = await collectionService.getCollectionById(collectionId);
+        setCollection(data);
+      } catch (error) {
+        console.error("Failed to fetch collection details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCollection();
+  }, [collectionId]);
+
+  if (loading) {
+    return <div className="text-center py-20">Loading collection details...</div>;
+  }
 
   if (!collection) {
     return (
@@ -57,7 +74,7 @@ export const CollectionDetailPage = ({
       {/* Hero Header Section */}
       <div className="relative h-80 md:h-[400px] rounded-2xl overflow-hidden shadow-2xl mb-12">
         <img
-          src={collection.coverImageUrl || (artworks[0]?.imageUrls[0])}
+          src={collection.coverImageUrl || (artworks[0]?.image_url?.[0]) || 'https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&w=800&q=80'}
           alt={collection.name}
           className="w-full h-full object-cover"
         />

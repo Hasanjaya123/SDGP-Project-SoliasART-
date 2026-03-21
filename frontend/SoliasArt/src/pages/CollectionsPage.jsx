@@ -1,20 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { collections } from '../data/mockData';
-import { getArtworks } from '../services/api';
+import { collectionService } from '../services/uploadApi';
 import { useNavigate } from 'react-router-dom';
 
 const CollectionsPage = () => {
     const navigate = useNavigate();
-    const [artworks, setArtworks] = useState([]);
+    const [collectionsList, setCollectionsList] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
-            const data = await getArtworks();
-            setArtworks(data);
+            try {
+                const data = await collectionService.getAllCollections();
+                setCollectionsList(data);
+            } catch (error) {
+                console.error("Failed to fetch collections:", error);
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchData();
     }, []);
+
+    if (loading) {
+        return <div className="p-6 text-center">Loading collections...</div>;
+    }
 
     return (
         <div className="p-6">
@@ -28,14 +38,14 @@ const CollectionsPage = () => {
             </div>
 
             <div className="space-y-12">
-                {collections.map((collection) => (
+                {collectionsList.map((collection) => (
                     <div
                         key={collection.id}
                         className="bg-white dark:bg-gray-900 rounded-lg shadow-lg dark:shadow-none dark:border dark:border-gray-800 overflow-hidden flex flex-col md:flex-row"
                     >
                         <div className="md:w-1/2">
                             <img
-                                src={collection.coverImageUrl}
+                                src={collection.artworks?.[0]?.image_url?.[0] || 'https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&w=800&q=80'}
                                 alt={collection.name}
                                 className="h-64 w-full object-cover md:h-full"
                             />
@@ -55,17 +65,14 @@ const CollectionsPage = () => {
                             </p>
 
                             <div className="mt-6 flex -space-x-2 overflow-hidden">
-                                {collection.artworkIds.map(id => {
-                                    const artwork = artworks.find(a => a.id === id);
-                                    return artwork ? (
-                                        <img
-                                            key={id}
-                                            className="inline-block h-12 w-12 rounded-full ring-2 ring-white dark:ring-gray-900"
-                                            src={artwork.imageUrls[0]}
-                                            alt={artwork.title}
-                                        />
-                                    ) : null;
-                                })}
+                                {collection.artworks?.slice(0, 5).map(artwork => (
+                                    <img
+                                        key={artwork.id}
+                                        className="inline-block h-12 w-12 rounded-full ring-2 ring-white dark:ring-gray-900"
+                                        src={artwork.image_url?.[0]}
+                                        alt={artwork.title}
+                                    />
+                                ))}
                             </div>
 
                             <button

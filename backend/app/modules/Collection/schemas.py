@@ -21,7 +21,7 @@ class CollectionOut(BaseModel):
     id: UUID
     name: str
     description: Optional[str] = None
-    artist_id: UUID
+    curator: Optional[str] = None
     created_at: datetime
     artworks: List[ArtworkSimple]
 
