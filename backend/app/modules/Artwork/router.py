@@ -53,7 +53,7 @@ async def get_artwork_details(artwork_id: str, db: Session = Depends(get_db)):
     }
 
 @router.post("/{artwork_id}/like")
-async def toggle_artwork_like(artwork_id: str, payload: LikeRequest, db: Session = Depends(get_db)):
+async def toggle_artwork_like(artwork_id: str, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
     
     # Check if the artwork exists in the database
     artwork = db.query(ArtWork).filter(ArtWork.id == artwork_id).first()
@@ -62,7 +62,7 @@ async def toggle_artwork_like(artwork_id: str, payload: LikeRequest, db: Session
     
     # Check if this specific user has already liked this specific artwork
     existing_like = db.query(UserLike).filter(
-        UserLike.user_id == payload.user_id, 
+        UserLike.user_id == str(current_user.id), 
         UserLike.artwork_id == artwork_id
     ).first()
 
@@ -83,7 +83,7 @@ async def toggle_artwork_like(artwork_id: str, payload: LikeRequest, db: Session
         # LIKE 
         # If no record exists, create a new row in the user_likes table
         new_like = UserLike(
-            user_id=payload.user_id, 
+            user_id=str(current_user.id), 
             artwork_id=artwork_id
         )
         db.add(new_like)
@@ -102,6 +102,21 @@ async def toggle_artwork_like(artwork_id: str, payload: LikeRequest, db: Session
         "message": message,
         "new_likes": new_total
     }
+
+@router.get("/{artwork_id}/check-like")
+async def check_artwork_like(
+    artwork_id: str, 
+    current_user = Depends(get_current_user), 
+    db: Session = Depends(get_db)
+):
+    # Search the database to check whether the user has liked the artwork
+    existing_like = db.query(UserLike).filter(
+        UserLike.user_id == str(current_user.id), 
+        UserLike.artwork_id == artwork_id
+    ).first()
+
+    # If it finds a record, it returns true. If not, it returns false.
+    return {"is_liked": existing_like is not None}
 
 @router.get("/")
 def get_all_artworks(

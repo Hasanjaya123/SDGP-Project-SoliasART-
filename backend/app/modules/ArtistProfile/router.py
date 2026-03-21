@@ -54,13 +54,15 @@ async def get_full_artist_profile(
             "posts": posts_res.data
         }
 
+    except HTTPException:
+        raise 
     except Exception as e:
-        print(f"Error fetching profile: {e}")
+        print(f"Error fetching profile by id: {e}")
         raise HTTPException(status_code=500, detail="Could not load profile data")
     
     
 @router.get("/profile/{artist_id}")
-async def get_full_artist_profile(
+async def get_full_artist_profile_by_id(
     current_user: str = Depends(get_current_user),
     artist_id: str = None
     ):
@@ -70,17 +72,17 @@ async def get_full_artist_profile(
     try:
        
         # We fetch the artist by the user_id foreign key
-        profile_res = supabase.table("artists").select("*").eq("id", artist_id).execute()
+        profile_res = supabase.table("artists").select("*").or_(f"id.eq.{artist_id},user_id.eq.{artist_id}").execute()
         
         if not profile_res.data:
             raise HTTPException(status_code=404, detail="Artist not found")
             
         raw_artist = profile_res.data[0]
-        artist_id = str(raw_artist["id"])
+        actual_artist_id = str(raw_artist["id"])
 
-        artworks_res = supabase.table("artwork").select("id, title, price, image_url, width_in, height_in, medium, view_count, likes, artists(display_name)").eq("artist_id", artist_id).execute()
+        artworks_res = supabase.table("artwork").select("id, title, price, image_url, width_in, height_in, medium").eq("artist_id", actual_artist_id).execute()
         
-        posts_res = supabase.table("post").select("*").eq("artist_id", artist_id).order("created_at", desc=True).execute()
+        posts_res = supabase.table("post").select("*").eq("artist_id", actual_artist_id).order("created_at", desc=True).execute()
 
         # We map the database columns (snake_case) to match your React props (camelCase)
         return {
@@ -103,8 +105,10 @@ async def get_full_artist_profile(
             "posts": posts_res.data
         }
 
+    except HTTPException:
+        raise 
     except Exception as e:
-        print(f"Error fetching profile: {e}")
+        print(f"Error fetching profile by id: {e}")
         raise HTTPException(status_code=500, detail="Could not load profile data")
 
 @router.get("/profile/{artist_id}/is-following")

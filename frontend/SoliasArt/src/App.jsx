@@ -23,6 +23,7 @@ import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
 import { jwtDecode } from "jwt-decode";
 import { authService } from './services/uploadApi';
 import ArtMapPage from './pages/ArtMapPage.jsx';
+import SaveWork from './pages/saveWork.jsx';
 
 
 // Verifies role against backend, not just the JWT
@@ -69,7 +70,7 @@ function ArtistGuard({ children }) {
 }
 
 
-import SaveWork from './pages/SaveWork.jsx';
+
 
 
 

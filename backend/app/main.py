@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+﻿from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.modules.ArtUpload.router import router as art_upload_router
@@ -29,7 +29,7 @@ app = FastAPI(title=settings.PROJECT_NAME)
 Base.metadata.create_all(bind=engine)
 
 
-origins = ["http://localhost:5173", "http://localhost:3000", "http://192.168.1.6:5173","http://192.168.1.6:8000"]
+origins = ["http://localhost:5173", "http://localhost:3000", "http://192.168.1.4:5173","http://192.168.1.4:8000"]
 
 
 app.add_middleware(
