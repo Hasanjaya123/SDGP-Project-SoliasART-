@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.modules.ArtUpload.model import ArtWork
-from app.modules.ArtistOnboarding.model import Artist 
+from app.modules.ArtistProfile.model import Artist 
 from app.modules.Artwork.model import UserLike
 from app.modules.Artwork.schemas import LikeRequest
 from app.modules.auth.dependencies import get_current_user
