@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { api } from "../services/uploadApi"
 
 function ModelViewer({ src }) {
     const [ready, setReady] = useState(false) // tracks if script loaded
@@ -68,24 +69,21 @@ export default function MobilePreview() {
         // fetch the GLB file from the backend to confirm it's cached and get a blob URL for the 3D viewer
         const fetchGlb = async () => {
             try {
-                const res = await fetch(decodedUrl, {
+                const res = await api.get(decodedUrl, {
                     headers: {
                         "ngrok-skip-browser-warning": "true" // needed when using ngrok
-                    }
+                    },
+                    responseType: 'blob'
                 });
-                if (!res.ok) {
-                    const body = await res.json().catch(() => ({}));
-                    throw new Error(body.detail || `Error ${res.status}`);
-                }
-
-                const blob = await res.blob();
+                
+                const blob = res.data;
                 setLocalUrl(URL.createObjectURL(blob));
 
                 // Use the original HTTP URL for model-viewer so AR viewers can access it
                 setModelUrl(decodedUrl);
 
             } catch (e) {
-                setError(e.message);
+                setError(e.response?.data?.detail || e.message);
             } finally {
                 setLoading(false);
             }
