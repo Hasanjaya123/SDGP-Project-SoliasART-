@@ -178,3 +178,29 @@ export const artworkService = {
     }
   }
 };
+
+export const paymentService = {
+  initiatePayment: async (artworkIds) => {
+    try {
+      const response = await api.post('/payhere/initiate', {
+        artwork_ids: artworkIds,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Payment initiation failed:", error.response?.data?.detail || error.message);
+      throw error;
+    }
+  },
+
+  confirmPayment: async (orderId) => {
+    try {
+      const response = await api.post('/payhere/confirm', {
+        order_id: orderId,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Payment confirmation failed:", error.response?.data?.detail || error.message);
+      throw error;
+    }
+  },
+};

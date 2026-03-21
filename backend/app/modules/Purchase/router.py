@@ -8,7 +8,7 @@ from app.modules.Purchase.models import CartItem
 from app.modules.auth.dependencies import get_current_user
 from app.modules.auth.models import User
 
-# Setup router
+
 router = APIRouter(prefix="/cart", tags=["Cart"])
 
 @router.post("/add")

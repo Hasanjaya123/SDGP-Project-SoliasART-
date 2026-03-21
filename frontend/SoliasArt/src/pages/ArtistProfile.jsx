@@ -406,8 +406,9 @@ export const ArtistProfilePage = ({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="px-4 md:px-8 pb-8 -mt-20 relative">
-          {/* Avatar and Actions Row */}
-          <div className="flex flex-col md:flex-row items-end md:items-center justify-between gap-4">
+          {/* Avatar Row */}
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            {/* Avatar */}
             <div className="relative">
               <div className="size-32 md:size-36 rounded-full border-4 border-white dark:border-zinc-900 shadow-md bg-white dark:bg-zinc-800 overflow-hidden">
                 <img
@@ -422,7 +423,8 @@ export const ArtistProfilePage = ({
                 </span>
               )}
             </div>
-            <div className="flex gap-3 mb-4 md:mb-8">
+            {/* Follow and Commission Buttons - right aligned */}
+            <div className="flex flex-row gap-3 mt-4 md:mt-0 self-start md:self-center">
               <button
                 onClick={handleFollowClick}
                 className={`font-bold text-sm px-6 py-2 rounded-full shadow-sm transition-colors ${
@@ -441,9 +443,9 @@ export const ArtistProfilePage = ({
               </button>
             </div>
           </div>
-          {/* Artist Info */}
+          {/* Artist Info (below avatar, full width) */}
           <div className="mt-4">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">{artist.name}</h1>
               {artist.specialty && (
                 <span className="flex items-center gap-1 bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
@@ -465,7 +467,6 @@ export const ArtistProfilePage = ({
                 </div>
               )}
             </div>
-
             {/* Tags */}
             {artist.styles?.length > 0 && (
               <div className="flex gap-2 mt-4 flex-wrap">
