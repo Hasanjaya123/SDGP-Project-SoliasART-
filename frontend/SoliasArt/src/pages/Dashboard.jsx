@@ -48,9 +48,7 @@ const AlertIcon = ({ className }) => (
   </svg>
 );
 
-// ─── Normalise image_url: backend may send a string OR string[] ───────────────
-// Your mock used a plain string; the real API sends string[].
-// This helper handles both so neither breaks.
+
 const getImageSrc = (image_url) => {
   if (!image_url) return null;
   if (Array.isArray(image_url)) return image_url[0] ?? null;
@@ -400,7 +398,7 @@ const ArtistDashboard = () => {
 
             </div>
 
-            {/* ── Footer — unmodified ── */}
+            {/* ── Footer*/}
             <Footer />
 
           </div>
