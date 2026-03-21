@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+﻿from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.modules.ArtUpload.router import router as art_upload_router
@@ -19,6 +19,7 @@ from app.modules.savework.router import router as savework_router
 from app.modules.PostUpload.router import router as post_upload_router
 from app.modules.ArtistDashbooard.router import router as dashboard_router
 from app.modules.PayHere.router import router as payhere_router
+from app.modules.Commission.router import router as commission_router
 
 
 
@@ -60,6 +61,7 @@ app.include_router(cart_router, prefix="/api", tags=["Cart"])
 app.include_router(art_search_router)
 app.include_router(dashboard_router)
 app.include_router(payhere_router, prefix="/payhere", tags=["PayHere Payment"])
+app.include_router(commission_router, prefix="/commissions", tags=["Commissions"])
 
 
 

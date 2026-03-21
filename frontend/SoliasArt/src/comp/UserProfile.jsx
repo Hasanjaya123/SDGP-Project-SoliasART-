@@ -6,22 +6,22 @@ const UserProfile = ({ name, role, avatar, collectionCount, likedCount, activeTa
       <img
         src={avatar}
         alt={name}
-        className="w-20 h-20 rounded-full object-cover border-2 border-gray-700 mb-3"
+        className="w-20 h-20 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700 mb-3 transition-colors"
       />
 
       {/* Name & Role */}
-      <h2 className="text-lg font-bold text-white">{name}</h2>
-      <p className="text-sm text-gray-400 mb-6">{role}</p>
+      <h2 className="text-lg font-bold text-gray-900 dark:text-white transition-colors">{name}</h2>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 transition-colors">{role}</p>
 
       {/* Stats */}
       <div className="flex items-center gap-10 mb-6">
         <div className="text-center">
-          <p className="text-xl font-bold text-white">{collectionCount}</p>
-          <p className="text-xs text-gray-400">In Collection</p>
+          <p className="text-xl font-bold text-gray-900 dark:text-white transition-colors">{collectionCount}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 transition-colors">In Collection</p>
         </div>
         <div className="text-center">
-          <p className="text-xl font-bold text-white">{likedCount}</p>
-          <p className="text-xs text-gray-400">Liked</p>
+          <p className="text-xl font-bold text-gray-900 dark:text-white transition-colors">{likedCount}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 transition-colors">Liked</p>
         </div>
       </div>
 

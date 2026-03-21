@@ -115,11 +115,11 @@ const CartPage = () => {
     setIsProcessing(true);
 
     try {
-      // Step 1: Get payment payload from backend
+      //  Get payment payload from backend
       const artworkIds = cartItems.map(item => item.artwork_id);
       const paymentData = await paymentService.initiatePayment(artworkIds);
 
-      // Step 2: Configure PayHere payment object
+      //  Configure PayHere payment object
       const payment = {
         sandbox: true,  // Set to false for production
         merchant_id: paymentData.merchant_id,
@@ -140,7 +140,7 @@ const CartPage = () => {
         country: paymentData.country,
       };
 
-      // Step 3: Set up PayHere callbacks
+      //  Set up PayHere callbacks
       window.payhere.onCompleted = async function onCompleted(orderId) {
         console.log("Payment completed. Order ID:", orderId);
         try {
@@ -164,7 +164,7 @@ const CartPage = () => {
         alert('An error occurred during payment. Please try again.');
       };
 
-      // Step 4: Open PayHere payment modal
+      //  Open PayHere payment modal
       window.payhere.startPayment(payment);
 
     } catch (error) {
@@ -201,7 +201,7 @@ const CartPage = () => {
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Cart is empty.</h3>
             <p className="text-gray-500 dark:text-gray-400 mb-8">Discover unique artworks to add to your collection.</p>
             <a
-              href="/explore"
+              href="/search"
               className="inline-block px-8 py-3.5 bg-amber-500 !text-white font-bold text-sm rounded-lg shadow-sm hover:bg-amber-600 transition-all hover:!border-gray-200 dark:hover:!border-gray-800 focus:!outline-none">
               Explore
             </a>

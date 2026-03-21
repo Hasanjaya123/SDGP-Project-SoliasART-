@@ -51,7 +51,7 @@ const OrderSummary = ({ subtotal, shipping, onCheckout, isProcessing }) => {
         <div className="flex items-center justify-center gap-2">
           <span className="text-sm font-normal text-gray-500 dark:text-gray-400"> or </span>
           {/* continue shopping */}
-          <Link to="/" className="inline-flex items-center gap-2 text-sm font-medium text-orange-600 hover:!underline  dark:text-orange-500 transition-colors">
+          <Link to="/search" className="inline-flex items-center gap-2 text-sm font-medium text-orange-600 hover:!underline  dark:text-orange-500 transition-colors">
             Continue Shopping
             <svg className="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 12H5m14 0-4 4m4-4-4-4" />
