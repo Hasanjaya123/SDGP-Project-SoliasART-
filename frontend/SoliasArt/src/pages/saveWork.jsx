@@ -4,7 +4,7 @@ import ArtDisplayCard from '../components/Art-card';
 import Footer from '../components/Footer';
 import UserProfile from '../comp/UserProfile';
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = import.meta.env.VITE_BACKEND_URL ||"http://localhost:8000";
 
 
 // ─── Seeded random so numbers stay stable across re-renders ───
@@ -91,100 +91,93 @@ const SaveWork = () => {
   const [artworks, setArtworks]         = useState([]);
   const [loading, setLoading]           = useState(true);
   const [error, setError]               = useState(null);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
+    // Check for auth token before fetching
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError("Please login to view your profile");
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
-    fetch(`${API_BASE}/savework/artworks?limit=20`)
-      .then(res => {
-        if (!res.ok) throw new Error(`Server error: ${res.status}`);
-        return res.json();
-      })
-      .then(data => {
+    // Fetching user profile and saved artworks 
+    const fetchProfileData = async () => {
+      try {
+        const headers = { 'Authorization': `Bearer ${token}` };
+
+        // Fetch User Info
+        const userRes = await fetch(`${API_BASE}/auth/me`, { headers });
+        if (userRes.ok) setUserData(await userRes.json());
+
+        // Fetch saved artworks
+        const artRes = await fetch(`${API_BASE}/savework/user/saved`, { headers });
+        if (!artRes.ok) throw new Error(`Status: ${artRes.status}`);
+        
+        const data = await artRes.json();
         setArtworks(data);
-        setLoading(false);
-      })
-      .catch(err => {
+      } catch (err) {
         setError(err.message);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchProfileData();
   }, []);
 
-  // For demo: split the fetched artworks into two tabs
-  const half = Math.ceil(artworks.length / 2);
-  const collectionArtworks = artworks.slice(0, Math.max(half, 5));
-  const likedArtworks      = artworks.slice(Math.max(half - 3, 0));
-  const displayedArtworks  = activeTab === 'collection' ? collectionArtworks : likedArtworks;
+  const collectionArtworks = artworks; 
+  const likedArtworks = artworks.filter(art => art.isLiked === true); 
+  const displayedArtworks = activeTab === 'collection' ? collectionArtworks : likedArtworks;
 
   return (
-    <div className="dark min-h-screen bg-gray-950 flex flex-col">
+    <div className="dark min-h-screen bg-gray-950 flex flex-col p-4 md:p-8">
 
-      <style>{`
-        .sidebar-override > div:first-child {
-          background-color: #0a0a0f !important;
-          border-right-color: #1f2937 !important;
-        }
-        .sidebar-override > div:first-child .text-gray-900 { color: #f9fafb !important; }
-        .sidebar-override > div:first-child .text-gray-500 { color: #9ca3af !important; }
-        .sidebar-override > div:first-child .text-\\[\\#0F2C59\\] { color: #f9fafb !important; }
-        .sidebar-override > div:first-child .border-gray-200 { border-color: #1f2937 !important; }
-        .sidebar-override > div:first-child .border-gray-300 { border-color: #374151 !important; }
-        .sidebar-override > div:first-child .hover\\:bg-yellow-50:hover { background-color: #1f2937 !important; }
-        .sidebar-override > div:first-child .hover\\:text-\\[\\#C58940\\]:hover { color: #f59e0b !important; }
-        .sidebar-override > div:first-child .text-\\[\\#C58940\\] { color: #f59e0b !important; }
-      `}</style>
+      <div className="max-w-7xl mx-auto w-full">
+        
+        {/* Userprofile */}
+        <UserProfile
+          name={userData ? (userData.full_name || `${userData.first_name || 'User'} ${userData.last_name || ''}`) : "Loading..."}
+          role={userData?.role || "Art Enthusiast"}
+          avatar={userData?.profile_image || "https://ui-avatars.com/api/?name=User"}
+          collectionCount={collectionArtworks.length}
+          likedCount={likedArtworks.length}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
 
-      <div className="flex flex-1 sidebar-override">
-        <Sidebar />
+        <h2 className="text-xl font-bold text-white text-center mb-8">
+          {activeTab === 'collection' ? 'My Art Collection' : 'Liked Artworks'}
+        </h2>
 
-        <div className="flex-1 pl-4 pr-8 py-8">
+        {error && (
+          <div className="text-center text-red-400 text-sm mb-6">
+            {error}
+          </div>
+        )}
 
-          <UserProfile
-            name="Alex Rider"
-            role="Art Enthusiast"
-            avatar="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=200"
-            collectionCount={collectionArtworks.length}
-            likedCount={likedArtworks.length}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-          />
+        {loading && (
+          <div className="flex flex-wrap gap-6 items-start justify-center">
+            {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+          </div>
+        )}
 
-          <h2 className="text-xl font-bold text-white text-center mb-8">
-            {activeTab === 'collection' ? 'My Art Collection' : 'Liked Artworks'}
-          </h2>
-
-          {/* Error state */}
-          {error && (
-            <div className="text-center text-red-400 text-sm mb-6">
-              Could not load artworks: {error}
-            </div>
-          )}
-
-          {/* Loading skeletons */}
-          {loading && (
-            <div className="flex flex-wrap gap-6 items-start justify-center">
-              {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
-            </div>
-          )}
-
-          {/* Artwork grid */}
-          {!loading && !error && (
-            <div className="flex flex-wrap gap-6 items-start justify-center">
-              {displayedArtworks.length === 0 ? (
-                <p className="text-gray-500 text-sm">No artworks found.</p>
-              ) : (
-                displayedArtworks.map(artwork => (
-                  <CardWithRealInfo key={artwork.id} artwork={artwork} />
-                ))
-              )}
-            </div>
-          )}
-
-        </div>
+        {!loading && !error && (
+          <div className="flex flex-wrap gap-6 items-start justify-center">
+            {displayedArtworks.length === 0 ? (
+              <p className="text-gray-500 text-sm mt-10">No artworks found in your collection.</p>
+            ) : (
+              displayedArtworks.map(artwork => (
+                <CardWithRealInfo key={artwork.id} artwork={artwork} />
+              ))
+            )}
+          </div>
+        )}
       </div>
-
-      <Footer />
     </div>
   );
 };

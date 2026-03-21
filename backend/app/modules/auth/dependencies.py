@@ -6,6 +6,7 @@ from fastapi import HTTPException, status
 from app.core.config import settings
 from jose import JWTError, jwt
 from app.modules.auth import models
+from app.modules.ArtistOnboarding.model import Artist
 
 #points to the "auth/login" endpoint for token retrieval
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl = "/auth/login")
@@ -38,3 +39,11 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
     
     return user
+
+def get_current_artist(current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if current_user.role != "artist":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Artist access required",
+        )
+    return current_user
