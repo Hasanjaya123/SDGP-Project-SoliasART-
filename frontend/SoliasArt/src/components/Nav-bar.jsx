@@ -3,12 +3,13 @@ import { BiSearch, BiCompass, BiCollection, BiTimeFive, BiMap, BiSave, BiMoon, B
 import { BsGrid } from 'react-icons/bs';
 import { HiOutlineNewspaper } from 'react-icons/hi';
 import logoImage from '../assets/soliasartlogo.png';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const Sidebar = ({ isDarkMode, toggleTheme }) => {
 
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
@@ -28,6 +29,32 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
         
         if (response.ok) {
           const data = await response.json();
+
+          // Get artist details if the user is an artist
+          if (data.role === 'artist') {
+            try {
+        
+              const artistRes = await fetch(`${API_BASE}/artists/profile`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+              });
+              
+              if (artistRes.ok) {
+                const artistData = await artistRes.json();
+                
+                // Override the empty user picture with the real Artist picture
+                if (artistData.artist?.profileImageUrl) {
+                  data.profile_image = artistData.artist.profileImageUrl;
+                }
+                
+                if (artistData.artist?.id) {
+                  data.artist_id = artistData.artist.id; 
+                }
+              }
+            } catch (artistErr) {
+              console.error("Failed to fetch artist image for sidebar:", artistErr);
+            }
+          }
+
           setUserData(data);
         }
         else {
@@ -50,7 +77,7 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
  
   const mainLinks = [
     { icon: <BiCompass size={24} />, label: "Explore", path: "/search" }, 
-    { icon: <HiOutlineNewspaper size={24} />, label: "Feed", path: "/search" }, 
+    { icon: <HiOutlineNewspaper size={24} />, label: "Feed", path: "/feed" }, 
     { icon: <BiCollection size={24} />, label: "Collections", path: "/collections" },  
     { icon: <BiMap size={24} />, label: "ArtMaps", path: "/map" },
   ];
@@ -65,7 +92,17 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
     },
   ];
 
-  const linkClass = "flex items-center gap-4 px-4 py-3 text-gray-500 hover:text-[#C58940] hover:bg-yellow-50 rounded-lg transition-colors cursor-pointer group";
+  // Active tab state
+  const getLinkClass = (path) => {
+    // Check if the current URL matches the link's path
+    const isActive = location.pathname === path;
+
+    return `flex items-center gap-4 px-4 py-3 rounded-lg transition-colors cursor-pointer ${
+      isActive 
+        ? '!text-[#1D4A73] dark:!text-[#3A8AD9] font-bold' 
+        : 'text-gray-500 hover:text-[#C58940] hover:bg-yellow-50 dark:hover:bg-gray-800 font-medium'
+    }`;
+  };
 
   // Safely extract user details or fallback to default values
   const defaultAvatar = "https://ik.imagekit.io/sjunnxn6x/Profile-Pictures/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3383.avif";
@@ -75,7 +112,7 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
   
   // Route them to the correct profile page based on their role
   const profileLink = userData?.role === 'artist' 
-    ? `/artist/profile/${userData.id}` 
+    ? `/artist/profile/${userData.artist_id || userData.id}`
     : `/buyer/profile`;
 
   return (
@@ -94,7 +131,7 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
       <nav className="flex flex-col gap-2">
 
         {mainLinks.map((item, index) => (
-          <Link key={index} to={item.path} className={linkClass}>
+          <Link key={index} to={item.path} className={getLinkClass(item.path)}>
             <span className="group-hover:text-[#C58940]">{item.icon}</span>
             <span className="text-lg font-medium">{item.label}</span>
           </Link>
@@ -107,7 +144,7 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
           // If it has an action (like Dark Mode), keep it as a clickable div
           if (item.action) {
             return (
-              <div key={index} className={linkClass} onClick={item.action}>
+              <div key={index} className={getLinkClass(item.path)} onClick={item.action}>
                 <span className="group-hover:text-[#C58940]">{item.icon}</span>
                 <span className="text-lg font-medium">{item.label}</span>
               </div>
@@ -115,7 +152,7 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
           }
           // Otherwise, it's a page link
           return (
-            <Link key={index} to={item.path} className={linkClass}>
+            <Link key={index} to={item.path} className={getLinkClass(item.path)}>
               <span className="group-hover:text-[#C58940]">{item.icon}</span>
               <span className="text-lg font-medium">{item.label}</span>
             </Link>
@@ -153,7 +190,7 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
         {/* Logout Button */}
         <button 
           onClick={handleLogout}
-          className="flex items-center gap-3 p-2 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors w-full focus:outline-none"
+          className="flex items-center gap-3 p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-red-500 hover:!border-transparent  dark:hover:text-red-400 transition-colors w-full focus:outline-none group"
         >
           <BiLogOut size={22} className="ml-1" />
           <span className="font-bold">Log out</span>
