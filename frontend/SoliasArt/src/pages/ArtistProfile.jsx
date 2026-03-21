@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ICONS } from '../constants';
 import { artistProfileService } from '../services/uploadApi';
 import ArtDisplayCard from '../components/Art-card';
+import CommissionModal from '../components/CommissionModal';
 
 
 // --- Upload Post Modal ---
@@ -70,7 +71,7 @@ const CreatePostModal = ({ artist, artistId, onClose, onPostCreated }) => {
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors text-lg font-bold"
           >
-            ✕
+            âœ•
           </button>
         </div>
 
@@ -99,7 +100,7 @@ const CreatePostModal = ({ artist, artistId, onClose, onPostCreated }) => {
                 onClick={handleRemoveImage}
                 className="absolute top-2 right-2 bg-black/60 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
               >
-                ✕
+                âœ•
               </button>
             </div>
           )}
@@ -119,11 +120,10 @@ const CreatePostModal = ({ artist, artistId, onClose, onPostCreated }) => {
             />
             <label
               htmlFor="post-image-input"
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium transition-colors ${
-                selectedImage
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium transition-colors ${selectedImage
                   ? 'bg-[#FFC247]/20 text-[#b8860b] dark:text-[#FFC247]'
                   : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-700 dark:hover:text-slate-200'
-              }`}
+                }`}
             >
               <span className="material-symbols-outlined text-[20px]">image</span>
               <span>{selectedImage ? 'Image added' : 'Add image'}</span>
@@ -184,56 +184,56 @@ const PortfolioTab = ({ artworks, onArtworkClick }) => (
 const UploadsTab = ({ posts, onCreatePost, isOwner }) => (
   <div>
     {isOwner && (
-    <div className="flex justify-end mb-4">
-      <button
-        onClick={onCreatePost}
-        className="flex items-center gap-2 bg-[#FFC247] text-slate-900 font-bold text-sm px-5 py-2.5 rounded-full hover:bg-yellow-400 transition-colors shadow-sm"
-      >
-        <span className="material-symbols-outlined text-[18px]">add</span>
-        New Post
-      </button>
-    </div>
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={onCreatePost}
+          className="flex items-center gap-2 bg-[#FFC247] text-slate-900 font-bold text-sm px-5 py-2.5 rounded-full hover:bg-yellow-400 transition-colors shadow-sm"
+        >
+          <span className="material-symbols-outlined text-[18px]">add</span>
+          New Post
+        </button>
+      </div>
     )}
 
     <div className="grid grid-cols-2 md:grid-cols-3 gap-1">
-    {posts.map((post) => {
-      const thumb = post.imageUrl || post.image_url?.[0] || null;
-      const text = post.description || post.title || post.text || '';
+      {posts.map((post) => {
+        const thumb = post.imageUrl || post.image_url?.[0] || null;
+        const text = post.description || post.title || post.text || '';
 
-      return (
-      <div key={post.id} className="relative aspect-square bg-slate-100 dark:bg-zinc-800 group cursor-pointer overflow-hidden">
-        {thumb ? (
-          <img src={thumb} alt="Post" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-        ) : post.videoUrl ? (
-          <video src={post.videoUrl} className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-slate-200 dark:bg-zinc-700 text-slate-500 p-4 text-center text-sm">
-            {text.slice(0, 50)}{text.length > 50 ? '...' : ''}
+        return (
+          <div key={post.id} className="relative aspect-square bg-slate-100 dark:bg-zinc-800 group cursor-pointer overflow-hidden">
+            {thumb ? (
+              <img src={thumb} alt="Post" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+            ) : post.videoUrl ? (
+              <video src={post.videoUrl} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-slate-200 dark:bg-zinc-700 text-slate-500 p-4 text-center text-sm">
+                {text.slice(0, 50)}{text.length > 50 ? '...' : ''}
+              </div>
+            )}
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-6 text-white font-bold">
+              <div className="flex items-center gap-1">
+                {React.cloneElement(ICONS.heartSolid, { className: 'w-5 h-5' })}
+                {post.likes || 0}
+              </div>
+              <div className="flex items-center gap-1">
+                {React.cloneElement(ICONS.chat, { className: 'w-5 h-5' })}
+                {post.comments?.length || 0}
+              </div>
+            </div>
+            {post.videoUrl && (
+              <div className="absolute top-2 right-2 text-white drop-shadow-md">
+                {React.cloneElement(ICONS.video, { className: 'w-6 h-6' })}
+              </div>
+            )}
           </div>
-        )}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-6 text-white font-bold">
-          <div className="flex items-center gap-1">
-            {React.cloneElement(ICONS.heartSolid, { className: 'w-5 h-5' })}
-            {post.likes || 0}
-          </div>
-          <div className="flex items-center gap-1">
-            {React.cloneElement(ICONS.chat, { className: 'w-5 h-5' })}
-            {post.comments?.length || 0}
-          </div>
+        );
+      })}
+      {posts.length === 0 && (
+        <div className="col-span-full text-center py-20 text-slate-500 dark:text-slate-400">
+          No posts uploaded yet.
         </div>
-        {post.videoUrl && (
-          <div className="absolute top-2 right-2 text-white drop-shadow-md">
-            {React.cloneElement(ICONS.video, { className: 'w-6 h-6' })}
-          </div>
-        )}
-      </div>
-      );
-    })}
-    {posts.length === 0 && (
-      <div className="col-span-full text-center py-20 text-slate-500 dark:text-slate-400">
-        No posts uploaded yet.
-      </div>
-    )}
+      )}
     </div>
   </div>
 );
@@ -267,20 +267,7 @@ const AboutTab = ({ artist }) => (
   </div>
 );
 
-const CommissionModal = ({ artistName, onClose }) => (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 max-w-md w-full mx-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Chat with {artistName}</h2>
-        <button onClick={onClose} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
-          âœ•
-        </button>
-      </div>
-      <p className="text-slate-600 dark:text-slate-400">Commission request chat coming soon.</p>
-    </div>
-  </div>
-);
-
+// CommissionModal is now imported from '../components/CommissionModal'
 const TABS = ['portfolio', 'uploads', 'about'];
 
 const formatFollowerCount = (count) =>
@@ -291,7 +278,7 @@ const formatFollowerCount = (count) =>
 export const ArtistProfilePage = ({
 
   currentUser = { followingIds: [] },
-  onToggleFollow = () => {},
+  onToggleFollow = () => { },
 }) => {
   const { artistId: artistIdParam } = useParams();
   const navigate = useNavigate();
@@ -307,7 +294,7 @@ export const ArtistProfilePage = ({
   const [error, setError] = useState(null);
 
   // Runs whenever artistId changes (e.g. navigating to a different artist).
-  // This is the main data-fetching hook â€” it calls the backend once and
+  // This is the main data-fetching hook Ã¢â‚¬â€ it calls the backend once and
   // populates all three pieces of state (artist, artworks, posts).
   useEffect(() => {
 
@@ -354,7 +341,7 @@ export const ArtistProfilePage = ({
   // When an artwork card is clicked, navigate to that artwork's details page
   const handleArtworkClick = useCallback(
     (id) => {
-      navigate(`/artwork/${id}`); 
+      navigate(`/artwork/${id}`);
     },
     [navigate]
   );
@@ -427,11 +414,10 @@ export const ArtistProfilePage = ({
             <div className="flex flex-row gap-3 mt-4 md:mt-0 self-start md:self-center">
               <button
                 onClick={handleFollowClick}
-                className={`font-bold text-sm px-6 py-2 rounded-full shadow-sm transition-colors ${
-                  isFollowing
+                className={`font-bold text-sm px-6 py-2 rounded-full shadow-sm transition-colors ${isFollowing
                     ? 'bg-slate-200 dark:bg-zinc-800 text-slate-800 dark:text-white'
                     : 'bg-[#FFC247] text-slate-900 hover:bg-yellow-400'
-                }`}
+                  }`}
               >
                 {isFollowing ? 'Following' : 'Follow'}
               </button>
@@ -501,11 +487,10 @@ export const ArtistProfilePage = ({
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`pb-3 border-b-2 text-sm font-bold transition-colors capitalize ${
-                    activeTab === tab
+                  className={`pb-3 border-b-2 text-sm font-bold transition-colors capitalize ${activeTab === tab
                       ? 'border-slate-900 dark:border-white text-slate-900 dark:text-white'
                       : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-                  }`}
+                    }`}
                 >
                   {tab}
                 </button>
@@ -524,9 +509,11 @@ export const ArtistProfilePage = ({
         </div>
       </div>
 
-      {isChatModalOpen && (
-        <CommissionModal artistName={artist.name} onClose={closeModal} />
-      )}
+      <CommissionModal
+        isOpen={isChatModalOpen}
+        onClose={closeModal}
+        artistId={artistId}
+      />
       {isCreatePostModalOpen && (
         <CreatePostModal
           artist={artist}

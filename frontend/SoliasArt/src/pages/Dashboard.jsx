@@ -207,6 +207,16 @@ const ArtistDashboard = () => {
             </div>
 
             <a
+              href="/dashboard/commissions"
+              className="border-2 border-amber-400 text-amber-600 hover:bg-amber-50 active:scale-95 font-bold px-5 py-2 rounded-lg flex items-center gap-2 transition-all text-sm whitespace-nowrap"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              See Commissions
+            </a>
+
+            <a
               href="/dashboard/upload"
               className="bg-amber-400 hover:bg-amber-500 active:scale-95 text-slate-900 font-bold px-5 py-2.5 rounded-lg flex items-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap"
             >

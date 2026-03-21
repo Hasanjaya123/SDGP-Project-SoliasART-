@@ -1,12 +1,15 @@
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, status
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, status, Form, File, UploadFile
 from sqlalchemy.orm import Session
+from typing import Optional
+from datetime import date
 from app.core.database import get_db
+from app.core.image_kit import imagekit
 from app.modules.auth.dependencies import get_current_user, get_current_artist
 from app.modules.auth.models import User
 from app.modules.Commission.model import Commission
-from app.modules.Commission.schemas import CommissionCreate, CommissionResponse
 from app.modules.Commission import utils as email_utils
 from app.core.supabase import supabase
+from fastapi.concurrency import run_in_threadpool
 
 
 router = APIRouter()
@@ -16,22 +19,48 @@ router = APIRouter()
 # POST /commissions/ — Buyer submits a request
 # ──────────────────────────────────────────────
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def create_commission(
-    payload: CommissionCreate,
+async def create_commission(
+    title: str = Form(...),
+    description: str = Form(...),
+    medium: str = Form(...),
+    size_inches: str = Form(...),
+    proposed_budget: float = Form(...),
+    deadline: date = Form(...),
+    artist_id: str = Form(...),
+    reference_image: Optional[UploadFile] = File(None),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """A buyer creates a new commission request for an artist."""
+    """A buyer creates a new commission request for an artist (multipart/form-data)."""
+
+    # Upload reference image to ImageKit if provided
+    reference_image_url = None
+    if reference_image and reference_image.filename:
+        try:
+            image_content = await reference_image.read()
+            upload_result = await run_in_threadpool(
+                imagekit.files.upload,
+                file=image_content,
+                file_name=reference_image.filename,
+                folder="/CommissionReferences",
+                tags=["commission-reference"],
+                is_private_file=False,
+            )
+            reference_image_url = upload_result.url
+        except Exception as e:
+            print(f"Image upload failed: {e}")
+            # Continue without image — non-critical
+
     new_commission = Commission(
-        artist_id=str(payload.artist_id),
+        artist_id=artist_id,
         buyer_id=str(current_user.id),
-        title=payload.title,
-        description=payload.description,
-        reference_image_url=payload.reference_image_url,
-        medium=payload.medium,
-        size_inches=payload.size_inches,
-        proposed_budget=payload.proposed_budget,
-        deadline=payload.deadline,
+        title=title,
+        description=description,
+        reference_image_url=reference_image_url,
+        medium=medium,
+        size_inches=size_inches,
+        proposed_budget=proposed_budget,
+        deadline=deadline,
         status="pending",
     )
 
@@ -69,7 +98,7 @@ def get_artist_commissions(
             supabase.table("commissions")
             .select("*, users(full_name, email)")
             .eq("artist_id", artist_id)
-            .eq("status", "pending")
+            .in_("status", ["pending", "accepted"])
             .order("created_at", desc=True)
             .execute()
         )

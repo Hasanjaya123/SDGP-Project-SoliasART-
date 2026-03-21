@@ -204,3 +204,40 @@ export const paymentService = {
     }
   },
 };
+
+// ── Commission Requests ────────────────────────
+export const commissionService = {
+  /**
+   * Submit a new commission request (multipart/form-data).
+   * @param {FormData} formData – contains text fields + optional reference_image file
+   */
+  submitCommission: async (formData) => {
+    try {
+      const response = await api.post('/commissions/', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Commission submission failed:", error.response?.data?.detail || error.message);
+      throw error;
+    }
+  },
+
+  /** Fetch all pending commissions for the logged-in artist */
+  getArtistCommissions: async () => {
+    const response = await api.get('/commissions/artist');
+    return response.data;
+  },
+
+  /** Artist accepts a commission */
+  acceptCommission: async (commissionId) => {
+    const response = await api.patch(`/commissions/${commissionId}/accept`);
+    return response.data;
+  },
+
+  /** Artist rejects a commission */
+  rejectCommission: async (commissionId) => {
+    const response = await api.patch(`/commissions/${commissionId}/reject`);
+    return response.data;
+  },
+};

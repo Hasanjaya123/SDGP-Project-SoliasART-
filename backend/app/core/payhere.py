@@ -12,10 +12,10 @@ def generate_payhere_hash(order_id: str, amount: str, currency: str = "LKR") -> 
     merchant_id = settings.PAYHERE_MERCHANT_ID
     merchant_secret = settings.PAYHERE_MERCHANT_SECRET
 
-    # Step 1: MD5 hash of the merchant secret (uppercase)
+    #MD5 hash of the merchant secret 
     secret_hash = hashlib.md5(merchant_secret.encode()).hexdigest().upper()
 
-    # Step 2: Concatenate and hash the full string
+    #Concatenat and hash the full string
     raw = merchant_id + order_id + amount + currency + secret_hash
     generated_hash = hashlib.md5(raw.encode()).hexdigest().upper()
 
@@ -34,7 +34,7 @@ def verify_payhere_notification(
     Verify the MD5 signature from a PayHere server notification (IPN).
     
     Verification hash formula:
-        md5(merchant_id + order_id + payhere_amount + payhere_currency + status_code + md5(merchant_secret).upper())
+        md5(merchant_id + order_id + payhere_amount + payhere_currency + status_code + md5(merchant_secret))
     """
     merchant_secret = settings.PAYHERE_MERCHANT_SECRET
 
