@@ -5,7 +5,7 @@ from uuid import UUID
 from app.core.database import get_db
 from app.modules.auth.dependencies import get_current_user
 from app.modules.auth.models import User
-from app.modules.ArtistOnboarding.model import Artist
+from app.modules.ArtistProfile.model import Artist
 from app.modules.ArtUpload.model import ArtWork
 from app.modules.Collection.model import Collection
 from app.modules.Collection.schemas import CollectionCreate, CollectionOut

@@ -4,7 +4,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.core.database import Base
-from app.modules.ArtistOnboarding.model import Artist
+from app.modules.ArtistProfile.model import Artist
 from app.modules.ArtUpload.model import ArtWork
 
 # Association table for many-to-many relationship between Collections and Artworks

@@ -24,7 +24,7 @@ import { authService } from './services/uploadApi';
 import ArtMapPage from './pages/ArtMapPage.jsx';
 import CollectionsPage from './pages/CollectionsPage';
 import CollectionDetailPage from './pages/CollectionDetailPage';
-import BuildCollections from './pages/BuildCollections';
+import CreateCollection from './pages/CreateCollection';
 import SaveWork from './pages/saveWork.jsx';
 
 
@@ -112,7 +112,7 @@ function App() {
         <Route path="/convert" element={<NotArtistGuard><ArtistOnboardingPage /></NotArtistGuard>} />
 
 
-        <Route path="/dashboard/collections/new" element={<ArtistGuard><BuildCollections /></ArtistGuard>} />
+        <Route path="/dashboard/collections/new" element={<ArtistGuard><CreateCollection /></ArtistGuard>} />
 
         {/* Pages within the main layout (pages which have sidebar and footer) */}
         <Route element={<Layout />}>

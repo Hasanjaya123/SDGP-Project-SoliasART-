@@ -4,7 +4,7 @@ import { artworkService, collectionService, authService } from '../services/uplo
 import ArtDisplayCard from '../components/Art-card';
 import soliasartlogo from "../assets/soliasartlogo.png";
 
-const BuildCollections = () => {
+const CreateCollection = () => {
     const navigate = useNavigate();
     const [artworks, setArtworks] = useState([]);
     const [selectedIds, setSelectedIds] = useState([]);
@@ -190,4 +190,4 @@ const BuildCollections = () => {
     );
 };
 
-export default BuildCollections;
+export default CreateCollection;
