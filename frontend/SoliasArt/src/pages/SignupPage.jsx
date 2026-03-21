@@ -239,7 +239,7 @@ const SignupPage = () => {
 
             <button
                 type="button"
-                className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white py-3 text-sm font-medium text-white hover:bg-gray-50 transition"
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
             >
                 <FcGoogle className="text-xl" />
                 Sign in with Google

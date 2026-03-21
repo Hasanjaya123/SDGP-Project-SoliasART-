@@ -25,6 +25,7 @@ import ArtMapPage from './pages/ArtMapPage.jsx';
 import CollectionsPage from './pages/CollectionsPage';
 import CollectionDetailPage from './pages/CollectionDetailPage';
 import BuildCollections from './pages/BuildCollections';
+import SaveWork from './pages/saveWork.jsx';
 
 
 // Verifies role against backend, not just the JWT
@@ -69,6 +70,11 @@ function ArtistGuard({ children }) {
 
   return children;
 }
+
+
+
+
+
 
 
 function App() {
