@@ -31,7 +31,12 @@ app = FastAPI(title=settings.PROJECT_NAME)
 Base.metadata.create_all(bind=engine)
 
 
-origins = ["http://localhost:5173", "http://localhost:3000", "http://112.134.206.49:5173","http://112.134.206.49:8000"]
+origins = [
+    "http://localhost:5173", 
+    "http://localhost:3000", 
+    "http://192.168.1.10:5173",
+    "http://192.168.1.10:8000"
+]
 
 
 app.add_middleware(

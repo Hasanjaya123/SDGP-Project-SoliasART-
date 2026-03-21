@@ -275,7 +275,7 @@ export const commissionService = {
     }
   },
 
- 
+
   getArtistCommissions: async () => {
     const response = await api.get('/commissions/artist');
     return response.data;
@@ -293,8 +293,5 @@ export const commissionService = {
     return response.data;
   },
 };
-<<<<<<< HEAD
-=======
 
 export { api };
->>>>>>> a8486ad301b5f493296b757f9fe48d6857b7a615

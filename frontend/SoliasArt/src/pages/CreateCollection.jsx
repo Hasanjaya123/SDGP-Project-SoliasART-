@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { artworkService, collectionService, authService } from '../services/uploadApi';
+import { artworkService, collectionService, authService, artistProfileService } from '../services/uploadApi';
 import ArtDisplayCard from '../components/Art-card';
 import soliasartlogo from "../assets/soliasartlogo.png";
 
