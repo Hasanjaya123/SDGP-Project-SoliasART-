@@ -137,9 +137,8 @@ const SaveWork = () => {
 
   // Navigate to artist onboarding, passing the user's id as a param
   const handleBecomeArtist = () => {
-    const userId = userData?.id || userData?.user_id || '';
-    navigate(`/artist/onboarding/${userId}`);
-  };
+  navigate('/convert');
+};
 
   return (
     <div className="dark min-h-screen bg-gray-950 flex flex-col p-4 md:p-8">
