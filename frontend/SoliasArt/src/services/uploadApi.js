@@ -208,7 +208,9 @@ export const collectionService = {
   deleteCollection: async (collectionId) => {
     const response = await api.delete(`/api/collections/${collectionId}`);
     return response.data;
-  }
+  },
+};
+
 export const paymentService = {
     initiatePayment: async (artworkIds) => {
       try {

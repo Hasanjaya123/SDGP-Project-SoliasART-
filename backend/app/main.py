@@ -17,13 +17,10 @@ from app.modules.ArtSearch.router import router as art_search_router
 from app.core.database import Base, engine
 from app.modules.savework.router import router as savework_router  
 from app.modules.PostUpload.router import router as post_upload_router
-<<<<<<< HEAD
 from app.modules.ArtistDashbooard.router import router as dashboard_router             
 from app.modules.Collection.router import router as collections_router
-=======
 from app.modules.ArtistDashbooard.router import router as dashboard_router
 from app.modules.PayHere.router import router as payhere_router
->>>>>>> 5ce0b5e9ce6c18b80759345a233b7e2f9778a360
 
 
 

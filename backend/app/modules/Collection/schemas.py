@@ -10,7 +10,7 @@ class ArtworkSimple(BaseModel):
     price: float
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class CollectionCreate(BaseModel):
     name: str
@@ -26,4 +26,4 @@ class CollectionOut(BaseModel):
     artworks: List[ArtworkSimple]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
