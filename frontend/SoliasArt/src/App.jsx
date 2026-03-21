@@ -18,11 +18,61 @@ import CartPage from './pages/CartPage';
 import ArtSearch from './pages/ArtSearch.jsx';
 
 import ArtistDashboard from './pages/Dashboard.jsx';
+import CommissionRequestsPage from './pages/CommissionRequestsPage.jsx';
 
-import CollectionsPage from "./pages/CollectionsPage";
-import CollectionDetailPage from "./pages/CollectionDetailPage";
-import { ArtistSearch } from "./components/ArtistSearch";
-import { ArtistProfilePage } from "./pages/ArtistProfile";
+import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
+import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
+import { jwtDecode } from "jwt-decode";
+import { authService } from './services/uploadApi';
+import ArtMapPage from './pages/ArtMapPage.jsx';
+import SaveWork from './pages/saveWork.jsx';
+
+
+// Verifies role against backend, not just the JWT
+function NotArtistGuard({ children }) {
+  const [verified, setVerified] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setVerified(false);
+      return;
+    }
+
+    authService.verifyRole()
+      .then((data) => setVerified(data.role === 'artist'))
+      .catch(() => setVerified(false));
+  }, []);
+
+  if (verified === null) return null;
+  if (verified) return <Navigate to="/search" replace />;
+
+  return children;
+}
+
+function ArtistGuard({ children }) {
+  const [verified, setVerified] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setVerified(false);
+      return;
+    }
+
+    authService.verifyRole()
+      .then((data) => setVerified(data.role === 'buyer'))
+      .catch(() => setVerified(false));
+  }, []);
+
+  if (verified === null) return null;
+  if (verified) return <Navigate to="/search" replace />;
+
+  return children;
+}
+
+
+
 
 import { artworks } from "./data/mockData";
 
@@ -62,7 +112,6 @@ function App() {
         {/* Artist on boarding page */}
         <Route path="/convert" element={<NotArtistGuard><ArtistOnboardingPage /></NotArtistGuard>} />
 
-        <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
 
         {/* Pages within the main layout (pages which have sidebar and footer) */}
         <Route element={<Layout />}>
@@ -75,6 +124,9 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/map" element={<ArtMapPage />} />
           <Route path="/buyer/profile" element={<SaveWork />} />
+
+          <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
+          <Route path="/dashboard/commissions" element={<ArtistGuard><CommissionRequestsPage /></ArtistGuard>} />
 
         </Route>
 

@@ -3,7 +3,9 @@ from app.modules.auth.models import User
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.modules.ArtistOnboarding.schemas import ArtistUploadRequest
-from app.modules.ArtistOnboarding.model import Artist
+from app.modules.ArtistProfile.model import Artist
+from app.core.image_kit import imagekit
+from app.core.supabase import supabase
 from app.modules.auth.dependencies import get_current_user
 
 router = APIRouter(prefix="/user/settings", tags=["ConvertToArtist"])

@@ -1,29 +1,37 @@
 import React, { useState } from 'react';
 import { FiHeart } from 'react-icons/fi'; 
 import { FaHeart } from 'react-icons/fa';
+import { api } from '../services/uploadApi';
+const LikeButton = ({ artworkId, initialLikes, initialIsLiked = false, currentUserId, isLiked: isLikedProp, onClick }) => {
 
-const LikeButton = ({ artworkId, initialLikes, initialIsLiked = false, currentUserId }) => {
-  const [likes, setLikes] = useState(initialLikes || 0);
-  const [isLiked, setIsLiked] = useState(initialIsLiked);
+  const [localLikes, setLocalLikes] = useState(initialLikes || 0);
+  const [localIsLiked, setLocalIsLiked] = useState(initialIsLiked);
+  const isControlled = isLikedProp !== undefined && onClick !== undefined;
+  const currentIsLiked = isControlled ? isLikedProp : localIsLiked;
 
   const handleLikeClick = async (e) => {
     e.stopPropagation(); // Prevents triggering other clicks if this is inside a feed card
 
-    // Instantly change the button state
-    setLikes(isLiked ? likes - 1 : likes + 1);
-    setIsLiked(!isLiked);
+    if (isControlled) {
+      onClick(e);
+      return;
+    }
 
-    // Send to backend
+    // IF BUTTON IS INDEPENDENT: Use the local state and JWT token
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert("Please log in to like artworks!");
+      return;
+    }
+
+    setLocalLikes(localIsLiked ? localLikes - 1 : localLikes + 1);
+    setLocalIsLiked(!localIsLiked);
+
     try {
-      await fetch(`http://localhost:8000/api/artworks/${artworkId}/like`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: currentUserId })
-      });
+      await api.post(`/api/artworks/${artworkId}/like`);
     } catch (error) {
-      // If the backend fails, revert the button back to its original state
-      setLikes(isLiked ? likes + 1 : likes - 1);
-      setIsLiked(isLiked);
+      setLocalLikes(localIsLiked ? localLikes + 1 : localLikes - 1);
+      setLocalIsLiked(localIsLiked);
       console.error("Failed to update like status");
     }
   };
@@ -34,7 +42,7 @@ const LikeButton = ({ artworkId, initialLikes, initialIsLiked = false, currentUs
       className="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors !outline-none focus:!outline-none hover:!outline-none !border-transparent focus:!ring-0"
     >
       {/* Swap between the filled heart and outlined heart based on state */}
-      {isLiked ? (
+      {currentIsLiked ? (
         <FaHeart className="w-8 h-8 text-red-500 transition-transform scale-110 drop-shadow-md" />
       ) : (
         <FiHeart 

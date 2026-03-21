@@ -24,13 +24,12 @@ const INITIAL_DATA = {
 const UploadArtPage = () => {
   
   const navigate = useNavigate()
-  //const { artistId } = useParams()
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(INITIAL_DATA);
   const [isDragOver, setIsDragOver] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false)
 
-  // --- Handlers ---
+
 
   const handlePublish = async () => {
     try {
@@ -130,7 +129,6 @@ const UploadArtPage = () => {
     }
   }, [formData.height, formData.width]);
 
-  // --- Render Helpers ---
 
   const renderProgressBar = () => {
     const steps = [
@@ -186,7 +184,7 @@ const UploadArtPage = () => {
     );
   };
 
-  // --- Step Components ---
+  //Step Components
 
   const renderStepMedia = () => (
     <div className="flex flex-col gap-8 animate-fade-in-up">

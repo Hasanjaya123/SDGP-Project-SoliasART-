@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import ArtDisplayCard from '../Art-card'; 
 import { useNavigate } from 'react-router-dom';
+import { api } from '../../services/uploadApi';
 
 const ArtistOtherArtworks = ({ artistId, currentArtworkId }) => {
   const [artworks, setArtworks] = useState([]);
@@ -27,8 +28,8 @@ const ArtistOtherArtworks = ({ artistId, currentArtworkId }) => {
   useEffect(() => {
     const fetchArt = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/artworks?artist_id=${artistId}`);
-        const data = await res.json();
+        const res = await api.get(`/api/artworks?artist_id=${artistId}`);
+        const data = res.data;
 
         const unsoldArt = (Array.isArray(data) ? data : []).filter(
           art => String(art.id) !== String(currentArtworkId) && art.status !== 'sold'
@@ -133,7 +134,10 @@ const ArtistOtherArtworks = ({ artistId, currentArtworkId }) => {
                   category: art.medium || art.category,
                   height: art.height_in || art.height,
                   width: art.width_in || art.width,
-                  images: [art.image_url]
+                  images: [art.image_url],
+                  artist_name: art.artists?.display_name || art.artist_name || "",
+                  views: art.view_count || art.views || 0,
+                  likes: art.likes || 0
                 }}
               />
             </div>

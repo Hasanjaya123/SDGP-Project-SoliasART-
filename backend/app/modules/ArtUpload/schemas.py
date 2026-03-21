@@ -4,16 +4,16 @@ from typing import Optional
 from uuid import UUID
 from app.modules.ArtUpload.form import as_form
 
-# --- INPUT SCHEMA (Request) ---
-@as_form
+
+@as_form 
 class ArtUploadRequest(BaseModel):
     title: str
     description: str
     medium: str
-    year: str      # Frontend sends "2024", "2023", "older"
-    framing: str   # Frontend sends "framed", "unframed"
+    year: str      
+    framing: str   
     
-    # Dimensions & Price come as strings from FormData
+   
     price: str
     weight: str
     height: str
@@ -23,19 +23,19 @@ class ArtUploadRequest(BaseModel):
     origin: str = "Colombo, Sri Lanka"
     shippingRate: str = "standard"
 
-    # -------- VALIDATORS (Pydantic v1 style) --------
-
-    @validator('year')
-    def parse_year(cls, v):
+    #VALIDATORS - Cleans the data automatically
+    @field_validator('year')
+    @classmethod
+    def parse_year(cls, v: str) -> int:
         if v.lower() == 'older':
             return 2020
         if v.isdigit():
             return int(v)
         raise ValueError("Year must be a number or 'older'")
 
-    @validator('framing')
-    def parse_framing(cls, v):
-        # DB expects Boolean (is_framed)
+    @field_validator('framing')
+    @classmethod
+    def parse_framing(cls, v: str) -> bool:
         return v.lower() == 'framed'
 
     @validator('price', 'weight', 'height', 'width', 'depth')
@@ -47,7 +47,6 @@ class ArtUploadRequest(BaseModel):
             return 0.0
 
 
-# --- OUTPUT SCHEMA (Response) ---
 class ArtWorkResponse(BaseModel):
     id: UUID
     title: str
@@ -57,4 +56,4 @@ class ArtWorkResponse(BaseModel):
     is_framed: bool
     
     class Config:
-        orm_mode = True   # ✅ Pydantic v1 uses this (NOT from_attributes)
+        from_attributes = True 

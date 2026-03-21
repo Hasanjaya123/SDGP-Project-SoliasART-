@@ -1,5 +1,4 @@
-// src/pages/ARViewer.jsx
-//
+
 // DESKTOP flow:
 //   1. User types artwork ID → clicks Generate
 //   2. Fetch GLB from backend (just to trigger server cache)
@@ -12,6 +11,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { api } from "../services/uploadApi";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
@@ -54,25 +54,16 @@ export default function ARViewer() {
     setQrReady(false); // hide QR code until we confirm backend has cached the GLB
 
     try {
-      const res = await fetch(`${BACKEND_URL}/ar/generate-ar/${id}`, {
-        headers: {
-          "ngrok-skip-browser-warning": "true" // needed when using ngrok
-        }
+      await api.get(`/ar/generate-ar/${id}`, {
+        headers: { "ngrok-skip-browser-warning": "true" },
+        responseType: "blob"
       });
-
-      // if the server returns an error (404, 500, etc)
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || `Server error: ${res.status}`);
-      }
-
-      await res.blob(); // we don't actually care about the GLB data, just want to trigger the backend processing and caching
 
       setQrReady(true); // show QR code once backend has cached the GLB
 
     } catch (e) {
       // if any error occurs (network, server, parsing), show it to the user
-      setErrorMsg(e.message);
+      setErrorMsg(e.response?.data?.detail || e.message);
 
     } finally {
       setIsLoading(false);

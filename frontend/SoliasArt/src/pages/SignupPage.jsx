@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FcGoogle } from 'react-icons/fc'; // Icon for the Google button
+import { api } from '../services/uploadApi';
 
 /**
  * SignupPage Component
@@ -73,25 +74,14 @@ const SignupPage = () => {
     try {
 
       // Send signup request to backend API
-      const response = await fetch('http://localhost:8000/auth/signup', {
-        method: 'POST', // POST request to create new user
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          first_name: formData.first_name,
-          last_name: formData.last_name,
-          email: formData.email,
-          password: formData.password,
-        }),
+      const response = await api.post('/auth/signup', {
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        email: formData.email,
+        password: formData.password,
       });
 
-      const data = await response.json(); // Parse response from server
-
-      // Check if request was successful
-      if (!response.ok) {
-        throw new Error(data.detail || "Failed to sign up");
-      }
+      const data = response.data; // Server response data
 
       // Display success message to user with their full name
       alert(`Success! Account created for ${data.full_name}`);
@@ -108,7 +98,7 @@ const SignupPage = () => {
 
     } catch (err) {
       // Catch and display any errors that occurred during signup
-      setError(err.message || "An unexpected error occurred");
+      setError(err.response?.data?.detail || err.message || "An unexpected error occurred");
     } finally {
       // Re-enable the form after request completes (success or error)
       setLoading(false);
@@ -239,7 +229,7 @@ const SignupPage = () => {
 
             <button
                 type="button"
-                className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white py-3 text-sm font-medium text-white hover:bg-gray-50 transition"
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
             >
                 <FcGoogle className="text-xl" />
                 Sign in with Google

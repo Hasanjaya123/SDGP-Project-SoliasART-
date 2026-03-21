@@ -1,8 +1,9 @@
-﻿import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ICONS } from '../constants';
 import { artistProfileService } from '../services/uploadApi';
 import ArtDisplayCard from '../components/Art-card';
+import CommissionModal from '../components/CommissionModal';
 
 
 // --- Upload Post Modal ---
@@ -70,7 +71,7 @@ const CreatePostModal = ({ artist, artistId, onClose, onPostCreated }) => {
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors text-lg font-bold"
           >
-            ✕
+            âœ•
           </button>
         </div>
 
@@ -99,7 +100,7 @@ const CreatePostModal = ({ artist, artistId, onClose, onPostCreated }) => {
                 onClick={handleRemoveImage}
                 className="absolute top-2 right-2 bg-black/60 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
               >
-                ✕
+                âœ•
               </button>
             </div>
           )}
@@ -119,11 +120,10 @@ const CreatePostModal = ({ artist, artistId, onClose, onPostCreated }) => {
             />
             <label
               htmlFor="post-image-input"
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium transition-colors ${
-                selectedImage
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium transition-colors ${selectedImage
                   ? 'bg-[#FFC247]/20 text-[#b8860b] dark:text-[#FFC247]'
                   : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-700 dark:hover:text-slate-200'
-              }`}
+                }`}
             >
               <span className="material-symbols-outlined text-[20px]">image</span>
               <span>{selectedImage ? 'Image added' : 'Add image'}</span>
@@ -151,7 +151,7 @@ const CreatePostModal = ({ artist, artistId, onClose, onPostCreated }) => {
 
 // --- Sub-components for tab content ---
 
-const PortfolioTab = ({ artworks, onArtworkClick }) => (
+const PortfolioTab = ({ artworks, onArtworkClick, artistName }) => (
   <div className="flex flex-wrap gap-6 items-start justify-start">
     {artworks.map((artwork, idx) => (
       <div
@@ -169,6 +169,9 @@ const PortfolioTab = ({ artworks, onArtworkClick }) => (
             height: artwork.height_in || '',
             width: artwork.width_in || '',
             images: artwork.image_url ? [artwork.image_url] : [],
+            artist_name: artistName || '',
+            views: artwork.view_count || artwork.views || 0,
+            likes: artwork.likes || 0
           }}
         />
       </div>
@@ -184,56 +187,56 @@ const PortfolioTab = ({ artworks, onArtworkClick }) => (
 const UploadsTab = ({ posts, onCreatePost, isOwner }) => (
   <div>
     {isOwner && (
-    <div className="flex justify-end mb-4">
-      <button
-        onClick={onCreatePost}
-        className="flex items-center gap-2 bg-[#FFC247] text-slate-900 font-bold text-sm px-5 py-2.5 rounded-full hover:bg-yellow-400 transition-colors shadow-sm"
-      >
-        <span className="material-symbols-outlined text-[18px]">add</span>
-        New Post
-      </button>
-    </div>
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={onCreatePost}
+          className="flex items-center gap-2 bg-[#FFC247] text-slate-900 font-bold text-sm px-5 py-2.5 rounded-full hover:bg-yellow-400 transition-colors shadow-sm"
+        >
+          <span className="material-symbols-outlined text-[18px]">add</span>
+          New Post
+        </button>
+      </div>
     )}
 
     <div className="grid grid-cols-2 md:grid-cols-3 gap-1">
-    {posts.map((post) => {
-      const thumb = post.imageUrl || post.image_url?.[0] || null;
-      const text = post.description || post.title || post.text || '';
+      {posts.map((post) => {
+        const thumb = post.imageUrl || post.image_url?.[0] || null;
+        const text = post.description || post.title || post.text || '';
 
-      return (
-      <div key={post.id} className="relative aspect-square bg-slate-100 dark:bg-zinc-800 group cursor-pointer overflow-hidden">
-        {thumb ? (
-          <img src={thumb} alt="Post" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-        ) : post.videoUrl ? (
-          <video src={post.videoUrl} className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-slate-200 dark:bg-zinc-700 text-slate-500 p-4 text-center text-sm">
-            {text.slice(0, 50)}{text.length > 50 ? '...' : ''}
+        return (
+          <div key={post.id} className="relative aspect-square bg-slate-100 dark:bg-zinc-800 group cursor-pointer overflow-hidden">
+            {thumb ? (
+              <img src={thumb} alt="Post" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+            ) : post.videoUrl ? (
+              <video src={post.videoUrl} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-slate-200 dark:bg-zinc-700 text-slate-500 p-4 text-center text-sm">
+                {text.slice(0, 50)}{text.length > 50 ? '...' : ''}
+              </div>
+            )}
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-6 text-white font-bold">
+              <div className="flex items-center gap-1">
+                {React.cloneElement(ICONS.heartSolid, { className: 'w-5 h-5' })}
+                {post.likes || 0}
+              </div>
+              <div className="flex items-center gap-1">
+                {React.cloneElement(ICONS.chat, { className: 'w-5 h-5' })}
+                {post.comments?.length || 0}
+              </div>
+            </div>
+            {post.videoUrl && (
+              <div className="absolute top-2 right-2 text-white drop-shadow-md">
+                {React.cloneElement(ICONS.video, { className: 'w-6 h-6' })}
+              </div>
+            )}
           </div>
-        )}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-6 text-white font-bold">
-          <div className="flex items-center gap-1">
-            {React.cloneElement(ICONS.heartSolid, { className: 'w-5 h-5' })}
-            {post.likes || 0}
-          </div>
-          <div className="flex items-center gap-1">
-            {React.cloneElement(ICONS.chat, { className: 'w-5 h-5' })}
-            {post.comments?.length || 0}
-          </div>
+        );
+      })}
+      {posts.length === 0 && (
+        <div className="col-span-full text-center py-20 text-slate-500 dark:text-slate-400">
+          No posts uploaded yet.
         </div>
-        {post.videoUrl && (
-          <div className="absolute top-2 right-2 text-white drop-shadow-md">
-            {React.cloneElement(ICONS.video, { className: 'w-6 h-6' })}
-          </div>
-        )}
-      </div>
-      );
-    })}
-    {posts.length === 0 && (
-      <div className="col-span-full text-center py-20 text-slate-500 dark:text-slate-400">
-        No posts uploaded yet.
-      </div>
-    )}
+      )}
     </div>
   </div>
 );
@@ -267,20 +270,7 @@ const AboutTab = ({ artist }) => (
   </div>
 );
 
-const CommissionModal = ({ artistName, onClose }) => (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 max-w-md w-full mx-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Chat with {artistName}</h2>
-        <button onClick={onClose} className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
-          âœ•
-        </button>
-      </div>
-      <p className="text-slate-600 dark:text-slate-400">Commission request chat coming soon.</p>
-    </div>
-  </div>
-);
-
+// CommissionModal is now imported from '../components/CommissionModal'
 const TABS = ['portfolio', 'uploads', 'about'];
 
 const formatFollowerCount = (count) =>
@@ -288,11 +278,7 @@ const formatFollowerCount = (count) =>
 
 // --- Main Page Component ---
 
-export const ArtistProfilePage = ({
-
-  currentUser = { followingIds: [] },
-  onToggleFollow = () => {},
-}) => {
+export const ArtistProfilePage = () => {
   const { artistId: artistIdParam } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('portfolio');
@@ -302,12 +288,14 @@ export const ArtistProfilePage = ({
   const [artist, setArtist] = useState(null);
   const [artworks, setArtworks] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [isFollowLoading, setIsFollowLoading] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Runs whenever artistId changes (e.g. navigating to a different artist).
-  // This is the main data-fetching hook â€” it calls the backend once and
+  // This is the main data-fetching hook Ã¢â‚¬â€ it calls the backend once and
   // populates all three pieces of state (artist, artworks, posts).
   useEffect(() => {
 
@@ -332,6 +320,13 @@ export const ArtistProfilePage = ({
         setArtist(data.artist);
         setArtworks(Array.isArray(data.artworks) ? data.artworks : []);
         setPosts(Array.isArray(data.posts) ? data.posts : []);
+
+        // Fetch follow status
+        if (data.artist?.id) {
+          artistProfileService.checkIsFollowing(data.artist.id)
+            .then(res => { if (!cancelled) setIsFollowing(res.is_following); })
+            .catch(err => console.error("Follow status check error:", err));
+        }
       })
       .catch((err) => {
         if (cancelled) return;
@@ -344,17 +339,30 @@ export const ArtistProfilePage = ({
     return () => { cancelled = true; };
   }, [artistIdParam]);
 
-  const isFollowing = currentUser?.followingIds?.includes(artistId) ?? false;
-
-  const handleFollowClick = useCallback(() => {
-
-    onToggleFollow(artistId);
-  }, [artistId, onToggleFollow]);
+  const handleFollowClick = async () => {
+    if (!artistId || isFollowLoading) return;
+    setIsFollowLoading(true);
+    try {
+      if (isFollowing) {
+        await artistProfileService.unfollowArtist(artistId);
+        setIsFollowing(false);
+        setArtist(prev => ({ ...prev, followers: Math.max(0, (parseInt(prev.followers) || 0) - 1) }));
+      } else {
+        await artistProfileService.followArtist(artistId);
+        setIsFollowing(true);
+        setArtist(prev => ({ ...prev, followers: (parseInt(prev.followers) || 0) + 1 }));
+      }
+    } catch (err) {
+      console.error('Follow toggle failed:', err);
+    } finally {
+      setIsFollowLoading(false);
+    }
+  };
 
   // When an artwork card is clicked, navigate to that artwork's details page
   const handleArtworkClick = useCallback(
     (id) => {
-      navigate(`/artwork/${id}`); 
+      navigate(`/artwork/${id}`);
     },
     [navigate]
   );
@@ -406,8 +414,9 @@ export const ArtistProfilePage = ({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="px-4 md:px-8 pb-8 -mt-20 relative">
-          {/* Avatar and Actions Row */}
-          <div className="flex flex-col md:flex-row items-end md:items-center justify-between gap-4">
+          {/* Avatar Row */}
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            {/* Avatar */}
             <div className="relative">
               <div className="size-32 md:size-36 rounded-full border-4 border-white dark:border-zinc-900 shadow-md bg-white dark:bg-zinc-800 overflow-hidden">
                 <img
@@ -422,16 +431,17 @@ export const ArtistProfilePage = ({
                 </span>
               )}
             </div>
-            <div className="flex gap-3 mb-4 md:mb-8">
+            {/* Follow and Commission Buttons - right aligned */}
+            <div className="flex flex-row gap-3 mt-4 md:mt-0 self-start md:self-center">
               <button
                 onClick={handleFollowClick}
-                className={`font-bold text-sm px-6 py-2 rounded-full shadow-sm transition-colors ${
-                  isFollowing
+                disabled={isFollowLoading}
+                className={`font-bold text-sm px-6 py-2 rounded-full shadow-sm transition-colors disabled:opacity-50 ${isFollowing
                     ? 'bg-slate-200 dark:bg-zinc-800 text-slate-800 dark:text-white'
                     : 'bg-[#FFC247] text-slate-900 hover:bg-yellow-400'
-                }`}
+                  }`}
               >
-                {isFollowing ? 'Following' : 'Follow'}
+                {isFollowLoading ? '...' : (isFollowing ? 'Unfollow' : 'Follow')}
               </button>
               <button
                 onClick={openModal}
@@ -441,9 +451,9 @@ export const ArtistProfilePage = ({
               </button>
             </div>
           </div>
-          {/* Artist Info */}
+          {/* Artist Info (below avatar, full width) */}
           <div className="mt-4">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">{artist.name}</h1>
               {artist.specialty && (
                 <span className="flex items-center gap-1 bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
@@ -465,7 +475,6 @@ export const ArtistProfilePage = ({
                 </div>
               )}
             </div>
-
             {/* Tags */}
             {artist.styles?.length > 0 && (
               <div className="flex gap-2 mt-4 flex-wrap">
@@ -500,11 +509,10 @@ export const ArtistProfilePage = ({
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`pb-3 border-b-2 text-sm font-bold transition-colors capitalize ${
-                    activeTab === tab
+                  className={`pb-3 border-b-2 text-sm font-bold transition-colors capitalize ${activeTab === tab
                       ? 'border-slate-900 dark:border-white text-slate-900 dark:text-white'
                       : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-                  }`}
+                    }`}
                 >
                   {tab}
                 </button>
@@ -515,7 +523,7 @@ export const ArtistProfilePage = ({
           {/* Tab Content */}
           <div className="mt-8 min-h-[400px]">
             {activeTab === 'portfolio' && (
-              <PortfolioTab artworks={artworks} onArtworkClick={handleArtworkClick} />
+              <PortfolioTab artworks={artworks} onArtworkClick={handleArtworkClick} artistName={artist?.display_name || artist?.name || ''} />
             )}
             {activeTab === 'uploads' && <UploadsTab posts={posts} onCreatePost={openCreatePost} isOwner={artist?.owner} />}
             {activeTab === 'about' && <AboutTab artist={artist} />}
@@ -523,9 +531,11 @@ export const ArtistProfilePage = ({
         </div>
       </div>
 
-      {isChatModalOpen && (
-        <CommissionModal artistName={artist.name} onClose={closeModal} />
-      )}
+      <CommissionModal
+        isOpen={isChatModalOpen}
+        onClose={closeModal}
+        artistId={artistId}
+      />
       {isCreatePostModalOpen && (
         <CreatePostModal
           artist={artist}

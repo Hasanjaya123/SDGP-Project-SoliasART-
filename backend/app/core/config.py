@@ -14,24 +14,13 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 300
 
-    # Email
-    MAIL_USERNAME: str
-    MAIL_PASSWORD: str
-    MAIL_FROM: str
-    MAIL_PORT: int
-    MAIL_SERVER: str
-    MAIL_STARTTLS: bool
-    MAIL_SSL_TLS: bool
+    # PayHere Payment Gateway
+    PAYHERE_MERCHANT_ID: str = ""
+    PAYHERE_MERCHANT_SECRET: str = ""
 
-    # ImageKit
-    IMAGEKIT_PRIVATE_KEY: str
-
-    # PayHere
-    PAYHERE_MERCHANT_ID: str
-    PAYHERE_MERCHANT_SECRET: str
-
-    class Config:
-        env_file = ".env"
-
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        extra="ignore"
+    )
 
 settings = Settings()

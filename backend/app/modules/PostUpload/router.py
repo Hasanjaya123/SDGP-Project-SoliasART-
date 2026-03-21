@@ -5,6 +5,7 @@ from typing import Optional
 from app.core.database import get_db
 from app.modules.PostUpload.model import Post
 from app.modules.PostUpload.schemas import PostUploadRequest, PostResponse
+from app.modules.ArtUpload.embeddings import generate_image_embedding
 
 router = APIRouter(prefix="/artists", tags=["PostUpload"])
 
@@ -19,27 +20,48 @@ async def upload_post(
     image_links = []
 
     try:
-        # ✅ TEMP: Skip Supabase check (assume artist exists)
+        #Verify artist exists
+        profile_response = supabase.table("artists").select("id").eq("id", artist_id).execute()
+        if not profile_response.data:
+            raise HTTPException(status_code=404, detail="Artist not found.")
 
-        # 1. Require at least some content
+        #Require at least some content
         has_images = images and images.filename
         if not form_data.title and not form_data.description and not has_images:
             raise HTTPException(
                 status_code=422,
                 detail="A post must have at least a title, description, or image.",
             )
+            
+        first_image_bytes = await images.read()
+        await images.seek(0)
+        
+        #Create embeddings
+        vector_embedding = await run_in_threadpool(generate_image_embedding, first_image_bytes)
 
-        # 2. Handle image (skip ImageKit)
+        # Upload images to ImageKit Posts folder
         if has_images:
             await images.read()
             image_links.append("https://via.placeholder.com/300")
 
-        # 3. Save to DB
+            upload_result = await run_in_threadpool(
+                imagekit.files.upload,
+                file=image_content,
+                file_name=images.filename,
+                folder="/Posts",
+                tags=["python-app"],
+                is_private_file=False
+            )
+
+            image_links.append(upload_result.url)
+
+        #Persist to the post table
         new_post = Post(
             title=form_data.title or None,
             description=form_data.description or None,
             image_url=image_links,
             artist_id=artist_id,
+            embedding=vector_embedding
         )
 
         db.add(new_post)
