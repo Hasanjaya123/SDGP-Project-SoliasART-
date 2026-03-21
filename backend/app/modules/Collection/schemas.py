@@ -6,7 +6,7 @@ from datetime import datetime
 class ArtworkSimple(BaseModel):
     id: UUID
     title: str
-    image_url: List[str]
+    imageUrls: List[str]
     price: float
 
     class Config:

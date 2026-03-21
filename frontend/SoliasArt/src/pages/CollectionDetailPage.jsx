@@ -74,7 +74,7 @@ export const CollectionDetailPage = ({
       {/* Hero Header Section */}
       <div className="relative h-80 md:h-[400px] rounded-2xl overflow-hidden shadow-2xl mb-12">
         <img
-          src={collection.coverImageUrl || (artworks[0]?.image_url?.[0]) || 'https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&w=800&q=80'}
+          src={collection.coverImageUrl || (artworks[0]?.imageUrls?.[0]) || 'https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&w=800&q=80'}
           alt={collection.name}
           className="w-full h-full object-cover"
         />

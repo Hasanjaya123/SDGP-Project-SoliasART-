@@ -45,7 +45,7 @@ const CollectionsPage = () => {
                     >
                         <div className="md:w-1/2">
                             <img
-                                src={collection.artworks?.[0]?.image_url?.[0] || 'https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&w=800&q=80'}
+                                src={collection.artworks?.[0]?.imageUrls?.[0] || 'https://via.placeholder.com/600x400?text=No+Image'}
                                 alt={collection.name}
                                 className="h-64 w-full object-cover md:h-full"
                             />

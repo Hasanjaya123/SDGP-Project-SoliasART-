@@ -26,8 +26,7 @@ const BuildCollections = () => {
                 }
                 
                 // We need the artist profile to get the artist ID
-                // The backend dashboard_router might have this info or we can get it from profiles
-                const profile = await api_get_profile(); // Helper to get own profile
+                const profile = await artistProfileService.getProfile();
                 setArtistId(profile.id);
 
                 const userArtworks = await artworkService.getArtworksByArtist(profile.id);
@@ -43,15 +42,6 @@ const BuildCollections = () => {
         loadInitialData();
     }, [navigate]);
 
-    // Helper because I haven't implemented it in uploadApi yet, 
-    // but I'll use the existing artistProfileService.getProfile() if it exists
-    const api_get_profile = async () => {
-        const response = await fetch('http://localhost:8000/artists/profile', {
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-        });
-        if (!response.ok) throw new Error("Failed to get profile");
-        return response.json();
-    };
 
     const toggleSelection = (id) => {
         setSelectedIds(prev => 
@@ -172,14 +162,14 @@ const BuildCollections = () => {
                                         onClick={() => toggleSelection(art.id)}
                                     >
                                         <ArtDisplayCard 
-                                            image={Array.isArray(art.image_url) ? art.image_url[0] : art.image_url} 
+                                            image={Array.isArray(art.imageUrls) ? art.imageUrls[0] : art.imageUrls} 
                                             formData={{
                                                 title: art.title,
                                                 price: art.price,
                                                 category: art.medium || '',
                                                 height: art.height_in || '',
                                                 width: art.width_in || '',
-                                                images: Array.isArray(art.image_url) ? art.image_url : [art.image_url]
+                                                images: Array.isArray(art.imageUrls) ? art.imageUrls : [art.imageUrls]
                                             }} 
                                         />
                                         {selectedIds.includes(art.id) && (
