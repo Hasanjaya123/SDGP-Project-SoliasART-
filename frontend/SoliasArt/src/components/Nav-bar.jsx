@@ -4,6 +4,7 @@ import { BsGrid } from 'react-icons/bs';
 import { HiOutlineNewspaper } from 'react-icons/hi';
 import logoImage from '../assets/soliasartlogo.png';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { api } from '../services/uploadApi';
 
 const Sidebar = ({ isDarkMode, toggleTheme }) => {
 
@@ -23,46 +24,34 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
       }
 
       try {
-        const response = await fetch(`${API_BASE}/auth/me`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
+        const response = await api.get('/auth/me');
+        const data = response.data;
 
-          // Get artist details if the user is an artist
-          if (data.role === 'artist') {
-            try {
-        
-              const artistRes = await fetch(`${API_BASE}/artists/profile`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-              });
-              
-              if (artistRes.ok) {
-                const artistData = await artistRes.json();
-                
-                // Override the empty user picture with the real Artist picture
-                if (artistData.artist?.profileImageUrl) {
-                  data.profile_image = artistData.artist.profileImageUrl;
-                }
-                
-                if (artistData.artist?.id) {
-                  data.artist_id = artistData.artist.id; 
-                }
-              }
-            } catch (artistErr) {
-              console.error("Failed to fetch artist image for sidebar:", artistErr);
+        // Get artist details if the user is an artist
+        if (data.role === 'artist') {
+          try {
+      
+            const artistRes = await api.get('/artists/profile');
+            const artistData = artistRes.data;
+            
+            // Override the empty user picture with the real Artist picture
+            if (artistData.artist?.profileImageUrl) {
+              data.profile_image = artistData.artist.profileImageUrl;
             }
+            
+            if (artistData.artist?.id) {
+              data.artist_id = artistData.artist.id; 
+            }
+          } catch (artistErr) {
+            console.error("Failed to fetch artist image for sidebar:", artistErr.response?.data?.detail || artistErr.message);
           }
+        }
 
-          setUserData(data);
-        }
-        else {
-          handleLogout();
-        }
+        setUserData(data);
 
       } catch (error) {
-        console.error("Failed to fetch user data in sidebar:", error);
+        console.error("Failed to fetch user data in sidebar:", error.response?.data?.detail || error.message);
+        handleLogout();
       }
     };
 

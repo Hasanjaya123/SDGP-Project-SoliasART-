@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';        
 import ArtDisplayCard from '../components/Art-card';  
 import UserProfile from '../comp/UserProfile';
-
-const API_BASE = import.meta.env.VITE_BACKEND_URL ||"http://localhost:8000";
+import { api } from '../services/uploadApi';
 
 
 // ─── Seeded random so numbers stay stable across re-renders ───
@@ -112,17 +111,18 @@ const SaveWork = () => {
         const headers = { 'Authorization': `Bearer ${token}` };
 
         // Fetch User Info
-        const userRes = await fetch(`${API_BASE}/auth/me`, { headers });
-        if (userRes.ok) setUserData(await userRes.json());
+        try {
+          const userRes = await api.get('/auth/me');
+          setUserData(userRes.data);
+        } catch (e) {
+          // gracefully handle missing user info if needed
+        }
 
         // Fetch saved artworks
-        const artRes = await fetch(`${API_BASE}/savework/user/saved`, { headers });
-        if (!artRes.ok) throw new Error(`Status: ${artRes.status}`);
-        
-        const data = await artRes.json();
-        setArtworks(data);
+        const artRes = await api.get('/savework/user/saved');
+        setArtworks(artRes.data);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.detail || err.message);
       } finally {
         setLoading(false);
       }
