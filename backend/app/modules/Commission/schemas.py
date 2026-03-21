@@ -5,7 +5,7 @@ from uuid import UUID
 
 
 class CommissionCreate(BaseModel):
-    """Schema for submitting a new commission request."""
+
     artist_id: UUID
     title: str
     description: str
@@ -17,7 +17,7 @@ class CommissionCreate(BaseModel):
 
 
 class CommissionResponse(BaseModel):
-    """Schema for returning commission data."""
+ 
     id: UUID
     artist_id: UUID
     buyer_id: UUID

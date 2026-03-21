@@ -14,10 +14,6 @@ from fastapi.concurrency import run_in_threadpool
 
 router = APIRouter()
 
-
-# ──────────────────────────────────────────────
-# POST /commissions/ — Buyer submits a request
-# ──────────────────────────────────────────────
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_commission(
     title: str = Form(...),
@@ -38,6 +34,7 @@ async def create_commission(
     if reference_image and reference_image.filename:
         try:
             image_content = await reference_image.read()
+            
             upload_result = await run_in_threadpool(
                 imagekit.files.upload,
                 file=image_content,
@@ -49,7 +46,7 @@ async def create_commission(
             reference_image_url = upload_result.url
         except Exception as e:
             print(f"Image upload failed: {e}")
-            # Continue without image — non-critical
+           
 
     new_commission = Commission(
         artist_id=artist_id,
@@ -73,10 +70,6 @@ async def create_commission(
         "commission_id": str(new_commission.id),
     }
 
-
-# ──────────────────────────────────────────────
-# GET /commissions/artist — Artist views requests
-# ──────────────────────────────────────────────
 @router.get("/artist")
 def get_artist_commissions(
     current_user: User = Depends(get_current_artist),
@@ -103,7 +96,7 @@ def get_artist_commissions(
             .execute()
         )
 
-        # Format the response
+        # Formating the response
         results = []
         for row in commissions_res.data:
             buyer_info = row.pop("users", {}) or {}
@@ -122,9 +115,6 @@ def get_artist_commissions(
         raise HTTPException(status_code=500, detail="Could not load commission requests")
 
 
-# ──────────────────────────────────────────────
-# PATCH /commissions/{id}/accept — Artist accepts
-# ──────────────────────────────────────────────
 @router.patch("/{commission_id}/accept")
 async def accept_commission(
     commission_id: str,
@@ -132,7 +122,7 @@ async def accept_commission(
     current_user: User = Depends(get_current_artist),
     db: Session = Depends(get_db),
 ):
-    """Artist accepts a commission — updates status and emails the buyer."""
+    """If Artist accepts a commission — updates status and emails the buyer."""
     user_id = str(current_user.id)
 
     # Verify artist ownership
@@ -164,7 +154,7 @@ async def accept_commission(
     buyer_name = buyer.full_name or buyer.first_name if buyer else "Customer"
     buyer_email = buyer.email if buyer else None
 
-    # Send notification email in background
+    # Send notification email in the background
     if buyer_email:
         commission_data = {
             "title": commission.title,
@@ -182,9 +172,6 @@ async def accept_commission(
     return {"message": "Commission accepted. Buyer has been notified."}
 
 
-# ──────────────────────────────────────────────
-# PATCH /commissions/{id}/reject — Artist rejects
-# ──────────────────────────────────────────────
 @router.patch("/{commission_id}/reject")
 async def reject_commission(
     commission_id: str,

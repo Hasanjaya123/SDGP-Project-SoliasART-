@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { commissionService } from '../services/uploadApi';
 
-// ─── SVG Icons ─────────────────────────────────────────────────────────────────
+//SVG Icons
 const SearchIcon = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -18,7 +18,7 @@ const ChevronDownIcon = ({ className }) => (
   </svg>
 );
 
-// ─── Skeleton Loader ───────────────────────────────────────────────────────────
+//Skeleton Loader 
 const SkeletonCard = () => (
   <div className="bg-white rounded-xl border border-slate-200 p-6 animate-pulse">
     <div className="flex gap-6">
@@ -42,7 +42,7 @@ const SkeletonCard = () => (
   </div>
 );
 
-// ─── Commission Card ───────────────────────────────────────────────────────────
+//Commission Card
 const CommissionCard = ({ commission, onAccept, onReject, processing }) => {
   const {
     id, title, description, medium, size_inches,
@@ -50,7 +50,7 @@ const CommissionCard = ({ commission, onAccept, onReject, processing }) => {
     buyer_name, created_at,
   } = commission;
 
-  // Format the deadline nicely
+  // Formating the deadline
   const formattedDeadline = deadline
     ? new Date(deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
     : '—';
@@ -65,7 +65,7 @@ const CommissionCard = ({ commission, onAccept, onReject, processing }) => {
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
       <div className="flex flex-col sm:flex-row">
-        {/* ─── Reference Image ─────────────────── */}
+        {/*Reference Image */}
         <div className="sm:w-48 sm:h-auto h-48 flex-shrink-0 bg-slate-100">
           {reference_image_url ? (
             <img
@@ -82,7 +82,7 @@ const CommissionCard = ({ commission, onAccept, onReject, processing }) => {
           )}
         </div>
 
-        {/* ─── Content ─────────────────────────── */}
+        {/*Content*/}
         <div className="flex-1 p-6">
           {/* Title + Badge Row */}
           <div className="flex items-start justify-between gap-4 mb-2">
@@ -176,16 +176,16 @@ const CommissionCard = ({ commission, onAccept, onReject, processing }) => {
   );
 };
 
-// ─── Main Page Component ───────────────────────────────────────────────────────
+// Main Page Component
 const CommissionRequestsPage = () => {
   const [commissions, setCommissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
   const [sortOrder, setSortOrder] = useState('newest');
-  const [processing, setProcessing] = useState(null); // ID of item being processed
+  const [processing, setProcessing] = useState(null);
 
-  // ── Fetch commissions on mount ────────────
+  //Fetch commissions on mount
   useEffect(() => {
     fetchCommissions();
   }, []);
@@ -203,7 +203,7 @@ const CommissionRequestsPage = () => {
     }
   };
 
-  // ── Accept handler ────────────────────────
+  //Accept handler
   const handleAccept = async (id) => {
     if (!window.confirm('Accept this commission request? The buyer will be notified via email.')) return;
     setProcessing(id);
@@ -218,7 +218,7 @@ const CommissionRequestsPage = () => {
     }
   };
 
-  // ── Reject handler ────────────────────────
+  // Reject handler
   const handleReject = async (id) => {
     if (!window.confirm('Reject this commission request? The buyer will be notified and the request will be deleted.')) return;
     setProcessing(id);
@@ -233,7 +233,7 @@ const CommissionRequestsPage = () => {
     }
   };
 
-  // ── Filtered + sorted list ────────────────
+  //Filtered + sorted list
   const displayed = useMemo(() => {
     let list = [...commissions];
 
@@ -249,7 +249,6 @@ const CommissionRequestsPage = () => {
       );
     }
 
-    // Sort
     list.sort((a, b) => {
       const dateA = new Date(a.created_at || 0);
       const dateB = new Date(b.created_at || 0);
@@ -259,7 +258,7 @@ const CommissionRequestsPage = () => {
     return list;
   }, [commissions, search, sortOrder]);
 
-  // ── Derived stats ─────────────────────────
+  //Derived stats
   const stats = useMemo(() => {
     const total = commissions.length;
     const avgBudget = total > 0
@@ -270,7 +269,7 @@ const CommissionRequestsPage = () => {
 
   return (
     <div className="flex flex-col min-h-full bg-stone-50 font-sans">
-        {/* ── Header ───────────────────────── */}
+        {/* Header*/}
         <header className="h-20 flex-shrink-0 bg-white border-b border-slate-200 flex items-center justify-between px-8 gap-6 sticky top-0 z-10">
           <div className="flex-shrink-0">
             <h2 className="text-xl font-bold text-slate-900">Commission Requests</h2>
@@ -412,7 +411,7 @@ const CommissionRequestsPage = () => {
               </div>
             )}
 
-            {/* Commission cards (pending only below) */}
+            {/* Commission cards pending only below */}
             {!loading && !error && displayed.filter(c => c.status !== 'accepted').length > 0 && (
               <div className="space-y-4">
                 {displayed.filter(c => c.status !== 'accepted').map((c) => (
@@ -433,7 +432,7 @@ const CommissionRequestsPage = () => {
                </div>
             )}
 
-            {/* ── Stats footer ────────────────── */}
+            {/*Stats footer*/}
             {!loading && !error && commissions.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
                 <div className="bg-white border border-slate-200 rounded-xl p-5">

@@ -19,13 +19,7 @@ class Post(Base):
 
     title = Column(String, nullable=True)
     description = Column(Text, nullable=True)
-
-    # One or more images uploaded to ImageKit (stored as an array of URLs)
     image_url = Column(ARRAY(String), nullable=False, default=list)
-
-    # Every post belongs to an artist
     artist_id = Column(UUID(as_uuid=True), ForeignKey("artists.id"), nullable=False)
-
-    # Engagement counters (updated separately, start at 0)
     likes = Column(String, nullable=False, server_default=text("'0'"))
     embedding = Column(Vector(512))
