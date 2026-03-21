@@ -4,7 +4,7 @@ import { artEvents, artGalleries } from '../data/mockData';
 const MAP_URL =
   'https://www.google.com/maps/d/embed?mid=1xQO6M7BnRd-s9GC_7Pih11fibV2Izcg&ehbc=2E312F&noprof=1';
 
-// Per-type dot colour and badge classes - using project's amber #FFC247
+
 const EVENT_TYPES = {
   All: { dot: '#FFC247', badge: 'bg-zinc-800 text-zinc-300 border-zinc-700' },
   Exhibition: { dot: '#FFC247', badge: 'bg-amber-500/10 text-amber-500 border-amber-500/20' },

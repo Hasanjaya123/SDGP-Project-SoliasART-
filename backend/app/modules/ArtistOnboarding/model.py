@@ -9,10 +9,7 @@ class Artist(Base):
     __tablename__ = "artists"
     
     id = Column(UUID(as_uuid=True),primary_key=True, server_default=text("gen_random_uuid()"))
-    #change this after user model is created
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
-    #Art id  change this after user model is created
-    
     verified_artist = Column(Boolean, nullable=False, default=False)
     display_name = Column(String, nullable=False)
     artist_bio = Column(Text, nullable=False)
@@ -31,5 +28,4 @@ class Artist(Base):
     profile_image_url = Column(String, nullable=True, default="https://shorturl.at/3ywNl")
     identy_card_image_url = Column(String, nullable=False)
     followers = Column(String, nullable=True, default="0")
-    
-    #from_user = relationship("users", foreign_keys=[user_id])
+ 
