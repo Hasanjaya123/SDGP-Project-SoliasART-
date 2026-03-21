@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import ArtworkGallery from '../components/ArtworkDetailsComponents/ArtworkGallery';
 import ArtworkDetailsCard from '../components/ArtworkDetailsComponents/ArtworkDetailsCard';
 import ArtistOtherArtworks from '../components/ArtworkDetailsComponents/OtherArtworks';
+import { api } from '../services/uploadApi';
 
 const ArtworkDetailsPage = () => {
 
@@ -31,28 +32,16 @@ const ArtworkDetailsPage = () => {
 
       try {
         // Check saved status
-        const saveRes = await fetch(`${BACKEND_URL}/savework/user/saved`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (saveRes.ok) {
-          const savedArtworks = await saveRes.json();
+        const saveRes = await api.get('/savework/user/saved').catch(() => ({ data: [] }));
+        const savedArtworks = saveRes.data;
 
-          // Check if this specific artwork ID exists in the user's saved list
-          const alreadySaved = savedArtworks.some(art => String(art.id) === String(id));
-          setIsSaved(alreadySaved);
-        }
+        // Check if this specific artwork ID exists in the user's saved list
+        const alreadySaved = savedArtworks.some(art => String(art.id) === String(id));
+        setIsSaved(alreadySaved);
 
         // Check like status
-        const likeRes = await fetch(`${BACKEND_URL}/api/artworks/${id}/check-like`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        if (likeRes.ok) {
-          const likeData = await likeRes.json();
-
-          // Check if already liked
-          setIsLiked(likeData.is_liked); 
-        }
+        const likeRes = await api.get(`/api/artworks/${id}/check-like`).catch(() => ({ data: { is_liked: false } }));
+        setIsLiked(likeRes.data.is_liked); 
 
       } catch (err) {
         console.error("Error checking save status:", err);
@@ -74,18 +63,8 @@ const ArtworkDetailsPage = () => {
     setIsSaved(!previousSaveStatus);
 
     try {
-      const response = await fetch(`${BACKEND_URL}/savework/save/${id}`, {
-        method: 'POST',
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json' 
-        }
-      });
-
-      if (!response.ok) throw new Error('Failed to toggle save');
-      
-      const data = await response.json();
-      setIsSaved(data.status === 'saved'); // Sync with actual backend response
+      const response = await api.post(`/savework/save/${id}`);
+      setIsSaved(response.data.status === 'saved'); // Sync with actual backend response
     } catch (err) {
       setIsSaved(previousSaveStatus); // Revert UI if request fails
       console.error("Save error:", err);
@@ -104,19 +83,14 @@ const ArtworkDetailsPage = () => {
     try {
       // Trigger backend to process/cache the GLB file
 
-      const res = await fetch(`${BACKEND_URL}/ar/generate-ar/${id}`, {
-        headers: { "ngrok-skip-browser-warning": "true" }
+      await api.get(`/ar/generate-ar/${id}`, {
+        headers: { "ngrok-skip-browser-warning": "true" },
+        responseType: "blob"
       });
-
-      if (!res.ok) throw new Error("Could not prepare 3D model.");
-
-    
-      await res.blob(); 
-
 
       setQrReady(true);
     } catch (err) {
-      setArError(err.message);
+      setArError(err.response?.data?.detail || err.message);
     } finally {
       setIsArLoading(false);
     }
@@ -129,18 +103,14 @@ const ArtworkDetailsPage = () => {
       try {
         setLoading(true);
         // fetch artwork details from backend API using the 'id' from URL params
-        const response = await fetch(`${BACKEND_URL}/api/artworks/${id}`);
+        const response = await api.get(`/api/artworks/${id}`);
         
-        if (!response.ok) {
-          throw new Error('Failed to fetch artwork details');
-        }
-
-        const data = await response.json();
+        const data = response.data;
         setArtwork(data); // Save the fetched data to state
 
         setLiveLikesCount(data.likes || 0);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.detail || err.message);
       } finally {
         setLoading(false);
       }
@@ -163,17 +133,7 @@ const ArtworkDetailsPage = () => {
 
     try {
       // The API Call
-      console.log("My Token Is:", token);
-      const response = await fetch(`${BACKEND_URL}/api/artworks/${id}/like`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-         } 
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update like');
-      }
+      await api.post(`/api/artworks/${id}/like`);
     } catch (err) {
 
       // Revert if the backend fails 
