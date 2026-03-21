@@ -256,7 +256,6 @@ export const paymentService = {
     }
   },
 };
-};
 
 // ── Commission Requests ────────────────────────
 export const commissionService = {
