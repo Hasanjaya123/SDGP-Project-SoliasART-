@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const OrderSummary = ({ subtotal, shipping }) => {
+const OrderSummary = ({ subtotal, shipping, onCheckout, isProcessing }) => {
   const total = subtotal + shipping;
 
   return (
@@ -30,8 +30,22 @@ const OrderSummary = ({ subtotal, shipping }) => {
         </div>
 
         {/* Checkout btn */}
-        <button className="flex w-full items-center justify-center rounded-lg bg-[#FF7A00] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#E06B00] !border-none !outline-none focus:!outline-none focus:!ring-4 focus:!ring-[#FF7A00]/50 dark:bg-[#FF7A00] dark:hover:bg-[#E06B00]">
-          Proceed to Checkout
+        <button 
+          onClick={onCheckout}
+          disabled={isProcessing}
+          className="flex w-full items-center justify-center rounded-lg bg-[#FF7A00] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#E06B00] !border-none !outline-none focus:!outline-none focus:!ring-4 focus:!ring-[#FF7A00]/50 dark:bg-[#FF7A00] dark:hover:bg-[#E06B00] disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isProcessing ? (
+            <span className="flex items-center gap-2">
+              <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              Processing...
+            </span>
+          ) : (
+            'Proceed to Checkout'
+          )}
         </button>
 
         <div className="flex items-center justify-center gap-2">

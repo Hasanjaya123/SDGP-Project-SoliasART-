@@ -67,7 +67,7 @@ export const artworkService = {
 
     const textFields = [
       'title', 'description', 'year', 'medium', 'category',
-      'height', 'width', 'depth', 'framing', 'price', 
+      'height', 'width', 'depth', 'framing', 'price',
       'origin', 'weight', 'shippingRate'
     ];
 
@@ -103,10 +103,10 @@ export const artworkService = {
       throw error
     }
   },
-  
+
   SearchArtWork: async (textInput, imageFile) => {
     const formData = new FormData();
-  
+
     if (textInput) {
       formData.append("query_text", textInput);
     } else if (imageFile) {
@@ -209,4 +209,28 @@ export const collectionService = {
     const response = await api.delete(`/api/collections/${collectionId}`);
     return response.data;
   }
-};
+export const paymentService = {
+    initiatePayment: async (artworkIds) => {
+      try {
+        const response = await api.post('/payhere/initiate', {
+          artwork_ids: artworkIds,
+        });
+        return response.data;
+      } catch (error) {
+        console.error("Payment initiation failed:", error.response?.data?.detail || error.message);
+        throw error;
+      }
+    },
+
+    confirmPayment: async (orderId) => {
+      try {
+        const response = await api.post('/payhere/confirm', {
+          order_id: orderId,
+        });
+        return response.data;
+      } catch (error) {
+        console.error("Payment confirmation failed:", error.response?.data?.detail || error.message);
+        throw error;
+      }
+    },
+  };

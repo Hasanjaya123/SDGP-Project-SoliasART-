@@ -11,4 +11,18 @@ class Settings:
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 300
     DATABASE_URL: str = os.getenv("DATABASE_URL")
 
+<<<<<<< HEAD
 settings = Settings()
+=======
+    # PayHere Payment Gateway
+    PAYHERE_MERCHANT_ID: str = ""
+    PAYHERE_MERCHANT_SECRET: str = ""
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        extra="ignore"
+    )
+
+#create object
+settings = Settings()
+>>>>>>> 5ce0b5e9ce6c18b80759345a233b7e2f9778a360
