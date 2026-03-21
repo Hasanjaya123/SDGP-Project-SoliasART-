@@ -58,9 +58,9 @@ def initiate_payment(
     # Build the full payment payload
     return PaymentInitiateResponse(
         merchant_id=settings.PAYHERE_MERCHANT_ID,
-        return_url="http://localhost:5173/cart?payment=success",
-        cancel_url="http://localhost:5173/cart?payment=cancelled",
-        notify_url="http://localhost:8000/payhere/notify",
+        return_url=f"{settings.FRONTEND_URL}/cart?payment=success",
+        cancel_url=f"{settings.FRONTEND_URL}/cart?payment=cancelled",
+        notify_url=f"{settings.BACKEND_URL}/payhere/notify",
         order_id=order_id,
         items=items_desc,
         currency="LKR",

@@ -14,12 +14,12 @@ const ArtworkDetailsPage = () => {
   const [isArModalOpen, setArModalOpen] = useState(false);
   const [liveLikesCount, setLiveLikesCount] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
-  const [isArLoading, setIsArLoading] = useState(false); 
-  const [arError, setArError] = useState("");    
-  const [isSaved, setIsSaved] = useState(false);        
-  const [qrReady, setQrReady] = useState(false);  
-  const [generatedMobileUrl, setGeneratedMobileUrl] = useState("");   
-  
+  const [isArLoading, setIsArLoading] = useState(false);
+  const [arError, setArError] = useState("");
+  const [isSaved, setIsSaved] = useState(false);
+  const [qrReady, setQrReady] = useState(false);
+  const [generatedMobileUrl, setGeneratedMobileUrl] = useState("");
+
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
   useEffect(() => {
@@ -41,7 +41,7 @@ const ArtworkDetailsPage = () => {
 
         // Check like status
         const likeRes = await api.get(`/api/artworks/${id}/check-like`).catch(() => ({ data: { is_liked: false } }));
-        setIsLiked(likeRes.data.is_liked); 
+        setIsLiked(likeRes.data.is_liked);
 
       } catch (err) {
         console.error("Error checking save status:", err);
@@ -70,14 +70,14 @@ const ArtworkDetailsPage = () => {
       console.error("Save error:", err);
     }
   };
-  
+
   const handleOpenArModal = async () => {
     setArModalOpen(true);
     setIsArLoading(true);
     setArError("");
     setQrReady(false);
 
-  const mobileLink = `http://${window.location.hostname}:5173/preview?glb=${BACKEND_URL}/ar/generate-ar/${id}`;
+    const mobileLink = `${window.location.origin}/preview?glb=${BACKEND_URL}/ar/generate-ar/${id}`;
     setGeneratedMobileUrl(mobileLink);
 
     try {
@@ -104,7 +104,7 @@ const ArtworkDetailsPage = () => {
         setLoading(true);
         // fetch artwork details from backend API using the 'id' from URL params
         const response = await api.get(`/api/artworks/${id}`);
-        
+
         const data = response.data;
         setArtwork(data); // Save the fetched data to state
 
@@ -126,7 +126,7 @@ const ArtworkDetailsPage = () => {
       alert("Please log in to like artworks!");
       return;
     }
-    
+
     const wasLiked = isLiked;
     setLiveLikesCount(prev => wasLiked ? prev - 1 : prev + 1);
     setIsLiked(!wasLiked);
@@ -168,17 +168,17 @@ const ArtworkDetailsPage = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 pb-24 pt-12 md:pt-16">
       <div className="max-w-7xl mx-auto px-8 md:px-12 lg:px-20">
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
-          
+
           {/* Leftside Gallery Component */}
           <div className="lg:col-span-7">
-            <div className= "top-24">
-              <ArtworkGallery 
-                images={artwork.imageUrls} 
-                title={artwork.title} 
-                artworkId={artwork.id}           
-                initialLikes={artwork.likes}         
+            <div className="top-24">
+              <ArtworkGallery
+                images={artwork.imageUrls}
+                title={artwork.title}
+                artworkId={artwork.id}
+                initialLikes={artwork.likes}
                 currentUserId={"temp-user-id"}
                 isLiked={isLiked}
                 onToggleLike={handleToggleLike}
@@ -188,15 +188,15 @@ const ArtworkDetailsPage = () => {
 
           {/* Rightside details component */}
           <div className="lg:col-span-5">
-            <ArtworkDetailsCard 
-              artwork={artwork} 
-              artist={artwork.artist} 
-              onArClick = {handleOpenArModal}
+            <ArtworkDetailsCard
+              artwork={artwork}
+              artist={artwork.artist}
+              onArClick={handleOpenArModal}
               // props for save
-              onSaveClick={handleToggleSave} 
+              onSaveClick={handleToggleSave}
               isSaved={isSaved}
               // props for like
-              liveLikesCount={liveLikesCount} 
+              liveLikesCount={liveLikesCount}
               isLiked={isLiked}
               onLikeClick={handleToggleLike}
             />
@@ -209,16 +209,16 @@ const ArtworkDetailsPage = () => {
       {isArModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
           <div className="bg-white dark:bg-gray-900 rounded-xl max-w-md w-full p-6 relative shadow-2xl">
-            <button 
+            <button
               onClick={() => setArModalOpen(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 dark:hover:text-white"
             >
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
-            
+
             <div className="text-center mt-4">
               <h3 className="text-xl font-black uppercase tracking-tight mb-2 text-gray-900 dark:text-white">View in Your Space</h3>
-              
+
 
               {/*Conditional Rendering for Loading, Error, and QR Ready states */}
 
@@ -234,27 +234,27 @@ const ArtworkDetailsPage = () => {
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Scan the QR code to place this artwork on your wall.</p>
 
                   <div className="flex justify-center p-4 bg-white rounded-lg border-2 border-gray-100 inline-block mb-5">
-                    
-                      {/* Display QR */}
-                      <img 
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(generatedMobileUrl)}`}
 
-                        alt="AR QR Code" 
-                        className="w-56 h-56" 
-                      />
+                    {/* Display QR */}
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(generatedMobileUrl)}`}
+
+                      alt="AR QR Code"
+                      className="w-56 h-56"
+                    />
                   </div>
                 </>
               ) : null}
-              
+
             </div>
           </div>
         </div>
       )}
 
       {/* Related Artworks from the same artist */}
-      <ArtistOtherArtworks 
-    artistId={artwork.artist?.id} 
-    currentArtworkId={artwork.id} 
+      <ArtistOtherArtworks
+        artistId={artwork.artist?.id}
+        currentArtworkId={artwork.id}
       />
     </div>
   );
