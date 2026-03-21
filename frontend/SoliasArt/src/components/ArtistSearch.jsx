@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ArtistCard } from './ArtistCard';
-import { supabase } from '../services/supabase';
 
-export const ArtistSearch = ({ setCurrentPage, artworks }) => {
+export const ArtistSearch = ({ setCurrentPage }) => {
     const [artists, setArtists] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -11,14 +10,17 @@ export const ArtistSearch = ({ setCurrentPage, artworks }) => {
     }, []);
 
     const fetchArtists = async () => {
-        const { data, error } = await supabase
-            .from('artists')
-            .select('*');
+        try {
+            const response = await fetch("http://127.0.0.1:8000/artists"); // 👈 backend endpoint
 
-        if (error) {
-            console.error(error);
-        } else {
+            if (!response.ok) {
+                throw new Error("Failed to fetch artists");
+            }
+
+            const data = await response.json();
             setArtists(data);
+        } catch (error) {
+            console.error("Error fetching artists:", error);
         }
     };
 
@@ -31,45 +33,41 @@ export const ArtistSearch = ({ setCurrentPage, artworks }) => {
 
             {/* Header */}
             <div className="text-center mb-12">
-                <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">Meet Our Artists</h1>
+                <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
+                    Meet Our Artists
+                </h1>
                 <p className="mt-3 max-w-2xl mx-auto text-xl text-gray-500 dark:text-gray-300">
-                    Discover the creative minds behind the masterpieces. Explore their stories, studios, and portfolios.
+                    Discover the creative minds behind the masterpieces.
                 </p>
             </div>
 
-            {/* Search Bar */}
+            {/* Search */}
             <div className="max-w-md mx-auto mb-10">
                 <input
                     type="text"
                     placeholder="Search artists..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 rounded-lg border"
                 />
             </div>
 
-            {/* Artists Grid */}
+            {/* Artists */}
             {filteredArtists.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-3 gap-8">
                     {filteredArtists.map((artist, index) => (
-                        <div
+                        <ArtistCard
                             key={artist.id}
-                            className="opacity-0 animate-fade-in-up"
-                            style={{ animationDelay: `${index * 100}ms` }}
-                        >
-                            <ArtistCard
-                                artist={artist}
-                                setCurrentPage={setCurrentPage}
-                            />
-                        </div>
+                            artist={artist}
+                            setCurrentPage={setCurrentPage}
+                        />
                     ))}
                 </div>
             ) : (
-                <p className="text-center text-gray-500 dark:text-gray-400 mt-8">
-                    No artists found matching "{searchQuery}"
+                <p className="text-center mt-8">
+                    No artists found
                 </p>
             )}
-
         </div>
     );
 };

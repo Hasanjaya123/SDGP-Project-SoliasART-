@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+
 
 import './App.css'
 import UploadArtPage from './pages/ArtUpload'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import SignupPage from './pages/SignupPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
@@ -16,7 +16,7 @@ import MobilePreview from './pages/MobilePreview.jsx';
 import Layout from './components/Layout';
 import CartPage from './pages/CartPage';
 import ArtSearch from './pages/ArtSearch.jsx';
-import React, { useState, useEffect } from 'react';
+
 import ArtistDashboard from './pages/Dashboard.jsx';
 
 import CollectionsPage from "./pages/CollectionsPage";
@@ -69,6 +69,7 @@ function App() {
           {/* Artwork details page */}
           <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
           <Route path="/search" element={<ArtSearch />} />
+          <Route path="/artist-search" element={<ArtistSearch />} />
           <Route path="/artist/profile" element={<ArtistProfilePage />} />
           <Route path="/artist/profile/:artistId" element={<ArtistProfilePage />} />
           <Route path="/cart" element={<CartPage />} />
