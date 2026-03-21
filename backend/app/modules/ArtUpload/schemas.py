@@ -1,11 +1,11 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, validator
 from decimal import Decimal
 from typing import Optional
 from uuid import UUID
 from app.modules.ArtUpload.form import as_form
 
 # --- INPUT SCHEMA (Request) ---
-@as_form 
+@as_form
 class ArtUploadRequest(BaseModel):
     title: str
     description: str
@@ -23,34 +23,31 @@ class ArtUploadRequest(BaseModel):
     origin: str = "Colombo, Sri Lanka"
     shippingRate: str = "standard"
 
-    #VALIDATORS (Cleans the data automatically)
+    # -------- VALIDATORS (Pydantic v1 style) --------
 
-    @field_validator('year')
-    @classmethod
-    def parse_year(cls, v: str) -> int:
+    @validator('year')
+    def parse_year(cls, v):
         if v.lower() == 'older':
             return 2020
         if v.isdigit():
             return int(v)
         raise ValueError("Year must be a number or 'older'")
 
-    @field_validator('framing')
-    @classmethod
-    def parse_framing(cls, v: str) -> bool:
+    @validator('framing')
+    def parse_framing(cls, v):
         # DB expects Boolean (is_framed)
         return v.lower() == 'framed'
 
-    @field_validator('price', 'weight', 'height', 'width', 'depth')
-    @classmethod
-    def parse_numbers(cls, v: str) -> float:
+    @validator('price', 'weight', 'height', 'width', 'depth')
+    def parse_numbers(cls, v):
         try:
-            # Remove currency symbols or commas if present
             clean_v = v.replace(',', '').replace('LKR', '').strip()
             return float(clean_v) if clean_v else 0.0
-        except ValueError:
+        except Exception:
             return 0.0
 
-# OUTPUT SCHEMA (Response)
+
+# --- OUTPUT SCHEMA (Response) ---
 class ArtWorkResponse(BaseModel):
     id: UUID
     title: str
@@ -60,4 +57,4 @@ class ArtWorkResponse(BaseModel):
     is_framed: bool
     
     class Config:
-        from_attributes = True # Allows Pydantic to read SQLAlchemy objects
+        orm_mode = True   # ✅ Pydantic v1 uses this (NOT from_attributes)

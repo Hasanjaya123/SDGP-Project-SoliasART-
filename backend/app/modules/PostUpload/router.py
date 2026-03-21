@@ -1,11 +1,8 @@
 from fastapi import APIRouter, HTTPException, File, UploadFile, Depends
-from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import Optional
 
-from app.core.image_kit import imagekit
 from app.core.database import get_db
-from app.core.supabase import supabase
 from app.modules.PostUpload.model import Post
 from app.modules.PostUpload.schemas import PostUploadRequest, PostResponse
 
@@ -22,12 +19,9 @@ async def upload_post(
     image_links = []
 
     try:
-        # 1. Verify artist exists
-        profile_response = supabase.table("artists").select("id").eq("id", artist_id).execute()
-        if not profile_response.data:
-            raise HTTPException(status_code=404, detail="Artist not found.")
+        # ✅ TEMP: Skip Supabase check (assume artist exists)
 
-        # 2. Require at least some content
+        # 1. Require at least some content
         has_images = images and images.filename
         if not form_data.title and not form_data.description and not has_images:
             raise HTTPException(
@@ -35,22 +29,12 @@ async def upload_post(
                 detail="A post must have at least a title, description, or image.",
             )
 
-        # 3. Upload images to ImageKit → /Posts folder
+        # 2. Handle image (skip ImageKit)
         if has_images:
-            image_content = await images.read()
+            await images.read()
+            image_links.append("https://via.placeholder.com/300")
 
-            upload_result = await run_in_threadpool(
-                imagekit.files.upload,
-                file=image_content,
-                file_name=images.filename,
-                folder="/Posts",
-                tags=["python-app"],
-                is_private_file=False
-            )
-
-            image_links.append(upload_result.url)
-
-        # 4. Persist to the `post` table
+        # 3. Save to DB
         new_post = Post(
             title=form_data.title or None,
             description=form_data.description or None,
