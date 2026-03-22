@@ -72,7 +72,11 @@ export const ArtworkCard = ({ artwork, onView }) => {
                 <span className="inline-block px-2.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 text-[9px] font-bold uppercase tracking-wider mb-1.5 rounded-sm">
                     {artwork.isNewRelease ? 'New Release' : (artwork.category || 'Artwork')}
                 </span>
+<<<<<<< HEAD
                 <p className="text-[11px] font-medium text-gray-800 dark:text-gray-400 mb-0.5">{artwork.artist?.display_name || artwork.artist || 'Unknown Artist'}</p>
+=======
+                <p className="text-[11px] font-medium text-gray-800 dark:text-gray-400 mb-0.5">{artwork.artist || 'Aria Chen'}</p>
+>>>>>>> main
                 <h4 className="text-lg font-black text-black dark:text-white uppercase tracking-tight mb-1.5 line-clamp-1">
                     {artwork.title || 'UNTITLED ARTWORK'}
                 </h4>
@@ -80,7 +84,11 @@ export const ArtworkCard = ({ artwork, onView }) => {
                 <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400 text-[11px] font-medium mb-2">
                     <div className="flex items-center gap-1">
                         <EyeIcon className="w-3.5 h-3.5" />
+<<<<<<< HEAD
                         <span>{artwork.view_count?.toLocaleString() || artwork.views?.toLocaleString() || '--'}</span>
+=======
+                        <span>{artwork.views?.toLocaleString() || '--'}</span>
+>>>>>>> main
                     </div>
                     <div className="flex items-center gap-1">
                         <HeartIcon className="w-3.5 h-3.5" />

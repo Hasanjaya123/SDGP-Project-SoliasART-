@@ -1,4 +1,3 @@
-# backend/main.py
 from fastapi import HTTPException, APIRouter, Depends
 from app.core.supabase import supabase
 from app.modules.auth.dependencies import get_current_user, get_current_artist
@@ -7,28 +6,48 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from app.modules.ArtistProfile.model import Follow, Artist
 
-
 router = APIRouter(prefix="/artists", tags=["ArtistProfile"])
 
-@router.get("/profile")
-async def get_full_artist_profile(
-    current_user: str = Depends(get_current_artist),
-    db: Session = Depends(get_db)
-    ):
-    """
-    Fetches everything needed for the ArtistProfilePage in one single request.
-    """
+
+@router.get("")
+async def get_all_artists():
     try:
+        response = supabase.table("artists").select("*").execute()
+        artists = response.data
         
-        user_id = str(current_user.id)
-       
-        # Use SQLAlchemy for the primary artist lookup to ensure reliability
-        artist_record = db.query(Artist).filter(Artist.user_id == user_id).first()
+        # Fetch artworks basic info to count them
+        artworks_res = supabase.table("artwork").select("artist_id").execute()
         
-        if not artist_record:
-            raise HTTPException(status_code=404, detail="Artist not found")
+        counts = {}
+        for art in artworks_res.data:
+            aid = str(art.get("artist_id"))
+            counts[aid] = counts.get(aid, 0) + 1
             
-        artist_id = str(artist_record.id)
+        for a in artists:
+            a["artworks_count"] = counts.get(str(a["id"]), 0)
+
+        return artists
+
+    except Exception as e:
+        print("🔥 FULL ERROR:", str(e))   
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@router.get("/profile")
+async def get_my_profile(
+    current_user: str = Depends(get_current_artist)
+):
+    try:
+        user_id = str(current_user.id)
+
+        profile_res = supabase.table("artists").select("*").eq("user_id", user_id).execute()
+
+        if not profile_res.data:
+            raise HTTPException(status_code=404, detail="Artist not found")
+
+        raw_artist = profile_res.data[0]
+        artist_id = str(raw_artist["id"])
 
         artworks_res = supabase.table("artwork").select("id, title, price, image_url, width_in, height_in, medium, view_count, likes, artists(display_name)").eq("artist_id", artist_id).execute()
         

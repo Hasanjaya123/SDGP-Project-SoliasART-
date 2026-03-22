@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import { BiSearch, BiCompass, BiCollection, BiTimeFive, BiMap, BiSave, BiMoon, BiSun, BiLogOut } from 'react-icons/bi';
+import React, { useState, useEffect } from 'react';
+import { BiSearch, BiCompass, BiCollection, BiTimeFive, BiMap, BiSave, BiMoon, BiSun, BiLogOut, BiUser } from 'react-icons/bi';
 import { BsGrid } from 'react-icons/bs';
 import { HiOutlineNewspaper } from 'react-icons/hi';
 import logoImage from '../assets/soliasartlogo.png';
@@ -20,7 +20,7 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
       const token = localStorage.getItem('token');
       if (!token) {
         navigate('/login');
-        return; 
+        return;
       }
 
       try {
@@ -30,17 +30,17 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
         // Get artist details if the user is an artist
         if (data.role === 'artist') {
           try {
-      
+
             const artistRes = await api.get('/artists/profile');
             const artistData = artistRes.data;
-            
+
             // Override the empty user picture with the real Artist picture
             if (artistData.artist?.profileImageUrl) {
               data.profile_image = artistData.artist.profileImageUrl;
             }
-            
+
             if (artistData.artist?.id) {
-              data.artist_id = artistData.artist.id; 
+              data.artist_id = artistData.artist.id;
             }
           } catch (artistErr) {
             console.error("Failed to fetch artist image for sidebar:", artistErr.response?.data?.detail || artistErr.message);
@@ -62,22 +62,23 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
   const handleLogout = () => {
     localStorage.removeItem('token'); // Clear the session
     navigate('/login'); // Send back to login page
-  };  
- 
+  };
+
   const mainLinks = [
-    { icon: <BiCompass size={24} />, label: "Explore", path: "/search" }, 
-    { icon: <HiOutlineNewspaper size={24} />, label: "Feed", path: "/feed" }, 
-    { icon: <BiCollection size={24} />, label: "Collections", path: "/collections" },  
+    { icon: <BiCompass size={24} />, label: "Explore", path: "/search" },
+    { icon: <HiOutlineNewspaper size={24} />, label: "Feed", path: "/feed" },
+    { icon: <BiCollection size={24} />, label: "Collections", path: "/collections" },
     { icon: <BiMap size={24} />, label: "ArtMaps", path: "/map" },
+    { icon: <BiUser size={24} />, label: "Artists", path: "/artist-search" }
   ];
 
   const bottomLinks = [
-    { icon: <BiSave size={24} />, label: "saved", path: "/saved" }, 
+    { icon: <BiSave size={24} />, label: "Saved", path: "/saved" },
     { icon: <BsGrid size={24} />, label: "Dashboard", path: "/dashboard" },
-    { 
-      icon: isDarkMode ? <BiSun size={24} /> : <BiMoon size={24} />, 
+    {
+      icon: isDarkMode ? <BiSun size={24} /> : <BiMoon size={24} />,
       label: isDarkMode ? "Light Mode" : "Dark Mode",
-      action: toggleTheme 
+      action: toggleTheme
     },
   ];
 
@@ -86,11 +87,10 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
     // Check if the current URL matches the link's path
     const isActive = location.pathname === path;
 
-    return `flex items-center gap-4 px-4 py-3 rounded-lg transition-colors cursor-pointer ${
-      isActive 
-        ? '!text-[#1D4A73] dark:!text-[#3A8AD9] font-bold' 
-        : 'text-gray-500 hover:text-[#C58940] hover:bg-yellow-50 dark:hover:bg-gray-800 font-medium'
-    }`;
+    return `flex items-center gap-4 px-4 py-3 rounded-lg transition-colors cursor-pointer ${isActive
+      ? '!text-[#1D4A73] dark:!text-[#3A8AD9] font-bold'
+      : 'text-gray-500 hover:text-[#C58940] hover:bg-yellow-50 dark:hover:bg-gray-800 font-medium'
+      }`;
   };
 
   // Safely extract user details or fallback to default values
@@ -98,21 +98,21 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
   const profileImage = userData?.profile_image || defaultAvatar;
   const userName = userData ? (userData.full_name || `${userData.first_name || 'Guest'} ${userData.last_name || ''}`) : "Guest";
   const userRole = userData?.role || "User";
-  
+
   // Route them to the correct profile page based on their role
-  const profileLink = userData?.role === 'artist' 
-    ? `/artist/profile/${userData.artist_id || userData.id}`
+  const profileLink = userData?.role === 'artist'
+    ? `/artist/profile`
     : `/buyer/profile`;
 
   return (
     <div className="flex h-screen w-64 flex-col border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-6 py-8 transition-colors duration-200">
-      
+
       {/* LOGO AREA */}
       <div className="mb-10 flex items-center gap-2">
-        <img 
-          src={logoImage} 
-          alt="SoliasArt Logo" 
-          className="h-10 w-auto object-contain" 
+        <img
+          src={logoImage}
+          alt="SoliasArt Logo"
+          className="h-10 w-auto object-contain"
         />
       </div>
 
@@ -152,7 +152,7 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
 
       {/* User Profile  */}
       <div className="mt-auto border-t border-gray-200 dark:border-gray-800 pt-6 flex flex-col gap-2">
-        
+
         {/* Profile Link  */}
         {userData ? (
           <Link to={profileLink} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
@@ -177,7 +177,7 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
         )}
 
         {/* Logout Button */}
-        <button 
+        <button
           onClick={handleLogout}
           className="flex items-center gap-3 p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-red-500 hover:!border-transparent  dark:hover:text-red-400 transition-colors w-full focus:outline-none group"
         >

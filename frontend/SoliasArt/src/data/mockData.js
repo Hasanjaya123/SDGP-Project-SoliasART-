@@ -48,79 +48,26 @@ export const artEvents = [
 
 export const artworks = [
     {
-        id: "art-1",
-        title: "Sunset over Sigiriya",
-        artist: "Amara Silva",
-        price: 24500,
-        imageUrls: ["https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=400&q=80"],
-        category: "Impressionism",
-        views: 1240,
-        likes: 156,
-        isNewRelease: true
+        id: 1,
+        title: "Sunset Painting",
+        artist: "Local Artist",
+        price: 200,
+        image: "https://via.placeholder.com/300"
     },
     {
-        id: "art-2",
-        title: "The Golden Temple",
-        artist: "Ravi Kumara",
-        price: 32000,
-        imageUrls: ["https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&w=400&q=80"],
-        category: "Abstract",
-        views: 890,
-        likes: 42
-    },
-    {
-        id: "art-3",
-        title: "Monsoon Melodies",
-        artist: "Nalini Perera",
-        price: 18000,
-        imageUrls: ["https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&w=400&q=80"],
-        category: "Contemporary",
-        views: 2100,
-        likes: 310
+        id: 2,
+        title: "Ocean Breeze",
+        artist: "Sri Lankan Painter",
+        price: 150,
+        image: "https://via.placeholder.com/300"
     }
 ];
 
 export const collections = [
     {
-        id: "coll-1",
-        name: "The Essence of Serendib",
-        curator: "Saskia Fernando",
-        description: "A breathtaking collection exploring the vibrant landscapes and rich cultural heritage of Sri Lanka through contemporary lenses.",
-        coverImageUrl: "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=800&q=80",
-        artworkIds: ["art-1", "art-2", "art-3"],
-        artworks: [
-            {
-                id: "art-1",
-                title: "Sunset over Sigiriya",
-                artist: "Amara Silva",
-                price: 24500,
-                imageUrls: ["https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=400&q=80"]
-            },
-            {
-                id: "art-2",
-                title: "The Golden Temple",
-                artist: "Ravi Kumara",
-                price: 32000,
-                imageUrls: ["https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&w=400&q=80"]
-            }
-        ]
-    },
-    {
-        id: "coll-2",
-        name: "Abstract Oscillations",
-        curator: "Barefoot Curators",
-        description: "Diving deep into the non-representational world, this collection showcases the best of abstract expressionism from the island's emerging talents.",
-        coverImageUrl: "https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&w=800&q=80",
-        artworkIds: ["art-2", "art-3"],
-        artworks: [
-            {
-                id: "art-2",
-                title: "The Golden Temple",
-                artist: "Ravi Kumara",
-                price: 32000,
-                imageUrls: ["https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&w=400&q=80"]
-            }
-        ]
+        id: 1,
+        name: "Modern Art Collection",
+        artworkIds: [1, 2]
     }
 ];
 

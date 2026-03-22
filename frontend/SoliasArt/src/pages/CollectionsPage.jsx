@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { collectionService } from '../services/uploadApi';
+import { collections } from '../data/mockData';
+import { artworkService } from '../services/uploadApi';
 import { useNavigate } from 'react-router-dom';
 
 const CollectionsPage = () => {
@@ -38,7 +39,7 @@ const CollectionsPage = () => {
             </div>
 
             <div className="space-y-12">
-                {collectionsList.map((collection) => (
+                {collections.map((collection) => (
                     <div
                         key={collection.id}
                         className="bg-white dark:bg-gray-900 rounded-lg shadow-lg dark:shadow-none dark:border dark:border-gray-800 overflow-hidden flex flex-col md:flex-row"
@@ -65,19 +66,22 @@ const CollectionsPage = () => {
                             </p>
 
                             <div className="mt-6 flex -space-x-2 overflow-hidden">
-                                {collection.artworks?.slice(0, 5).map(artwork => (
-                                    <img
-                                        key={artwork.id}
-                                        className="inline-block h-12 w-12 rounded-full ring-2 ring-white dark:ring-gray-900"
-                                        src={artwork.image_url?.[0]}
-                                        alt={artwork.title}
-                                    />
-                                ))}
+                                {collection.artworkIds.map(id => {
+                                    const artwork = artworks.find(a => a.id === id);
+                                    return artwork ? (
+                                        <img
+                                            key={id}
+                                            className="inline-block h-12 w-12 rounded-full ring-2 ring-white dark:ring-gray-900"
+                                            src={artwork.imageUrls[0]}
+                                            alt={artwork.title}
+                                        />
+                                    ) : null;
+                                })}
                             </div>
 
                             <button
                                 onClick={() =>
-                                    navigate(`/collections/${collection.id}`)
+                                    navigate(`/collection/${collection.id}`)
                                 }
                                 className="mt-8 px-6 py-2 bg-[#b67e33] text-white font-semibold rounded-full hover:bg-amber-700 self-start transition-colors shadow-sm"
                             >
