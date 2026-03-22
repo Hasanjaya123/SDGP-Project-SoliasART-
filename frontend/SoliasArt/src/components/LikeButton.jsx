@@ -24,7 +24,8 @@ function LikeButton({ targetType, targetId, initialCount, initialLiked, userId }
 
     return (
         <button onClick={handleClick}
-            className="inline-flex items-center gap-1.5 leading-none text-stone-600"
+            className="inline-flex items-center gap-1.5 leading-none text-stone-600 outline-none focus:outline-none focus-visible:outline-none active:outline-none ring-0 focus:ring-0"
+            style={{ outline: 'none', border: 'none' }}
         >
             {/* Heart icon filled red if liked, outline if not liked */}
             <svg

@@ -18,7 +18,7 @@ function SaveButton({ targetType, targetId, initialSaved, userId }) {
     }
 
     return (
-        <button onClick={handleClick} className="ml-auto">
+        <button onClick={handleClick} className="ml-auto outline-none focus:outline-none focus-visible:outline-none active:outline-none ring-0 focus:ring-0" style={{ outline: 'none', border: 'none' }}>
             <svg
                 width="20"
                 height="20"
