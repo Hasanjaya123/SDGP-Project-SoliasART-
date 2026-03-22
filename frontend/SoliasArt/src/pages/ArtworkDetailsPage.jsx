@@ -23,38 +23,19 @@ const ArtworkDetailsPage = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
   useEffect(() => {
-    setIsSaved(false);
-    setIsLiked(false);
-
     const checkSaveStatus = async () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
       try {
-        // Check saved status
-        const saveRes = await fetch(`${BACKEND_URL}/savework/user/saved`, {
+        const res = await fetch(`${BACKEND_URL}/api/savework/user/saved`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (saveRes.ok) {
-          const savedArtworks = await saveRes.json();
-
+        if (res.ok) {
+          const savedArtworks = await res.json();
           // Check if this specific artwork ID exists in the user's saved list
-          const alreadySaved = savedArtworks.some(art => String(art.id) === String(id));
-          setIsSaved(alreadySaved);
+          setIsSaved(savedArtworks.some(art => art.id === id));
         }
-
-        // Check like status
-        const likeRes = await fetch(`${BACKEND_URL}/api/artworks/${id}/check-like`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        if (likeRes.ok) {
-          const likeData = await likeRes.json();
-
-          // Check if already liked
-          setIsLiked(likeData.is_liked); 
-        }
-
       } catch (err) {
         console.error("Error checking save status:", err);
       }
@@ -63,7 +44,7 @@ const ArtworkDetailsPage = () => {
     if (id) checkSaveStatus();
   }, [id, BACKEND_URL]);
 
-  //  Function to handle the Save/Unsave btn
+  // NEW: Function to handle the Save/Unsave toggle
   const handleToggleSave = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -71,6 +52,7 @@ const ArtworkDetailsPage = () => {
       return;
     }
 
+    // Optimistic UI update
     const previousSaveStatus = isSaved;
     setIsSaved(!previousSaveStatus);
 
@@ -212,13 +194,8 @@ const ArtworkDetailsPage = () => {
               artwork={artwork} 
               artist={artwork.artist} 
               onArClick = {handleOpenArModal}
-              // props for save
               onSaveClick={handleToggleSave} 
               isSaved={isSaved}
-              // props for like
-              liveLikesCount={liveLikesCount} 
-              isLiked={isLiked}
-              onLikeClick={handleToggleLike}
             />
           </div>
 
