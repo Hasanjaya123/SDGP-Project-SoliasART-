@@ -80,11 +80,14 @@ def get_unified_feed(user_id: str, db:Session, page: int = 1, page_size: int = 1
 
     #score the artworks using embedding similarity
     artworks = db.query(ArtWork).all()
+    posts = db.query(Post).all()
     taste_profile = None
 
-    #base on user interest create with their interaction history
+    #base on user interest create with their interaction history using both artworks and posts
     if not is_new_user:
         weighted_embeddings = []
+        
+        # Include artwork embeddings in taste profile
         for artwork in artworks:
             aid = str(artwork.id)
             if artwork.embedding is None:
@@ -99,6 +102,20 @@ def get_unified_feed(user_id: str, db:Session, page: int = 1, page_size: int = 1
             if weight > 0:
                 weighted_embeddings.append((np.array(artwork.embedding) * weight))
 
+        # Include post embeddings in taste profile
+        for post in posts:
+            pid = str(post.id)
+            if post.embedding is None:
+                continue
+            weight = 0
+            if pid in liked_ids and liked_ids[pid] == "post":
+                weight += EVENT_WEIGHTS["like"]
+            elif pid in saved_ids and saved_ids[pid] == "post":
+                weight += EVENT_WEIGHTS["save"]
+            elif pid in viewed_ids and viewed_ids[pid] == "post":
+                weight += EVENT_WEIGHTS["view"]
+            if weight > 0:
+                weighted_embeddings.append((np.array(post.embedding) * weight))
         
         if weighted_embeddings:
             # Average all weighted embeddings to create a user taste as vector
@@ -136,8 +153,7 @@ def get_unified_feed(user_id: str, db:Session, page: int = 1, page_size: int = 1
             "is_framed": artwork.is_framed,
         })
 
-    #score posts using enagement and collaborative filtering
-    posts = db.query(Post).all()
+    #score posts using engagement, collaborative filtering, and embedding similarity
 
     #collaborative filtering for posts
     bonus_post_ids = set()
@@ -164,8 +180,13 @@ def get_unified_feed(user_id: str, db:Session, page: int = 1, page_size: int = 1
         likes = like_count.get((post.id, "post"), 0)
         views = view_counts.get((post.id, "post"), 0)
         bonus = 2 if pid in bonus_post_ids else 0
-        # +1.0 baseline ensures new posts surface regardless of engagement
-        score = (likes * 3 + views * 1 + bonus + 1.0) * recency
+        
+        if taste_profile is not None and post.embedding is not None:
+            similarity = cosine_similarity(taste_profile, np.array(post.embedding).reshape(1, -1))[0][0]
+            score = (similarity * 5 + likes * 3 + views * 1 + bonus + 1.0) * recency
+        else:
+            # +1.0 baseline ensures new posts surface regardless of engagement
+            score = (likes * 3 + views * 1 + bonus + 1.0) * recency
 
         scored_items.append({
             "score"       : score,
