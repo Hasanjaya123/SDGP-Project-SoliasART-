@@ -75,7 +75,6 @@ function ArtistGuard({ children }) {
   return children;
 }
 
-
 function App() {
   const [savedArtworks, setSavedArtworks] = useState([]);
   const [cartCount, setCartCount] = useState(0);

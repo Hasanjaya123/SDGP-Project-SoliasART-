@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+﻿import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ICONS } from '../constants';
 import { artistProfileService } from '../services/uploadApi';
@@ -451,7 +451,7 @@ export const ArtistProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-white dark:bg-gray-900 font-sans transition-colors duration-300">
 
       {/* Cover Image */}
       <div className="h-48 md:h-64 w-full relative bg-slate-200 dark:bg-zinc-800">

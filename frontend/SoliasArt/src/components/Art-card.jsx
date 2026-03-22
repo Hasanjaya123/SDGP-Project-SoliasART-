@@ -56,7 +56,7 @@ const ArtDisplayCard = ({ image, formData }) => {
 
         <div className="bg-transparent rounded-sm overflow-hidden p-2.5 flex flex-col items-center transform transition-transform duration-500 hover:scale-[1.01]">
             <div
-                className="relative border-[7px] border-black dark:border-gray-800 p-1.5 bg-transparent mb-3 transition-all duration-500 ease-in-out flex items-center justify-center"
+                className="relative border-[7px] border-gray-700 dark:border-gray-600 p-1.5 bg-transparent mb-3 transition-all duration-500 ease-in-out flex items-center justify-center"
                 style={previewStyle}
             >
                 <div className="w-full h-full bg-transparent overflow-hidden relative group flex items-center justify-center">
