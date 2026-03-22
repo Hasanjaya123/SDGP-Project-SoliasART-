@@ -205,7 +205,7 @@ const ArtworkDetailsPage = () => {
   const qrCodeUrl = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${encodeURIComponent(arUrl)}`;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 pb-24 pt-12 md:pt-16">
+    <div className="min-h-screen bg-white dark:bg-gray-900 pt-12 md:pt-16">
       <div className="max-w-7xl mx-auto px-8 md:px-12 lg:px-20">
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">

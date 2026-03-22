@@ -12,7 +12,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 const ArtSearch = () => {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const [isDark, setIsDark] = useState(true);
   const [previewImage, setPreviewImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   // const { userId } = useParams()
@@ -57,14 +56,6 @@ const ArtSearch = () => {
     }
   };
 
-  // ── Apply / remove the "dark" class on <html> so ALL dark: variants work ──
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDark]);
 
   const handleArtworkClick = useCallback(
     (id) => {
