@@ -5,11 +5,7 @@ import ArtDisplayCard from '../components/Art-card';
 import Footer from '../components/Footer';
 import UserProfile from '../comp/UserProfile';
 
-<<<<<<< HEAD
 const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
-=======
-const API_BASE = import.meta.env.VITE_BACKEND_URL ||"http://localhost:8000";
->>>>>>> cc40490614151ea69cb12e8487e55ecdaf0cbe89
 
 
 // ─── Seeded random so numbers stay stable across re-renders ───
@@ -99,7 +95,6 @@ function SkeletonCard() {
 
 // ─── Page ─────────────────────────────────────────────────────
 const SaveWork = () => {
-<<<<<<< HEAD
   const navigate = useNavigate();
   const [artworks, setArtworks] = useState([]);
   const [loading, setLoading]   = useState(true);
@@ -107,16 +102,6 @@ const SaveWork = () => {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-=======
-  const [activeTab, setActiveTab]       = useState('collection');
-  const [artworks, setArtworks]         = useState([]);
-  const [loading, setLoading]           = useState(true);
-  const [error, setError]               = useState(null);
-  const [userData, setUserData] = useState(null);
-
-  useEffect(() => {
-    // Check for auth token before fetching
->>>>>>> cc40490614151ea69cb12e8487e55ecdaf0cbe89
     const token = localStorage.getItem('token');
     if (!token) {
       setError("Please login to view your profile");
@@ -127,31 +112,16 @@ const SaveWork = () => {
     setLoading(true);
     setError(null);
 
-<<<<<<< HEAD
-=======
-    // Fetching user profile and saved artworks 
->>>>>>> cc40490614151ea69cb12e8487e55ecdaf0cbe89
     const fetchProfileData = async () => {
       try {
         const headers = { 'Authorization': `Bearer ${token}` };
 
-<<<<<<< HEAD
         const userRes = await fetch(`${API_BASE}/auth/me`, { headers });
         if (userRes.ok) setUserData(await userRes.json());
 
         const artRes = await fetch(`${API_BASE}/savework/user/saved`, { headers });
         if (!artRes.ok) throw new Error(`Status: ${artRes.status}`);
 
-=======
-        // Fetch User Info
-        const userRes = await fetch(`${API_BASE}/auth/me`, { headers });
-        if (userRes.ok) setUserData(await userRes.json());
-
-        // Fetch saved artworks
-        const artRes = await fetch(`${API_BASE}/savework/user/saved`, { headers });
-        if (!artRes.ok) throw new Error(`Status: ${artRes.status}`);
-        
->>>>>>> cc40490614151ea69cb12e8487e55ecdaf0cbe89
         const data = await artRes.json();
         setArtworks(data);
       } catch (err) {
@@ -164,7 +134,6 @@ const SaveWork = () => {
     fetchProfileData();
   }, []);
 
-<<<<<<< HEAD
   const handleBecomeArtist = () => {
     navigate('/convert');
   };
@@ -207,32 +176,6 @@ const SaveWork = () => {
           </button>
         </div>
 
-=======
-  const collectionArtworks = artworks; 
-  const likedArtworks = artworks.filter(art => art.isLiked === true); 
-  const displayedArtworks = activeTab === 'collection' ? collectionArtworks : likedArtworks;
-
-  return (
-    <div className="dark min-h-screen bg-gray-950 flex flex-col p-4 md:p-8">
-
-      <div className="max-w-7xl mx-auto w-full">
-        
-        {/* Userprofile */}
-        <UserProfile
-          name={userData ? (userData.full_name || `${userData.first_name || 'User'} ${userData.last_name || ''}`) : "Loading..."}
-          role={userData?.role || "Art Enthusiast"}
-          avatar={userData?.profile_image || "https://ui-avatars.com/api/?name=User"}
-          collectionCount={collectionArtworks.length}
-          likedCount={likedArtworks.length}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
-
-        <h2 className="text-xl font-bold text-white text-center mb-8">
-          {activeTab === 'collection' ? 'My Art Collection' : 'Liked Artworks'}
-        </h2>
-
->>>>>>> cc40490614151ea69cb12e8487e55ecdaf0cbe89
         {error && (
           <div className="text-center text-red-400 text-sm mb-6">
             {error}
@@ -247,17 +190,10 @@ const SaveWork = () => {
 
         {!loading && !error && (
           <div className="flex flex-wrap gap-6 items-start justify-center">
-<<<<<<< HEAD
             {artworks.length === 0 ? (
               <p className="text-gray-500 text-sm mt-10">No artworks found in your collection.</p>
             ) : (
               artworks.map(artwork => (
-=======
-            {displayedArtworks.length === 0 ? (
-              <p className="text-gray-500 text-sm mt-10">No artworks found in your collection.</p>
-            ) : (
-              displayedArtworks.map(artwork => (
->>>>>>> cc40490614151ea69cb12e8487e55ecdaf0cbe89
                 <CardWithRealInfo key={artwork.id} artwork={artwork} />
               ))
             )}

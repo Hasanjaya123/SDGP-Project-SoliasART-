@@ -173,8 +173,4 @@ async def get_my_saved_artworks(
     )
     
     artist_map = await _fetch_artist_names(rows)
-<<<<<<< HEAD
     return [_map_row(r, artist_name=artist_map.get(str(r.get("artist_id")))) for r in rows]
-=======
-    return [_map_row(r, artist_name=artist_map.get(str(r.get("artist_id")))) for r in rows]
->>>>>>> cc40490614151ea69cb12e8487e55ecdaf0cbe89
