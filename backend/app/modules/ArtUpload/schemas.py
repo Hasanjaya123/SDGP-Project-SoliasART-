@@ -1,29 +1,29 @@
-from pydantic import BaseModel, Field, validator
-from decimal import Decimal
-from typing import Optional
+from pydantic import BaseModel, Field, field_validator
+from typing import List
 from uuid import UUID
 from app.modules.ArtUpload.form import as_form
 
 
-@as_form 
+# --- INPUT SCHEMA (Request) ---
+@as_form
 class ArtUploadRequest(BaseModel):
     title: str
     description: str
     medium: str
-    year: str      
-    framing: str   
-    
-   
+    year: str
+    framing: str
+
     price: str
     weight: str
     height: str
     width: str
     depth: str
-    
+
     origin: str = "Colombo, Sri Lanka"
     shippingRate: str = "standard"
 
-    #VALIDATORS - Cleans the data automatically
+    # -------- VALIDATORS -------- #
+
     @field_validator('year')
     @classmethod
     def parse_year(cls, v: str) -> int:
@@ -38,22 +38,25 @@ class ArtUploadRequest(BaseModel):
     def parse_framing(cls, v: str) -> bool:
         return v.lower() == 'framed'
 
-    @validator('price', 'weight', 'height', 'width', 'depth')
-    def parse_numbers(cls, v):
+    @field_validator('price', 'weight', 'height', 'width', 'depth')
+    @classmethod
+    def parse_numbers(cls, v: str) -> float:
         try:
             clean_v = v.replace(',', '').replace('LKR', '').strip()
             return float(clean_v) if clean_v else 0.0
-        except Exception:
+        except ValueError:
             return 0.0
 
 
+# --- OUTPUT SCHEMA (Response) ---
 class ArtWorkResponse(BaseModel):
     id: UUID
     title: str
     description: str
-    image_url: list[str]
+    image_url: List[str]
     price: float
     is_framed: bool
-    
-    class Config:
-        from_attributes = True 
+
+    model_config = {
+        "from_attributes": True
+    }
