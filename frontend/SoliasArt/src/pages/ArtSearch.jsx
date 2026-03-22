@@ -12,7 +12,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 const ArtSearch = () => {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const [isDark, setIsDark] = useState(true);
   const [previewImage, setPreviewImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   // const { userId } = useParams()
@@ -57,14 +56,6 @@ const ArtSearch = () => {
     }
   };
 
-  // ── Apply / remove the "dark" class on <html> so ALL dark: variants work ──
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDark]);
 
   const handleArtworkClick = useCallback(
     (id) => {
@@ -120,7 +111,7 @@ const ArtSearch = () => {
           </header>
 
           {/* Main content */}
-          <main className="flex-1 px-6 py-8 bg-white dark:bg-gray-950 transition-colors duration-300">
+          <main className="flex-1 px-6 py-8 bg-white dark:bg-gray-900 transition-colors duration-300">
             {loading ? (
               <div className="flex items-center justify-center py-24">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FFC247]"></div>
