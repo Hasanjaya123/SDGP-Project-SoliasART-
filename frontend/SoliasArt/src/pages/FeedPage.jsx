@@ -68,53 +68,8 @@ function FeedPage() {
 
     return (
         <div className='min-h-screen bg-stone-50 md:flex'>
-            <div className='hidden md:block md:shrink-0'>
-                <Sidebar />
-            </div>
-
-            <div className='flex-1'>
+            <div className='flex-1 pt-6'>
                 <div className='mx-auto max-w-[470px]'>
-                    <div className='px-4 py-4'>
-                        <div className='rounded-[26px] bg-white px-5 py-4 shadow-[0_8px_30px_rgba(15,23,42,0.06)]'>
-                            <div className='flex items-start gap-3'>
-                                <img
-                                    src='https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'
-                                    alt='User avatar'
-                                    className='h-12 w-12 rounded-full object-cover'
-                                />
-                                <div className='min-w-0 flex-1'>
-                                    <Link
-                                        to='/posts/create'
-                                        className='block text-[28px] font-medium tracking-[-0.03em] text-slate-500 transition hover:text-slate-700'
-                                    >
-                                        What&apos;s Happening?
-                                    </Link>
-                                </div>
-                            </div>
-
-                            <div className='mt-6 flex items-center justify-between'>
-                                <Link
-                                    to='/posts/create'
-                                    className='flex h-10 w-10 items-center justify-center rounded-full text-slate-500 transition hover:bg-stone-100 hover:text-slate-700'
-                                    aria-label='Add photo'
-                                >
-                                    <svg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'>
-                                        <rect x='3' y='5' width='18' height='14' rx='2' ry='2' />
-                                        <circle cx='8.5' cy='10.5' r='1.5' />
-                                        <path d='M21 16l-5.5-5.5L7 19' />
-                                    </svg>
-                                </Link>
-
-                                <Link
-                                    to='/posts/create'
-                                    className='inline-flex min-w-24 items-center justify-center rounded-full bg-amber-600 px-6 py-3 text-base font-bold leading-none no-underline shadow-sm transition hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-300'
-                                    style={{ color: '#ffffff' }}
-                                >
-                                    Post
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
                     {/*Error message*/}
                     {error && (
                         <div className="mx-4 my-3 p-3 bg-red-50 border border-red-200
