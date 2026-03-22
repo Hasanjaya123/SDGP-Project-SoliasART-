@@ -4,13 +4,13 @@ from uuid import UUID
 from datetime import datetime
 from app.modules.PostUpload.form import as_form
 
-# --- INPUT SCHEMA (Request) ---
+
 @as_form
 class PostUploadRequest(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
 
-# --- OUTPUT SCHEMA (Response) ---
+
 class PostResponse(BaseModel):
     id: UUID
     title: Optional[str]

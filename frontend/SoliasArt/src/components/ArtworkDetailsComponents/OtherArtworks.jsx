@@ -133,7 +133,10 @@ const ArtistOtherArtworks = ({ artistId, currentArtworkId }) => {
                   category: art.medium || art.category,
                   height: art.height_in || art.height,
                   width: art.width_in || art.width,
-                  images: [art.image_url]
+                  images: [art.image_url],
+                  artist_name: art.artists?.display_name || art.artist_name || "",
+                  views: art.view_count || art.views || 0,
+                  likes: art.likes || 0
                 }}
               />
             </div>

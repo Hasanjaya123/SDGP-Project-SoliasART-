@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Nav-bar'           
-import ArtDisplayCard from '../components/Art-card';   
+import Sidebar from '../components/Nav-bar';
+import ArtDisplayCard from '../components/Art-card';
 import Footer from '../components/Footer';
 import UserProfile from '../comp/UserProfile';
 
@@ -34,7 +34,6 @@ const HeartIcon = () => (
   </svg>
 );
 
-// ─── Palette icon for the CTA button ───
 const PaletteIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 shrink-0">
     <circle cx="12" cy="12" r="10"/>
@@ -67,10 +66,10 @@ function CardWithRealInfo({ artwork }) {
         className="absolute left-0 right-0 flex flex-col items-center gap-1 pointer-events-none"
         style={{ bottom: '68px' }}
       >
-        <p className="text-[11px] font-medium text-gray-400 bg-gray-950 w-full text-center py-0.5">
+        <p className="text-[11px] font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-950 w-full text-center py-0.5 transition-colors">
           {artwork.artist_name || 'Unknown Artist'}
         </p>
-        <div className="flex items-center justify-center gap-3 text-gray-400 text-[11px] font-medium bg-gray-950 w-full py-0.5">
+        <div className="flex items-center justify-center gap-3 text-gray-600 dark:text-gray-400 text-[11px] font-medium bg-white dark:bg-gray-950 w-full py-0.5 transition-colors">
           <span className="flex items-center gap-1">
             <EyeIcon />{seededRandom(artwork.id + 'v', 300, 5000).toLocaleString()}
           </span>
@@ -97,10 +96,10 @@ function SkeletonCard() {
 // ─── Page ─────────────────────────────────────────────────────
 const SaveWork = () => {
   const navigate = useNavigate();
-  const [artworks, setArtworks]   = useState([]);
-  const [loading, setLoading]     = useState(true);
-  const [error, setError]         = useState(null);
-  const [userData, setUserData]   = useState(null);
+  const [artworks, setArtworks] = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState(null);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -135,13 +134,12 @@ const SaveWork = () => {
     fetchProfileData();
   }, []);
 
-  // Navigate to artist onboarding, passing the user's id as a param
   const handleBecomeArtist = () => {
-  navigate('/convert');
-};
+    navigate('/convert');
+  };
 
   return (
-    <div className="dark min-h-screen bg-gray-950 flex flex-col p-4 md:p-8">
+    <div className="min-h-screen bg-white dark:bg-gray-950 flex flex-col p-4 md:p-8 transition-colors duration-200">
 
       <div className="max-w-7xl mx-auto w-full">
 
@@ -149,15 +147,15 @@ const SaveWork = () => {
         <UserProfile
           name={userData ? (userData.full_name || `${userData.first_name || 'User'} ${userData.last_name || ''}`) : "Loading..."}
           role={userData?.role || "Art Enthusiast"}
-          avatar={userData?.profile_image || "https://ui-avatars.com/api/?name=User"}
+          avatar={userData?.profile_image || "https://ik.imagekit.io/sjunnxn6x/Profile-Pictures/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3383.avif?updatedAt=1773944392522"}
           collectionCount={artworks.length}
           activeTab="collection"
           onTabChange={() => {}}
         />
 
-        {/* ── Header row: title + Switch to Artist CTA ── */}
+        {/* Header row: title + Switch to Artist CTA */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-          <h2 className="text-xl font-bold text-white text-center sm:text-left">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white text-center sm:text-left">
             My Art Collection
           </h2>
 

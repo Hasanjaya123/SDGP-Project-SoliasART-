@@ -16,17 +16,19 @@ import CartPage from './pages/CartPage';
 import ArtSearch from './pages/ArtSearch.jsx';
 import React, { useState, useEffect } from 'react';
 import ArtistDashboard from './pages/Dashboard.jsx';
+import CommissionRequestsPage from './pages/CommissionRequestsPage.jsx';
 
 import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
 import { jwtDecode } from "jwt-decode";
 import { authService } from './services/uploadApi';
 import ArtMapPage from './pages/ArtMapPage.jsx';
+import SaveWork from './pages/saveWork.jsx';
 
 
 // Verifies role against backend, not just the JWT
 function NotArtistGuard({ children }) {
-  const [verified, setVerified] = useState(null); 
+  const [verified, setVerified] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -40,14 +42,14 @@ function NotArtistGuard({ children }) {
       .catch(() => setVerified(false));
   }, []);
 
-  if (verified === null) return null; 
+  if (verified === null) return null;
   if (verified) return <Navigate to="/search" replace />;
 
   return children;
 }
 
 function ArtistGuard({ children }) {
-  const [verified, setVerified] = useState(null); 
+  const [verified, setVerified] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -61,14 +63,14 @@ function ArtistGuard({ children }) {
       .catch(() => setVerified(false));
   }, []);
 
-  if (verified === null) return null; 
+  if (verified === null) return null;
   if (verified) return <Navigate to="/search" replace />;
 
   return children;
 }
 
 
-import SaveWork from './pages/saveWork.jsx';
+
 
 
 
@@ -78,7 +80,7 @@ import SaveWork from './pages/saveWork.jsx';
 
 
 function App() {
-  
+
   return (
     <>
       <Routes>
@@ -92,10 +94,10 @@ function App() {
         {/* Test route for ArtDisplayCard */}
         <Route path="/test" element={<Test />} />
 
-        
+
 
         <Route path="/search/:userId" element={<ArtSearch />} />
-        
+
         {/* AR Viewer - Desktop AR generation and QR code */}
         <Route path="/ar" element={<ARViewer />} />
 
@@ -107,11 +109,10 @@ function App() {
 
         {/* Route for Art Upload page (for artists) - can be accessed after login */}
         <Route path='/dashboard/upload' element={<ArtistGuard><UploadArtPage /></ArtistGuard>}></Route>
-  
+
         {/* Artist on boarding page */}
         <Route path="/convert" element={<NotArtistGuard><ArtistOnboardingPage /></NotArtistGuard>} />
 
-        <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
 
         {/* Pages within the main layout (pages which have sidebar and footer) */}
         <Route element={<Layout />}>
@@ -124,11 +125,14 @@ function App() {
           <Route path="/map" element={<ArtMapPage />} />
           <Route path="/buyer/profile" element={<SaveWork />} />
 
+          <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
+          <Route path="/dashboard/commissions" element={<ArtistGuard><CommissionRequestsPage /></ArtistGuard>} />
+
         </Route>
 
       </Routes>
 
-     
+
     </>
   );
 }

@@ -84,14 +84,6 @@ const ArtSearch = () => {
           <header className="sticky top-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm transition-colors duration-300">
             <div className="px-6 py-3 flex items-center gap-3">
 
-              {/* Logo PNG — replaces the old "ArtVault" text */}
-               <div className="flex-shrink-0 mr-2">
-                <img
-                  src={soliasartlogo}
-                  alt="SoliasART"
-                  className="h-8 w-auto object-contain"
-                />
-              </div>
 
               <div className="flex-1 flex justify-center">
                 <SearchBar
@@ -107,6 +99,7 @@ const ArtSearch = () => {
               </div>
 
               <div className="flex items-center gap-2 flex-shrink-0">
+
                 <UploadButton onImageUpload={(url, file) => {
                   if (previewImage) URL.revokeObjectURL(previewImage);
                   const ownUrl = URL.createObjectURL(file);
@@ -114,7 +107,14 @@ const ArtSearch = () => {
                   setImageFile(file);
                   handleSearch(null, file);
                 }} />
-                <CartButton count={0} />
+
+                <div 
+                  onClick={() => navigate('/cart')} 
+                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                >
+                  <CartButton count={0} />
+                </div>
+
               </div>
             </div>
           </header>
@@ -157,6 +157,9 @@ const ArtSearch = () => {
                       height: art.height_in || '',
                       width: art.width_in || '',
                       images: imgUrl ? [imgUrl] : [],
+                      artist_name: art.artists?.display_name || art.artist_name || "",
+                      views: art.view_count || art.views || 0,
+                      likes: art.likes || 0,
                     }} />
                   </div>
                   );

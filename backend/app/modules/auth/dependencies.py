@@ -6,7 +6,7 @@ from fastapi import HTTPException, status
 from app.core.config import settings
 from jose import JWTError, jwt
 from app.modules.auth import models
-from app.modules.ArtistOnboarding.model import Artist
+from app.modules.ArtistProfile.model import Artist
 
 #points to the "auth/login" endpoint for token retrieval
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl = "/auth/login")
