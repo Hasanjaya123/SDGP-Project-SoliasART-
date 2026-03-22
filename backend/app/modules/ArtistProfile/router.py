@@ -8,20 +8,31 @@ from app.modules.ArtistProfile.model import Follow
 router = APIRouter(prefix="/artists", tags=["ArtistProfile"])
 
 
-# 🔥 GET ALL ARTISTS (THIS IS YOUR ERROR FIX)
 @router.get("")
 async def get_all_artists():
     try:
         response = supabase.table("artists").select("*").execute()
+        artists = response.data
+        
+        # Fetch artworks basic info to count them
+        artworks_res = supabase.table("artwork").select("artist_id").execute()
+        
+        counts = {}
+        for art in artworks_res.data:
+            aid = str(art.get("artist_id"))
+            counts[aid] = counts.get(aid, 0) + 1
+            
+        for a in artists:
+            a["artworks_count"] = counts.get(str(a["id"]), 0)
 
-        return response.data  # return list directly
+        return artists
 
     except Exception as e:
-        print("🔥 FULL ERROR:", str(e))   # VERY IMPORTANT
+        print("🔥 FULL ERROR:", str(e))   
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# 🔐 GET CURRENT ARTIST PROFILE
+
 @router.get("/profile")
 async def get_my_profile(
     current_user: str = Depends(get_current_artist)

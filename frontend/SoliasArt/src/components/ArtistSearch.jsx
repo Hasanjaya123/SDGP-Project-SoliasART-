@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { ArtistCard } from './ArtistCard';
+import { api } from '../services/uploadApi';
 
-export const ArtistSearch = ({ setCurrentPage }) => {
+export const ArtistSearch = () => {
     const [artists, setArtists] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -11,14 +12,8 @@ export const ArtistSearch = ({ setCurrentPage }) => {
 
     const fetchArtists = async () => {
         try {
-            const response = await fetch("http://127.0.0.1:8000/artists"); // 👈 backend endpoint
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch artists");
-            }
-
-            const data = await response.json();
-            setArtists(data);
+            const response = await api.get("/artists");
+            setArtists(response.data);
         } catch (error) {
             console.error("Error fetching artists:", error);
         }
@@ -29,7 +24,7 @@ export const ArtistSearch = ({ setCurrentPage }) => {
     );
 
     return (
-        <div>
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
 
             {/* Header */}
             <div className="text-center mb-12">
@@ -54,12 +49,11 @@ export const ArtistSearch = ({ setCurrentPage }) => {
 
             {/* Artists */}
             {filteredArtists.length > 0 ? (
-                <div className="grid grid-cols-3 gap-8">
-                    {filteredArtists.map((artist, index) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    {filteredArtists.map((artist) => (
                         <ArtistCard
                             key={artist.id}
                             artist={artist}
-                            setCurrentPage={setCurrentPage}
                         />
                     ))}
                 </div>

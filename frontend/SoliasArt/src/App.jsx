@@ -16,6 +16,8 @@ import MobilePreview from './pages/MobilePreview.jsx';
 import Layout from './components/Layout';
 import CartPage from './pages/CartPage';
 import ArtSearch from './pages/ArtSearch.jsx';
+import { ArtistSearch } from './components/ArtistSearch.jsx';
+import CollectionsPage from './pages/CollectionsPage.jsx';
 
 import ArtistDashboard from './pages/Dashboard.jsx';
 import CommissionRequestsPage from './pages/CommissionRequestsPage.jsx';
@@ -72,12 +74,6 @@ function ArtistGuard({ children }) {
 }
 
 
-
-
-import { artworks } from "./data/mockData";
-
-
-
 function App() {
 
   return (
@@ -124,6 +120,7 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/map" element={<ArtMapPage />} />
           <Route path="/buyer/profile" element={<SaveWork />} />
+          <Route path="/collections" element={<CollectionsPage />} />
 
           <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
           <Route path="/dashboard/commissions" element={<ArtistGuard><CommissionRequestsPage /></ArtistGuard>} />
