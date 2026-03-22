@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FiHeart } from 'react-icons/fi'; 
 import { FaHeart } from 'react-icons/fa';
-
+import { api } from '../services/uploadApi';
 const LikeButton = ({ artworkId, initialLikes, initialIsLiked = false, currentUserId, isLiked: isLikedProp, onClick }) => {
 
   const [localLikes, setLocalLikes] = useState(initialLikes || 0);
@@ -28,14 +28,7 @@ const LikeButton = ({ artworkId, initialLikes, initialIsLiked = false, currentUs
     setLocalIsLiked(!localIsLiked);
 
     try {
-      await fetch(`http://localhost:8000/api/artworks/${artworkId}/like`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` // Use JWT instead of hardcoded ID
-        }
-        // Deleted the hardcoded body!
-      });
+      await api.post(`/api/artworks/${artworkId}/like`);
     } catch (error) {
       setLocalLikes(localIsLiked ? localLikes + 1 : localLikes - 1);
       setLocalIsLiked(localIsLiked);

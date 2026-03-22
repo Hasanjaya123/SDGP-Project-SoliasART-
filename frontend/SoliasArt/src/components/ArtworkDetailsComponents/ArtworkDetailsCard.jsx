@@ -1,5 +1,6 @@
 import React, { useState ,useEffect} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { api } from '../../services/uploadApi';
 
 //import icons
 import { FiEye, FiHeart, FiBookmark } from 'react-icons/fi'; 
@@ -27,28 +28,15 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick, onSaveC
     
     try {
       // Send the POST request to backend
-      const response = await fetch('http://localhost:8000/api/cart/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          artwork_id: artwork.id 
-        }),
+      await api.post('/api/cart/add', {
+        artwork_id: artwork.id 
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        // If the response is not ok
-        throw new Error(data.detail || "Failed to add to cart");
-      }
 
       // If successful navigate to cart page
       navigate('/cart'); 
       
     } catch (error) {
+      error.message = error.response?.data?.detail || error.message;
       console.error("Cart Error:", error);
       alert(error.message); 
     } finally {

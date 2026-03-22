@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import UserProfile from '../comp/UserProfile';
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+import { api } from '../services/uploadApi';
 
 
 // ─── Seeded random so numbers stay stable across re-renders ───
@@ -125,7 +126,7 @@ const SaveWork = () => {
         const data = await artRes.json();
         setArtworks(data);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.detail || err.message);
       } finally {
         setLoading(false);
       }
