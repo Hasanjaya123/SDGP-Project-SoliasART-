@@ -88,10 +88,10 @@ function App() {
         {/* Test route for ArtDisplayCard */}
         <Route path="/test" element={<Test />} />
 
-
+        
 
         <Route path="/search/:userId" element={<ArtSearch />} />
-
+        
         {/* AR Viewer - Desktop AR generation and QR code */}
         <Route path="/ar" element={<ARViewer />} />
 
@@ -130,7 +130,6 @@ function App() {
 
 
     </>
-
   );
 }
 

@@ -8,6 +8,8 @@ import { FaHeart, FaBookmark } from 'react-icons/fa';
 import { MdOutlineViewInAr } from 'react-icons/md';
 
 const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick, onSaveClick, isSaved }) => {
+  const [likesCount, setLikesCount] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   // Initialize the navigation hook
