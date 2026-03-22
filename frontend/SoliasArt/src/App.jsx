@@ -125,6 +125,9 @@ function App() {
           <Route path="/map" element={<ArtMapPage />} />
           <Route path="/collections" element={<CollectionsPage />} />
           <Route path="/collections/:id" element={<CollectionDetailPage />} />
+          <Route path="/buyer/profile" element={<SaveWork />} />
+          <Route path="/saved" element={<SaveWork />} />
+          <Route path="/feed" element={<ArtSearch />} />
 
           <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
           <Route path="/dashboard/commissions" element={<ArtistGuard><CommissionRequestsPage /></ArtistGuard>} />

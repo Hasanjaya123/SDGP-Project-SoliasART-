@@ -4,14 +4,16 @@ from app.core.supabase import supabase
 from app.modules.auth.dependencies import get_current_user, get_current_artist
 from app.core.database import get_db
 from sqlalchemy.orm import Session
-from app.modules.ArtistProfile.model import Follow
+from sqlalchemy import or_
+from app.modules.ArtistProfile.model import Follow, Artist
 
 
 router = APIRouter(prefix="/artists", tags=["ArtistProfile"])
 
 @router.get("/profile")
 async def get_full_artist_profile(
-    current_user: str = Depends(get_current_artist)
+    current_user: str = Depends(get_current_artist),
+    db: Session = Depends(get_db)
     ):
     """
     Fetches everything needed for the ArtistProfilePage in one single request.
@@ -20,34 +22,33 @@ async def get_full_artist_profile(
         
         user_id = str(current_user.id)
        
-        # We fetch the artist by the user_id foreign key
-        profile_res = supabase.table("artists").select("*").eq("user_id", user_id).execute()
+        # Use SQLAlchemy for the primary artist lookup to ensure reliability
+        artist_record = db.query(Artist).filter(Artist.user_id == user_id).first()
         
-        if not profile_res.data:
+        if not artist_record:
             raise HTTPException(status_code=404, detail="Artist not found")
             
-        raw_artist = profile_res.data[0]
-        artist_id = str(raw_artist["id"])
+        artist_id = str(artist_record.id)
 
         artworks_res = supabase.table("artwork").select("id, title, price, image_url, width_in, height_in, medium, view_count, likes, artists(display_name)").eq("artist_id", artist_id).execute()
         
         posts_res = supabase.table("post").select("*").eq("artist_id", artist_id).order("created_at", desc=True).execute()
 
-        # We map the database columns (snake_case) to match your React props (camelCase)
+        # Map database fields to match React props
         return {
             "artist": {
-                "id": raw_artist.get("id"),
+                "id": str(artist_record.id),
                 'owner' : True,
-                "name": raw_artist.get("display_name", "Unknown Artist"),
-                "display_name": raw_artist.get("display_name", "Unknown Artist"),
-                "bio": raw_artist.get("artist_bio", ""),
-                "profileImageUrl": raw_artist.get("profile_image_url", "https://via.placeholder.com/150"),
-                "isVerified": raw_artist.get("verified_artist", False),
-                "specialty": raw_artist.get("primary_medium", ""),
-                "location": raw_artist.get("dispatch_address", "Sri Lanka"),
-                "yearsExperience": raw_artist.get("years_experience", ""),
-                "styles": raw_artist.get("artistic_styles", []), 
-                "followers": raw_artist.get("followers", 0),
+                "name": artist_record.display_name or "Unknown Artist",
+                "display_name": artist_record.display_name or "Unknown Artist",
+                "bio": artist_record.artist_bio or "",
+                "profileImageUrl": artist_record.profile_image_url or "https://via.placeholder.com/150",
+                "isVerified": artist_record.verified_artist or False,
+                "specialty": artist_record.primary_medium or "",
+                "location": artist_record.dispatch_address or "Sri Lanka",
+                "yearsExperience": artist_record.years_experience or "",
+                "styles": artist_record.artistic_styles or [], 
+                "followers": artist_record.followers or 0,
                 "recognition": [],
             },
             "artworks": artworks_res.data,
@@ -63,42 +64,44 @@ async def get_full_artist_profile(
     
 @router.get("/profile/{artist_id}")
 async def get_full_artist_profile_by_id(
+    artist_id: str,
     current_user: str = Depends(get_current_user),
-    artist_id: str = None
+    db: Session = Depends(get_db)
     ):
     """
     Fetches everything needed for the ArtistProfilePage in one single request.
     """
     try:
        
-        # We fetch the artist by the user_id foreign key
-        profile_res = supabase.table("artists").select("*").or_(f"id.eq.{artist_id},user_id.eq.{artist_id}").execute()
-        
-        if not profile_res.data:
+        # Use SQLAlchemy to find the artist by either their record ID or their User ID
+        artist_record = db.query(Artist).filter(
+            or_(Artist.id == artist_id, Artist.user_id == artist_id)
+        ).first()
+
+        if not artist_record:
             raise HTTPException(status_code=404, detail="Artist not found")
             
-        raw_artist = profile_res.data[0]
-        actual_artist_id = str(raw_artist["id"])
+        actual_artist_id = str(artist_record.id)
 
         artworks_res = supabase.table("artwork").select("id, title, price, image_url, width_in, height_in, medium").eq("artist_id", actual_artist_id).execute()
         
         posts_res = supabase.table("post").select("*").eq("artist_id", actual_artist_id).order("created_at", desc=True).execute()
 
-        # We map the database columns (snake_case) to match your React props (camelCase)
+        # Map database fields to match React props
         return {
             "artist": {
-                "id": raw_artist.get("id"),
+                "id": str(artist_record.id),
                 'owner' : False,
-                "name": raw_artist.get("display_name", "Unknown Artist"),
-                "display_name": raw_artist.get("display_name", "Unknown Artist"),
-                "bio": raw_artist.get("artist_bio", ""),
-                "profileImageUrl": raw_artist.get("profile_image_url", "https://via.placeholder.com/150"),
-                "isVerified": raw_artist.get("verified_artist", False),
-                "specialty": raw_artist.get("primary_medium", ""),
-                "location": raw_artist.get("dispatch_address", "Sri Lanka"),
-                "yearsExperience": raw_artist.get("years_experience", ""),
-                "styles": raw_artist.get("artistic_styles", []), 
-                "followers": raw_artist.get("followers", 0),
+                "name": artist_record.display_name or "Unknown Artist",
+                "display_name": artist_record.display_name or "Unknown Artist",
+                "bio": artist_record.artist_bio or "",
+                "profileImageUrl": artist_record.profile_image_url or "https://via.placeholder.com/150",
+                "isVerified": artist_record.verified_artist or False,
+                "specialty": artist_record.primary_medium or "",
+                "location": artist_record.dispatch_address or "Sri Lanka",
+                "yearsExperience": artist_record.years_experience or "",
+                "styles": artist_record.artistic_styles or [], 
+                "followers": artist_record.followers or 0,
                 "recognition": [],
             },
             "artworks": artworks_res.data,
