@@ -73,7 +73,6 @@ function ArtistGuard({ children }) {
   return children;
 }
 
-
 function App() {
 
   return (
