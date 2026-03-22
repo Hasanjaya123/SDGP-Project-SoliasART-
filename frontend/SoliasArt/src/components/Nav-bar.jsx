@@ -115,10 +115,10 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
   const profileImage = userData?.profile_image || defaultAvatar;
   const userName = userData ? (userData.full_name || `${userData.first_name || 'Guest'} ${userData.last_name || ''}`) : "Guest";
   const userRole = userData?.role || "User";
-  
-  // Route to the correct profile page based on user role
-  const profileLink = userData?.role === 'artist' 
-    ? `/artist/profile/${userData.artist_id || userData.id}`
+
+  // Route them to the correct profile page based on their role
+  const profileLink = userData?.role === 'artist'
+    ? `/artist/profile`
     : `/buyer/profile`;
 
   // close sidebar on link click in mobile view  

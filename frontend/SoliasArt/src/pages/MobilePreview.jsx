@@ -28,11 +28,23 @@ function ModelViewer({ src }) {
             ar-placement="wall"
             auto-rotate
             camera-controls
-            shadow-intensity="1.5"
+            shadow-intensity="1"
             environment-image="neutral"
             style={{ width: "100%", height: "70vh" }}
         >
-            <button slot="ar-button">View in AR</button>
+            <button slot="ar-button" style={{
+                position: 'absolute',
+                bottom: '20px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                backgroundColor: '#d97706',
+                color: 'white',
+                fontWeight: '600',
+                padding: '8px 16px',
+                borderRadius: '4px',
+                border: 'none',
+                outline: 'none'
+            }}>View in AR</button>
         </model-viewer>
     )
 }
