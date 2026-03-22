@@ -43,7 +43,7 @@ export const ArtistSearch = () => {
                     placeholder="Search artists..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border"
+                    className="w-full px-4 py-2 rounded-lg border text-gray-900 dark:!text-white bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition-all"
                 />
             </div>
 
