@@ -1,7 +1,9 @@
+import React, { useState, useEffect } from "react";
+
 
 import './App.css'
 import UploadArtPage from './pages/ArtUpload'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import SignupPage from './pages/SignupPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
@@ -14,7 +16,9 @@ import MobilePreview from './pages/MobilePreview.jsx';
 import Layout from './components/Layout';
 import CartPage from './pages/CartPage';
 import ArtSearch from './pages/ArtSearch.jsx';
-import React, { useState, useEffect } from 'react';
+import { ArtistSearch } from './components/ArtistSearch.jsx';
+import CollectionsPage from './pages/CollectionsPage.jsx';
+
 import ArtistDashboard from './pages/Dashboard.jsx';
 import CommissionRequestsPage from './pages/CommissionRequestsPage.jsx';
 
@@ -70,11 +74,6 @@ function ArtistGuard({ children }) {
 }
 
 
-
-
-
-
-
 function App() {
 
   return (
@@ -115,11 +114,13 @@ function App() {
           {/* Artwork details page */}
           <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
           <Route path="/search" element={<ArtSearch />} />
+          <Route path="/artist-search" element={<ArtistSearch />} />
           <Route path="/artist/profile" element={<ArtistProfilePage />} />
           <Route path="/artist/profile/:artistId" element={<ArtistProfilePage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/map" element={<ArtMapPage />} />
           <Route path="/buyer/profile" element={<SaveWork />} />
+          <Route path="/collections" element={<CollectionsPage />} />
 
           <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
           <Route path="/dashboard/commissions" element={<ArtistGuard><CommissionRequestsPage /></ArtistGuard>} />

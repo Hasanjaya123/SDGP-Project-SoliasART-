@@ -46,6 +46,31 @@ export const artEvents = [
     }
 ];
 
+export const artworks = [
+    {
+        id: 1,
+        title: "Sunset Painting",
+        artist: "Local Artist",
+        price: 200,
+        image: "https://via.placeholder.com/300"
+    },
+    {
+        id: 2,
+        title: "Ocean Breeze",
+        artist: "Sri Lankan Painter",
+        price: 150,
+        image: "https://via.placeholder.com/300"
+    }
+];
+
+export const collections = [
+    {
+        id: 1,
+        name: "Modern Art Collection",
+        artworkIds: [1, 2]
+    }
+];
+
 export const artGalleries = [
     { id: 101, name: "Saskia Fernando Gallery", location: "Horton Place, Colombo 7" },
     { id: 102, name: "Barefoot Gallery", location: "Galle Road, Colombo 3" },

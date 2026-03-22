@@ -1,18 +1,19 @@
 import inspect
 from typing import Type
 from fastapi import Form
-from pydantic import BaseModel, field_validator
-from decimal import Decimal
+from pydantic import BaseModel
+
 
 def as_form(cls: Type[BaseModel]):
     """
-    Decorator to make a Pydantic class usable with FastAPI Form() data.
+    Converts Pydantic model fields into FastAPI Form fields
+    (Compatible with Pydantic v2)
     """
     new_params = [
         inspect.Parameter(
             field.alias or field_name,
             inspect.Parameter.POSITIONAL_ONLY,
-            default=Form(field.default) if not field.is_required() else Form(...),
+            default=Form(...) if field.is_required() else Form(field.default),
             annotation=field.annotation,
         )
         for field_name, field in cls.model_fields.items()
