@@ -13,18 +13,17 @@ class UserResponse(BaseModel):
     id: UUID
     email: EmailStr
     full_name: str
-    role: str 
+    role: str
+
+    class Config:
+        from_attributes = True
 
 # INPUT: What the user types to login
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
-#Token
+# Token
 class Token(BaseModel):
     access_token: str
     token_type: str
-
-# Allow read data from a class object
-    class Config:
-        from_attributes = True

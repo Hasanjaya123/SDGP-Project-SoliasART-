@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { api } from "../services/uploadApi"
 
 function ModelViewer({ src }) {
     const [ready, setReady] = useState(false) // tracks if script loaded
@@ -31,7 +32,19 @@ function ModelViewer({ src }) {
             environment-image="neutral"
             style={{ width: "100%", height: "70vh" }}
         >
-            <button slot="ar-button">View in AR</button>
+            <button slot="ar-button" style={{
+                position: 'absolute',
+                bottom: '20px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                backgroundColor: '#d97706',
+                color: 'white',
+                fontWeight: '600',
+                padding: '8px 16px',
+                borderRadius: '4px',
+                border: 'none',
+                outline: 'none'
+            }}>View in AR</button>
         </model-viewer>
     )
 }
@@ -68,24 +81,21 @@ export default function MobilePreview() {
         // fetch the GLB file from the backend to confirm it's cached and get a blob URL for the 3D viewer
         const fetchGlb = async () => {
             try {
-                const res = await fetch(decodedUrl, {
+                const res = await api.get(decodedUrl, {
                     headers: {
                         "ngrok-skip-browser-warning": "true" // needed when using ngrok
-                    }
+                    },
+                    responseType: 'blob'
                 });
-                if (!res.ok) {
-                    const body = await res.json().catch(() => ({}));
-                    throw new Error(body.detail || `Error ${res.status}`);
-                }
-
-                const blob = await res.blob();
+                
+                const blob = res.data;
                 setLocalUrl(URL.createObjectURL(blob));
 
                 // Use the original HTTP URL for model-viewer so AR viewers can access it
                 setModelUrl(decodedUrl);
 
             } catch (e) {
-                setError(e.message);
+                setError(e.response?.data?.detail || e.message);
             } finally {
                 setLoading(false);
             }

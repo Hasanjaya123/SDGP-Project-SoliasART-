@@ -1,4 +1,3 @@
-# backend/main.py
 from fastapi import HTTPException, APIRouter, Depends
 from app.core.supabase import supabase
 from app.modules.auth.dependencies import get_current_user, get_current_artist
@@ -6,26 +5,46 @@ from app.core.database import get_db
 from sqlalchemy.orm import Session
 from app.modules.ArtistProfile.model import Follow
 
-
 router = APIRouter(prefix="/artists", tags=["ArtistProfile"])
 
-@router.get("/profile")
-async def get_full_artist_profile(
-    current_user: str = Depends(get_current_artist)
-    ):
-    """
-    Fetches everything needed for the ArtistProfilePage in one single request.
-    """
+
+@router.get("")
+async def get_all_artists():
     try:
+        response = supabase.table("artists").select("*").execute()
+        artists = response.data
         
+        # Fetch artworks basic info to count them
+        artworks_res = supabase.table("artwork").select("artist_id").execute()
+        
+        counts = {}
+        for art in artworks_res.data:
+            aid = str(art.get("artist_id"))
+            counts[aid] = counts.get(aid, 0) + 1
+            
+        for a in artists:
+            a["artworks_count"] = counts.get(str(a["id"]), 0)
+
+        return artists
+
+    except Exception as e:
+        print("🔥 FULL ERROR:", str(e))   
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@router.get("/profile")
+async def get_my_profile(
+    current_user: str = Depends(get_current_artist)
+):
+    try:
         user_id = str(current_user.id)
-       
-        # We fetch the artist by the user_id foreign key
+
         profile_res = supabase.table("artists").select("*").eq("user_id", user_id).execute()
-        
+
         if not profile_res.data:
             raise HTTPException(status_code=404, detail="Artist not found")
-            
+
         raw_artist = profile_res.data[0]
         artist_id = str(raw_artist["id"])
 

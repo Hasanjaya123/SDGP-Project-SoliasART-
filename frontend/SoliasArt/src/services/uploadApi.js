@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -47,7 +47,7 @@ export const artistProfileService = {
     const response = await api.get(`/artists/profile/${artistId}/is-following`);
     return response.data;
   },
-  
+
   followArtist: async (artistId) => {
     const response = await api.post(`/artists/profile/${artistId}/follow`);
     return response.data;
@@ -82,7 +82,7 @@ export const artworkService = {
 
     const textFields = [
       'title', 'description', 'year', 'medium', 'category',
-      'height', 'width', 'depth', 'framing', 'price', 
+      'height', 'width', 'depth', 'framing', 'price',
       'origin', 'weight', 'shippingRate'
     ];
 
@@ -118,10 +118,10 @@ export const artworkService = {
       throw error
     }
   },
-  
+
   SearchArtWork: async (textInput, imageFile) => {
     const formData = new FormData();
-  
+
     if (textInput) {
       formData.append("query_text", textInput);
     } else if (imageFile) {
@@ -220,11 +220,11 @@ export const paymentService = {
   },
 };
 
-// ── Commission Requests ────────────────────────
+
 export const commissionService = {
   /**
-   * Submit a new commission request (multipart/form-data).
-   * @param {FormData} formData – contains text fields + optional reference_image file
+   * 
+   * @param {FormData} formData 
    */
   submitCommission: async (formData) => {
     try {
@@ -238,21 +238,23 @@ export const commissionService = {
     }
   },
 
-  /** Fetch all pending commissions for the logged-in artist */
+
   getArtistCommissions: async () => {
     const response = await api.get('/commissions/artist');
     return response.data;
   },
 
-  /** Artist accepts a commission */
+
   acceptCommission: async (commissionId) => {
     const response = await api.patch(`/commissions/${commissionId}/accept`);
     return response.data;
   },
 
-  /** Artist rejects a commission */
+
   rejectCommission: async (commissionId) => {
     const response = await api.patch(`/commissions/${commissionId}/reject`);
     return response.data;
   },
 };
+
+export { api };

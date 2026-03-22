@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     # PayHere Payment Gateway
     PAYHERE_MERCHANT_ID: str = ""
     PAYHERE_MERCHANT_SECRET: str = ""
+    
+    FRONTEND_URL: str = ""
+    BACKEND_URL: str = ""
 
     model_config = SettingsConfigDict(
         env_file=".env",

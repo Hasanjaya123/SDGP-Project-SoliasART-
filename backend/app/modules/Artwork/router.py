@@ -138,7 +138,11 @@ def get_all_artworks(
             "medium": art.medium,
             "height_in": art.height_in,
             "width_in": art.width_in,
-            "artist_id": art.artist_id
+            "artist_id": art.artist_id,
+            "views": art.view_count if art.view_count is not None else 0,
+            "likes": art.likes if art.likes is not None else 0,
+            "artist_name": art.artist.display_name if art.artist else art.artist_name if art.artist_name else "Unknown Artist"
+
         }
         for art in artworks
     ]

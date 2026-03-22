@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { FiHeart } from 'react-icons/fi'; 
 import { FaHeart } from 'react-icons/fa';
+import { api } from '../services/uploadApi';
+
 
 const LikeButton = ({ artworkId, initialLikes, initialIsLiked = false, currentUserId, isLiked: isLikedProp, onClick }) => {
 
@@ -17,7 +19,7 @@ const LikeButton = ({ artworkId, initialLikes, initialIsLiked = false, currentUs
       return;
     }
 
-    // IF BUTTON IS INDEPENDENT: Use the local state and JWT token
+    // Use the local state and JWT token
     const token = localStorage.getItem('token');
     if (!token) {
       alert("Please log in to like artworks!");
@@ -61,5 +63,6 @@ const LikeButton = ({ artworkId, initialLikes, initialIsLiked = false, currentUs
     </button>
   );
 };
+
 
 export default LikeButton;

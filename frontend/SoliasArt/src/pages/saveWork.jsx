@@ -66,10 +66,10 @@ function CardWithRealInfo({ artwork }) {
         className="absolute left-0 right-0 flex flex-col items-center gap-1 pointer-events-none"
         style={{ bottom: '68px' }}
       >
-        <p className="text-[11px] font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-950 w-full text-center py-0.5 transition-colors">
+        <p className="text-[11px] font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-900 w-full text-center py-0.5 transition-colors">
           {artwork.artist_name || 'Unknown Artist'}
         </p>
-        <div className="flex items-center justify-center gap-3 text-gray-600 dark:text-gray-400 text-[11px] font-medium bg-white dark:bg-gray-950 w-full py-0.5 transition-colors">
+        <div className="flex items-center justify-center gap-3 text-gray-600 dark:text-gray-400 text-[11px] font-medium bg-white dark:bg-gray-900 w-full py-0.5 transition-colors">
           <span className="flex items-center gap-1">
             <EyeIcon />{seededRandom(artwork.id + 'v', 300, 5000).toLocaleString()}
           </span>
@@ -125,7 +125,7 @@ const SaveWork = () => {
         const data = await artRes.json();
         setArtworks(data);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.detail || err.message);
       } finally {
         setLoading(false);
       }
@@ -139,7 +139,7 @@ const SaveWork = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 flex flex-col p-4 md:p-8 transition-colors duration-200">
+    <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col p-4 md:p-8 transition-colors duration-200">
 
       <div className="max-w-7xl mx-auto w-full">
 

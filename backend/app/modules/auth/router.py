@@ -113,7 +113,7 @@ def verify_email(token: str, db: Session = Depends(get_db)):
         </html>
         """
 
-    # 1. Decode Token
+    #  Decode Token
     try:
         from app.core.config import settings 
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
@@ -123,12 +123,12 @@ def verify_email(token: str, db: Session = Depends(get_db)):
     except JWTError:
         return HTMLResponse(content=create_page("⚠️", "Link Expired", "This verification link has expired or is invalid.", "#D32F2F"))
 
-    # 2. Find User
+    #  Find User
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if not user:
         return HTMLResponse(content=create_page("❓", "User Not Found", "We could not find a user associated with this link.", "#D32F2F"))
 
-    # 3 Already Verified?
+    #  Already Verified?
     if user.is_verified:
        
         return HTMLResponse(content=create_page(
@@ -138,7 +138,7 @@ def verify_email(token: str, db: Session = Depends(get_db)):
             color="#1F4E79" 
         ))
 
-    # Success: Mark as Verified
+    #  Mark as Verified
     user.is_verified = True
     db.commit()
 
