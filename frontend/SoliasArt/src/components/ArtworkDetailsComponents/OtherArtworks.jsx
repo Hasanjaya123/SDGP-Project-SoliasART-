@@ -127,7 +127,7 @@ const ArtistOtherArtworks = ({ artistId, currentArtworkId }) => {
               }}
             >
               <ArtDisplayCard 
-                image={Array.isArray(art.imageUrls) ? art.imageUrls[0] : (art.image_url || art.imageUrls)} 
+                image={Array.isArray(art.image_url) ? art.image_url[0] : art.image_url} 
                 formData={{
                   title: art.title,
                   price: art.price,

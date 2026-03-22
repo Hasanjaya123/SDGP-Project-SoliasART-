@@ -53,11 +53,7 @@ class ArtWorkResponse(BaseModel):
     id: UUID
     title: str
     description: str
-<<<<<<< HEAD
-    imageUrls: list[str]
-=======
     image_url: List[str]
->>>>>>> main
     price: float
     is_framed: bool
 

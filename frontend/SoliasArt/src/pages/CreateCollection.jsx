@@ -14,6 +14,7 @@ const CreateCollection = () => {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
     const [artistId, setArtistId] = useState(null);
+    const [totalPrice, setTotalPrice] = useState(0);
 
     useEffect(() => {
         const loadInitialData = async () => {
@@ -41,6 +42,12 @@ const CreateCollection = () => {
 
         loadInitialData();
     }, [navigate]);
+
+    useEffect(() => {
+        const selectedArtworks = artworks.filter(art => selectedIds.includes(art.id));
+        const total = selectedArtworks.reduce((sum, art) => sum + (parseFloat(art.price) || 0), 0);
+        setTotalPrice(total);
+    }, [selectedIds, artworks]);
 
 
     const toggleSelection = (id) => {
@@ -93,8 +100,16 @@ const CreateCollection = () => {
                             Build Collection
                         </h1>
                     </div>
-                    <div className="text-xs text-gray-400">
-                        {selectedIds.length} ARTS SELECTED
+                    <div className="flex items-center gap-6">
+                        <div className="text-right">
+                            <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Value</div>
+                            <div className="text-sm font-bold text-amber-600 dark:text-amber-500">LKR {totalPrice.toLocaleString()}</div>
+                        </div>
+                        <div className="h-8 w-px bg-gray-200 dark:border-gray-800"></div>
+                        <div className="text-right">
+                            <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Selected</div>
+                            <div className="text-sm font-bold text-gray-900 dark:text-white uppercase">{selectedIds.length} ARTS</div>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -162,14 +177,14 @@ const CreateCollection = () => {
                                         onClick={() => toggleSelection(art.id)}
                                     >
                                         <ArtDisplayCard 
-                                            image={Array.isArray(art.imageUrls) ? art.imageUrls[0] : art.imageUrls} 
+                                            image={Array.isArray(art.image_url) ? art.image_url[0] : art.image_url} 
                                             formData={{
                                                 title: art.title,
                                                 price: art.price,
                                                 category: art.medium || '',
                                                 height: art.height_in || '',
                                                 width: art.width_in || '',
-                                                images: Array.isArray(art.imageUrls) ? art.imageUrls : [art.imageUrls]
+                                                images: Array.isArray(art.image_url) ? art.image_url : [art.image_url]
                                             }} 
                                         />
                                         {selectedIds.includes(art.id) && (

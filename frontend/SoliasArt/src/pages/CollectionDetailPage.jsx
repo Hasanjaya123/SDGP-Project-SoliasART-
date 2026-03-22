@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { collectionService } from '../services/uploadApi';
-import React, { useState } from 'react';
 import { collections } from '../data/mockData';
 import { ArtworkCard } from '../components/ArtworkCard';
 import { Heart, Eye, ShoppingCart, ArrowLeft } from 'lucide-react';
@@ -35,17 +34,8 @@ export const CollectionDetailPage = ({
   if (loading) {
     return <div className="text-center py-20">Loading collection details...</div>;
   }
-  collectionId,
-    artworks: allArtworks,
-      setCurrentPage,
-      onToggleSave,
-      savedItemIds,
-      onAddToCartBatch
-}) => {
-  const [likes, setLikes] = useState({});
 
-  // Find the specific collection based on the passed ID
-  const collection = collections.find(c => c.id === collectionId);
+  // The collection is already being fetched and stored in state via useEffect
 
   if (!collection) {
     return (
@@ -87,7 +77,7 @@ export const CollectionDetailPage = ({
       {/* Hero Header Section */}
       <div className="relative h-80 md:h-[400px] rounded-2xl overflow-hidden shadow-2xl mb-12">
         <img
-          src={collection.coverImageUrl || (artworks[0]?.imageUrls[0])}
+          src={collection.coverImageUrl || (artworks[0]?.image_url?.[0])}
           alt={collection.name}
           className="w-full h-full object-cover"
         />

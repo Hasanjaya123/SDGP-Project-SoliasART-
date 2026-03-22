@@ -151,6 +151,13 @@ export const artworkService = {
     }
   },
 
+  addBatchToCart: async (artworkIds) => {
+    const response = await api.post('/api/cart/add-batch', {
+      artwork_ids: artworkIds
+    });
+    return response.data;
+  },
+
   uploadArtist: async (formDataState) => {
     const formData = new FormData();
 

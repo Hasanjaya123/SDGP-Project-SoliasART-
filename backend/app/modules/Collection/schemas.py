@@ -12,7 +12,7 @@ class ArtistSimple(BaseModel):
 class ArtworkSimple(BaseModel):
     id: UUID
     title: str
-    imageUrls: List[str]
+    image_url: List[str]
     price: float
     view_count: Optional[int] = 0
     likes: Optional[int] = 0

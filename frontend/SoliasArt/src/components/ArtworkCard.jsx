@@ -26,7 +26,10 @@ const HeartIcon = ({ className }) => (
     </svg>
 );
 
-export const ArtworkCard = ({ artwork, onView }) => {
+import { FiBookmark } from 'react-icons/fi';
+import { FaBookmark } from 'react-icons/fa';
+
+export const ArtworkCard = ({ artwork, onView, onToggleSave, isSaved }) => {
     const previewStyle = useMemo(() => {
         // Since original artwork data might not have dimensions, we use a default aspect ratio
         // If it did have them, we would use them like in Art-card.jsx
@@ -45,11 +48,11 @@ export const ArtworkCard = ({ artwork, onView }) => {
                 onClick={() => onView(artwork.id)}
             >
                 <div className="w-full h-full bg-transparent overflow-hidden relative group flex items-center justify-center">
-                    {artwork.imageUrls && artwork.imageUrls.length > 0 ? (
+                    {artwork.image_url && artwork.image_url.length > 0 ? (
                         <img
                             alt={artwork.title}
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                            src={artwork.imageUrls[0]}
+                            src={artwork.image_url[0]}
                         />
                     ) : (
                         <div className="text-gray-300 dark:text-gray-600 flex flex-col items-center">
@@ -60,11 +63,22 @@ export const ArtworkCard = ({ artwork, onView }) => {
 
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
 
-                    {/* Optional: Add AR badge if we want to simulate premium feel even without data */}
+                    {/* AR badge */}
                     <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-[10px] font-bold uppercase flex items-center gap-1 backdrop-blur-sm">
                         <ArScanIcon className="w-3 h-3" />
                         AR Ready
                     </div>
+
+                    {/* Save button */}
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onToggleSave(artwork.id);
+                        }}
+                        className="absolute top-2 right-2 bg-white/90 dark:bg-black/70 p-2 rounded-full shadow-lg hover:scale-110 transition-transform flex items-center justify-center border border-gray-100 dark:border-gray-800"
+                    >
+                        {isSaved ? <FaBookmark className="w-3.5 h-3.5 text-amber-500" /> : <FiBookmark className="w-3.5 h-3.5 text-gray-900 dark:text-white" />}
+                    </button>
                 </div>
             </div>
 
@@ -72,11 +86,7 @@ export const ArtworkCard = ({ artwork, onView }) => {
                 <span className="inline-block px-2.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 text-[9px] font-bold uppercase tracking-wider mb-1.5 rounded-sm">
                     {artwork.isNewRelease ? 'New Release' : (artwork.category || 'Artwork')}
                 </span>
-<<<<<<< HEAD
                 <p className="text-[11px] font-medium text-gray-800 dark:text-gray-400 mb-0.5">{artwork.artist?.display_name || artwork.artist || 'Unknown Artist'}</p>
-=======
-                <p className="text-[11px] font-medium text-gray-800 dark:text-gray-400 mb-0.5">{artwork.artist || 'Aria Chen'}</p>
->>>>>>> main
                 <h4 className="text-lg font-black text-black dark:text-white uppercase tracking-tight mb-1.5 line-clamp-1">
                     {artwork.title || 'UNTITLED ARTWORK'}
                 </h4>
@@ -84,11 +94,7 @@ export const ArtworkCard = ({ artwork, onView }) => {
                 <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400 text-[11px] font-medium mb-2">
                     <div className="flex items-center gap-1">
                         <EyeIcon className="w-3.5 h-3.5" />
-<<<<<<< HEAD
                         <span>{artwork.view_count?.toLocaleString() || artwork.views?.toLocaleString() || '--'}</span>
-=======
-                        <span>{artwork.views?.toLocaleString() || '--'}</span>
->>>>>>> main
                     </div>
                     <div className="flex items-center gap-1">
                         <HeartIcon className="w-3.5 h-3.5" />

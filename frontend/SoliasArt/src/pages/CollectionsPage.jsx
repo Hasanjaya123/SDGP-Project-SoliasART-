@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { collections } from '../data/mockData';
-import { artworkService } from '../services/uploadApi';
+import { collectionService } from '../services/uploadApi';
 import { useNavigate } from 'react-router-dom';
 
 const CollectionsPage = () => {
@@ -12,7 +11,7 @@ const CollectionsPage = () => {
         const fetchData = async () => {
             try {
                 const data = await collectionService.getAllCollections();
-                setCollectionsList(data);
+                setCollectionsList(Array.isArray(data) ? data : []);
             } catch (error) {
                 console.error("Failed to fetch collections:", error);
             } finally {
@@ -39,14 +38,14 @@ const CollectionsPage = () => {
             </div>
 
             <div className="space-y-12">
-                {collections.map((collection) => (
+                {collectionsList.map((collection) => (
                     <div
                         key={collection.id}
                         className="bg-white dark:bg-gray-900 rounded-lg shadow-lg dark:shadow-none dark:border dark:border-gray-800 overflow-hidden flex flex-col md:flex-row"
                     >
                         <div className="md:w-1/2">
                             <img
-                                src={collection.artworks?.[0]?.imageUrls?.[0] || 'https://via.placeholder.com/600x400?text=No+Image'}
+                                src={collection.cover_image_url || (collection.artworks?.[0]?.image_url?.[0]) || 'https://via.placeholder.com/600x400?text=No+Image'}
                                 alt={collection.name}
                                 className="h-64 w-full object-cover md:h-full"
                             />
@@ -54,7 +53,7 @@ const CollectionsPage = () => {
 
                         <div className="p-8 md:w-1/2 flex flex-col justify-center">
                             <p className="text-sm font-semibold text-amber-600 dark:text-amber-400 uppercase">
-                                Curated by {collection.curator}
+                                Curated by {collection.curator || 'Anonymous'}
                             </p>
 
                             <h2 className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
@@ -66,22 +65,19 @@ const CollectionsPage = () => {
                             </p>
 
                             <div className="mt-6 flex -space-x-2 overflow-hidden">
-                                {collection.artworkIds.map(id => {
-                                    const artwork = artworks.find(a => a.id === id);
-                                    return artwork ? (
-                                        <img
-                                            key={id}
-                                            className="inline-block h-12 w-12 rounded-full ring-2 ring-white dark:ring-gray-900"
-                                            src={artwork.imageUrls[0]}
-                                            alt={artwork.title}
-                                        />
-                                    ) : null;
-                                })}
+                                {collection.artworks?.slice(0, 5).map(artwork => (
+                                    <img
+                                        key={artwork.id}
+                                        className="inline-block h-12 w-12 rounded-full ring-2 ring-white dark:ring-gray-900"
+                                        src={artwork.image_url?.[0]}
+                                        alt={artwork.title}
+                                    />
+                                ))}
                             </div>
 
                             <button
                                 onClick={() =>
-                                    navigate(`/collection/${collection.id}`)
+                                    navigate(`/collections/${collection.id}`)
                                 }
                                 className="mt-8 px-6 py-2 bg-[#b67e33] text-white font-semibold rounded-full hover:bg-amber-700 self-start transition-colors shadow-sm"
                             >

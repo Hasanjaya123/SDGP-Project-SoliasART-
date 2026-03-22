@@ -5,7 +5,7 @@ import ArtworkDetailsCard from '../components/ArtworkDetailsComponents/ArtworkDe
 import ArtistOtherArtworks from '../components/ArtworkDetailsComponents/OtherArtworks';
 import { api } from '../services/uploadApi';
 
-const ArtworkDetailsPage = () => {
+const ArtworkDetailsPage = ({ onToggleSave, savedItemIds = [] }) => {
 
   const { id } = useParams();
   const [artwork, setArtwork] = useState(null);
@@ -16,59 +16,32 @@ const ArtworkDetailsPage = () => {
   const [isLiked, setIsLiked] = useState(false);
   const [isArLoading, setIsArLoading] = useState(false);
   const [arError, setArError] = useState("");
-  const [isSaved, setIsSaved] = useState(false);
   const [qrReady, setQrReady] = useState(false);
   const [generatedMobileUrl, setGeneratedMobileUrl] = useState("");
+
+  const isSaved = savedItemIds.includes(String(id)) || savedItemIds.includes(id);
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
   useEffect(() => {
-    setIsSaved(false);
-    setIsLiked(false);
-
-    const checkSaveStatus = async () => {
+    const checkLikeStatus = async () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
       try {
-        // Check saved status
-        const saveRes = await api.get('/savework/user/saved').catch(() => ({ data: [] }));
-        const savedArtworks = saveRes.data;
-
-        // Check if this specific artwork ID exists in the user's saved list
-        const alreadySaved = savedArtworks.some(art => String(art.id) === String(id));
-        setIsSaved(alreadySaved);
-
-        // Check like status
         const likeRes = await api.get(`/api/artworks/${id}/check-like`).catch(() => ({ data: { is_liked: false } }));
         setIsLiked(likeRes.data.is_liked);
-
       } catch (err) {
-        console.error("Error checking save status:", err);
+        console.error("Error checking like status:", err);
       }
     };
 
-    if (id) checkSaveStatus();
+    if (id) checkLikeStatus();
   }, [id, BACKEND_URL]);
 
   //  Function to handle the Save/Unsave btn
-  const handleToggleSave = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      alert("Please log in to save artworks!");
-      return;
-    }
-
-    const previousSaveStatus = isSaved;
-    setIsSaved(!previousSaveStatus);
-
-    try {
-      const response = await api.post(`/savework/save/${id}`);
-      setIsSaved(response.data.status === 'saved'); // Sync with actual backend response
-    } catch (err) {
-      setIsSaved(previousSaveStatus); // Revert UI if request fails
-      console.error("Save error:", err);
-    }
+  const handleToggleSave = () => {
+    onToggleSave(id);
   };
 
   const handleOpenArModal = async () => {
@@ -175,7 +148,7 @@ const ArtworkDetailsPage = () => {
           <div className="lg:col-span-7">
             <div className="top-24">
               <ArtworkGallery
-                images={artwork.imageUrls}
+                images={artwork.image_url}
                 title={artwork.title}
                 artworkId={artwork.id}
                 initialLikes={artwork.likes}

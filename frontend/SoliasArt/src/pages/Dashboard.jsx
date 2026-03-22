@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import ArtDisplayCard from "../components/Art-card";
 import Footer from "../components/Footer";
 import { artistProfileService } from "../services/uploadApi";
+import { BiCollection } from "react-icons/bi";
 
 // SVG Icons
 const SearchIcon = ({ className }) => (
@@ -205,6 +206,14 @@ const ArtistDashboard = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
             See Commissions
+          </a>
+
+          <a
+            href="/dashboard/collections/new"
+            className="border-2 border-amber-400 text-amber-600 hover:bg-amber-50 active:scale-95 font-bold px-5 py-2.5 rounded-lg flex items-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap"
+          >
+            <BiCollection className="w-4 h-4" />
+            Create Collection
           </a>
 
           <a

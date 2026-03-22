@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from app.modules.ArtUpload.model import ArtWork
 from app.core.database import get_db
-from app.modules.Purchase.schemas import CartItemAdd
+from app.modules.Purchase.schemas import CartItemAdd, CartBatchAdd
+from typing import List
 from app.modules.Purchase.models import CartItem
 from app.modules.auth.dependencies import get_current_user
 from app.modules.auth.models import User
@@ -38,6 +39,41 @@ def add_to_cart(cart_request: CartItemAdd, db: Session = Depends(get_db),current
         # if already added
         db.rollback() 
         raise HTTPException(status_code=400, detail="This item is already in your cart.")
+
+@router.post("/add-batch")
+def add_batch_to_cart(batch_request: CartBatchAdd, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    added_count = 0
+    errors = []
+    
+    for artwork_id in batch_request.artwork_ids:
+        # Check if already in cart
+        exists = db.query(CartItem).filter(CartItem.user_id == current_user.id, CartItem.artwork_id == artwork_id).first()
+        if exists:
+            continue
+            
+        artwork = db.query(ArtWork).filter(ArtWork.id == artwork_id).first()
+        if not artwork:
+            errors.append(f"Artwork {artwork_id} not found.")
+            continue
+            
+        if str(artwork.status).lower() == "sold":
+            errors.append(f"Artwork {artwork.title} is already sold.")
+            continue
+            
+        new_item = CartItem(user_id=current_user.id, artwork_id=artwork_id)
+        db.add(new_item)
+        added_count += 1
+        
+    try:
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Failed to add items to cart.")
+        
+    return {
+        "message": f"Added {added_count} items to cart.",
+        "errors": errors if errors else None
+    }
 
 @router.get("/")
 def get_user_cart(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):

@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-=======
-import React, { useState, useEffect } from "react";
 
-
->>>>>>> main
 import './App.css'
 import UploadArtPage from './pages/ArtUpload'
 import { Routes, Route, Navigate } from 'react-router-dom';
@@ -28,9 +23,10 @@ import CommissionRequestsPage from './pages/CommissionRequestsPage.jsx';
 import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
 import { jwtDecode } from "jwt-decode";
-import { authService } from './services/uploadApi';
+import { authService, api, artworkService } from './services/uploadApi';
 import ArtMapPage from './pages/ArtMapPage.jsx';
-import CollectionsPage from './pages/CollectionsPage';
+import { useState, useEffect } from 'react';
+
 import CollectionDetailPage from './pages/CollectionDetailPage';
 import CreateCollection from './pages/CreateCollection';
 import SaveWork from './pages/saveWork.jsx';
@@ -81,6 +77,54 @@ function ArtistGuard({ children }) {
 
 
 function App() {
+  const [savedArtworks, setSavedArtworks] = useState([]);
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    fetchSavedArtworks();
+  }, []);
+
+  const fetchSavedArtworks = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      const res = await api.get('/savework/user/saved');
+      setSavedArtworks(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error("Error fetching saved artworks:", err);
+    }
+  };
+
+  const handleToggleSave = async (artworkId) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert("Please log in to save artworks!");
+      return;
+    }
+    try {
+      await api.post(`/savework/save/${artworkId}`);
+      fetchSavedArtworks();
+    } catch (err) {
+      console.error("Save error:", err);
+    }
+  };
+
+  const handleAddToCartBatch = async (artworks) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert("Please log in to add items to cart!");
+      return;
+    }
+    try {
+      const ids = artworks.map(a => a.id);
+      await artworkService.addBatchToCart(ids);
+      alert(`${ids.length} items added to cart!`);
+    } catch (err) {
+      console.error("Batch cart error:", err);
+      alert("Failed to add items to cart.");
+    }
+  };
+
 
   return (
     <>
@@ -120,19 +164,18 @@ function App() {
         {/* Pages within the main layout (pages which have sidebar and footer) */}
         <Route element={<Layout />}>
           {/* Artwork details page */}
-          <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
+          <Route path="/artwork/:id" element={<ArtworkDetailsPage onToggleSave={handleToggleSave} savedItemIds={savedArtworks.map(a => a.id)} />} />
           <Route path="/search" element={<ArtSearch />} />
           <Route path="/artist-search" element={<ArtistSearch />} />
-          <Route path="/artist/profile" element={<ArtistProfilePage />} />
-          <Route path="/artist/profile/:artistId" element={<ArtistProfilePage />} />
+          <Route path="/artist/profile" element={<ArtistProfilePage onToggleSave={handleToggleSave} savedItemIds={savedArtworks.map(a => a.id)} />} />
+          <Route path="/artist/profile/:artistId" element={<ArtistProfilePage onToggleSave={handleToggleSave} savedItemIds={savedArtworks.map(a => a.id)} />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/map" element={<ArtMapPage />} />
           <Route path="/collections" element={<CollectionsPage />} />
-          <Route path="/collections/:id" element={<CollectionDetailPage />} />
+          <Route path="/collections/:id" element={<CollectionDetailPage onAddToCartBatch={handleAddToCartBatch} onToggleSave={handleToggleSave} savedItemIds={savedArtworks.map(a => a.id)} />} />
           <Route path="/buyer/profile" element={<SaveWork />} />
           <Route path="/saved" element={<SaveWork />} />
           <Route path="/feed" element={<ArtSearch />} />
-          <Route path="/collections" element={<CollectionsPage />} />
 
           <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
           <Route path="/dashboard/commissions" element={<ArtistGuard><CommissionRequestsPage /></ArtistGuard>} />
