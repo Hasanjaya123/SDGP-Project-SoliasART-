@@ -95,7 +95,6 @@ pydantic_core==2.41.5
 pydeck==0.9.1
 pyglet==1.5.31
 Pygments==2.18.0
-pyiceberg==0.11.1
 PyJWT==2.11.0
 PyOpenGL==3.1.0
 pyparsing==3.1.2
