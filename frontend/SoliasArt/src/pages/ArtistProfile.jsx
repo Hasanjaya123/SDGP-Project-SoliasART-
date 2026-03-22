@@ -6,8 +6,6 @@ import ArtDisplayCard from '../components/Art-card';
 import CommissionModal from '../components/CommissionModal';
 
 
-// --- Upload Post Modal ---
-
 const CreatePostModal = ({ artist, artistId, onClose, onPostCreated }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -149,7 +147,7 @@ const CreatePostModal = ({ artist, artistId, onClose, onPostCreated }) => {
   );
 };
 
-// --- Sub-components for tab content ---
+
 
 const PortfolioTab = ({ artworks, onArtworkClick, artistName }) => (
   <div className="flex flex-wrap gap-6 items-start justify-start">
@@ -270,13 +268,13 @@ const AboutTab = ({ artist }) => (
   </div>
 );
 
-// CommissionModal is now imported from '../components/CommissionModal'
+
 const TABS = ['portfolio', 'uploads', 'about'];
 
 const formatFollowerCount = (count) =>
   count >= 1000 ? (count / 1000).toFixed(1) + 'k' : count;
 
-// --- Main Page Component ---
+
 
 export const ArtistProfilePage = () => {
   const { artistId: artistIdParam } = useParams();
@@ -294,9 +292,7 @@ export const ArtistProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Runs whenever artistId changes (e.g. navigating to a different artist).
-  // This is the main data-fetching hook Ã¢â‚¬â€ it calls the backend once and
-  // populates all three pieces of state (artist, artworks, posts).
+  
   useEffect(() => {
 
     const token = localStorage.getItem('token');
