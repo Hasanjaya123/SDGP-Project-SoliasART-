@@ -94,10 +94,17 @@ function App() {
         {/* Test route for ArtDisplayCard */}
         <Route path="/test" element={<Test />} />
 
+<<<<<<< HEAD
 
 
         <Route path="/search/:userId" element={<ArtSearch />} />
 
+=======
+        
+
+        <Route path="/search/:userId" element={<ArtSearch />} />
+        
+>>>>>>> cc40490614151ea69cb12e8487e55ecdaf0cbe89
         {/* AR Viewer - Desktop AR generation and QR code */}
         <Route path="/ar" element={<ARViewer />} />
 
@@ -124,9 +131,12 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/map" element={<ArtMapPage />} />
           <Route path="/buyer/profile" element={<SaveWork />} />
+<<<<<<< HEAD
 
           <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
           <Route path="/dashboard/commissions" element={<ArtistGuard><CommissionRequestsPage /></ArtistGuard>} />
+=======
+>>>>>>> cc40490614151ea69cb12e8487e55ecdaf0cbe89
 
         </Route>
 
