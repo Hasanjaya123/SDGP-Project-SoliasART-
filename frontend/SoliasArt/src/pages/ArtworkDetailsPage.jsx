@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import ArtworkGallery from '../components/ArtworkDetailsComponents/ArtworkGallery';
 import ArtworkDetailsCard from '../components/ArtworkDetailsComponents/ArtworkDetailsCard';
 import ArtistOtherArtworks from '../components/ArtworkDetailsComponents/OtherArtworks';
+import { api } from '../services/uploadApi';
 
 const ArtworkDetailsPage = () => {
 
@@ -13,12 +14,12 @@ const ArtworkDetailsPage = () => {
   const [isArModalOpen, setArModalOpen] = useState(false);
   const [liveLikesCount, setLiveLikesCount] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
-  const [isArLoading, setIsArLoading] = useState(false); 
-  const [arError, setArError] = useState("");    
-  const [isSaved, setIsSaved] = useState(false);        
-  const [qrReady, setQrReady] = useState(false);  
-  const [generatedMobileUrl, setGeneratedMobileUrl] = useState("");   
-  
+  const [isArLoading, setIsArLoading] = useState(false);
+  const [arError, setArError] = useState("");
+  const [isSaved, setIsSaved] = useState(false);
+  const [qrReady, setQrReady] = useState(false);
+  const [generatedMobileUrl, setGeneratedMobileUrl] = useState("");
+
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
   useEffect(() => {
@@ -74,49 +75,34 @@ const ArtworkDetailsPage = () => {
     setIsSaved(!previousSaveStatus);
 
     try {
-      const response = await fetch(`${BACKEND_URL}/savework/save/${id}`, {
-        method: 'POST',
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json' 
-        }
-      });
-
-      if (!response.ok) throw new Error('Failed to toggle save');
-      
-      const data = await response.json();
-      setIsSaved(data.status === 'saved'); // Sync with actual backend response
+      const response = await api.post(`/savework/save/${id}`);
+      setIsSaved(response.data.status === 'saved'); // Sync with actual backend response
     } catch (err) {
       setIsSaved(previousSaveStatus); // Revert UI if request fails
       console.error("Save error:", err);
     }
   };
-  
+
   const handleOpenArModal = async () => {
     setArModalOpen(true);
     setIsArLoading(true);
     setArError("");
     setQrReady(false);
 
-  const mobileLink = `http://${window.location.hostname}:5173/preview?glb=${BACKEND_URL}/ar/generate-ar/${id}`;
+    const mobileLink = `${window.location.origin}/preview?glb=${BACKEND_URL}/ar/generate-ar/${id}`;
     setGeneratedMobileUrl(mobileLink);
 
     try {
       // Trigger backend to process/cache the GLB file
 
-      const res = await fetch(`${BACKEND_URL}/ar/generate-ar/${id}`, {
-        headers: { "ngrok-skip-browser-warning": "true" }
+      await api.get(`/ar/generate-ar/${id}`, {
+        headers: { "ngrok-skip-browser-warning": "true" },
+        responseType: "blob"
       });
-
-      if (!res.ok) throw new Error("Could not prepare 3D model.");
-
-    
-      await res.blob(); 
-
 
       setQrReady(true);
     } catch (err) {
-      setArError(err.message);
+      setArError(err.response?.data?.detail || err.message);
     } finally {
       setIsArLoading(false);
     }
@@ -129,18 +115,14 @@ const ArtworkDetailsPage = () => {
       try {
         setLoading(true);
         // fetch artwork details from backend API using the 'id' from URL params
-        const response = await fetch(`${BACKEND_URL}/api/artworks/${id}`);
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch artwork details');
-        }
+        const response = await api.get(`/api/artworks/${id}`);
 
-        const data = await response.json();
+        const data = response.data;
         setArtwork(data); // Save the fetched data to state
 
         setLiveLikesCount(data.likes || 0);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.detail || err.message);
       } finally {
         setLoading(false);
       }
@@ -156,7 +138,6 @@ const ArtworkDetailsPage = () => {
       alert("Please log in to like artworks!");
       return;
     }
-    
     const wasLiked = isLiked;
     setLiveLikesCount(prev => wasLiked ? prev - 1 : prev + 1);
     setIsLiked(!wasLiked);
@@ -207,17 +188,17 @@ const ArtworkDetailsPage = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 pt-12 md:pt-16">
       <div className="max-w-7xl mx-auto px-8 md:px-12 lg:px-20">
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
-          
+
           {/* Leftside Gallery Component */}
           <div className="lg:col-span-7">
-            <div className= "top-24">
-              <ArtworkGallery 
-                images={artwork.imageUrls} 
-                title={artwork.title} 
-                artworkId={artwork.id}           
-                initialLikes={artwork.likes}         
+            <div className="top-24">
+              <ArtworkGallery
+                images={artwork.imageUrls}
+                title={artwork.title}
+                artworkId={artwork.id}
+                initialLikes={artwork.likes}
                 currentUserId={"temp-user-id"}
                 isLiked={isLiked}
                 onToggleLike={handleToggleLike}
@@ -248,16 +229,16 @@ const ArtworkDetailsPage = () => {
       {isArModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
           <div className="bg-white dark:bg-gray-900 rounded-xl max-w-md w-full p-6 relative shadow-2xl">
-            <button 
+            <button
               onClick={() => setArModalOpen(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 dark:hover:text-white"
             >
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
-            
+
             <div className="text-center mt-4">
               <h3 className="text-xl font-black uppercase tracking-tight mb-2 text-gray-900 dark:text-white">View in Your Space</h3>
-              
+
 
               {/*Conditional Rendering for Loading, Error, and QR Ready states */}
 
@@ -273,18 +254,18 @@ const ArtworkDetailsPage = () => {
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Scan the QR code to place this artwork on your wall.</p>
 
                   <div className="flex justify-center p-4 bg-white rounded-lg border-2 border-gray-100 inline-block mb-5">
-                    
-                      {/* Display QR */}
-                      <img 
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(generatedMobileUrl)}`}
 
-                        alt="AR QR Code" 
-                        className="w-56 h-56" 
-                      />
+                    {/* Display QR */}
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(generatedMobileUrl)}`}
+
+                      alt="AR QR Code"
+                      className="w-56 h-56"
+                    />
                   </div>
                 </>
               ) : null}
-              
+
             </div>
           </div>
         </div>
@@ -292,9 +273,10 @@ const ArtworkDetailsPage = () => {
 
       {/* Related Artworks from the same artist */}
       <ArtistOtherArtworks 
-    artistId={artwork.artist?.id} 
-    currentArtworkId={artwork.id} 
+        artistId={artwork.artist?.id} 
+        currentArtworkId={artwork.id} 
       />
+      
     </div>
   );
 };

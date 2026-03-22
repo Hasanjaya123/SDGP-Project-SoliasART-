@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';        
 import ArtDisplayCard from '../components/Art-card';  
 import UserProfile from '../comp/UserProfile';
-
-const API_BASE = import.meta.env.VITE_BACKEND_URL ||"http://localhost:8000";
+import { api } from '../services/uploadApi';
 
 
 // ─── Seeded random so numbers stay stable across re-renders ───
@@ -59,10 +58,10 @@ function CardWithRealInfo({ artwork }) {
         className="absolute left-0 right-0 flex flex-col items-center gap-1 pointer-events-none"
         style={{ bottom: '68px' }}
       >
-        <p className="text-[11px] font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-950 w-full text-center py-0.5 transition-colors">
+        <p className="text-[11px] font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-900 w-full text-center py-0.5 transition-colors">
           {artwork.artist_name || 'Unknown Artist'}
         </p>
-        <div className="flex items-center justify-center gap-3 text-gray-600 dark:text-gray-400 text-[11px] font-medium bg-white dark:bg-gray-950 w-full py-0.5 transition-colors">
+        <div className="flex items-center justify-center gap-3 text-gray-600 dark:text-gray-400 text-[11px] font-medium bg-white dark:bg-gray-900 w-full py-0.5 transition-colors">
           <span className="flex items-center gap-1">
             <EyeIcon />{seededRandom(artwork.id + 'v', 300, 5000).toLocaleString()}
           </span>
@@ -112,17 +111,18 @@ const SaveWork = () => {
         const headers = { 'Authorization': `Bearer ${token}` };
 
         // Fetch User Info
-        const userRes = await fetch(`${API_BASE}/auth/me`, { headers });
-        if (userRes.ok) setUserData(await userRes.json());
+        try {
+          const userRes = await api.get('/auth/me');
+          setUserData(userRes.data);
+        } catch (e) {
+          // gracefully handle missing user info if needed
+        }
 
         // Fetch saved artworks
-        const artRes = await fetch(`${API_BASE}/savework/user/saved`, { headers });
-        if (!artRes.ok) throw new Error(`Status: ${artRes.status}`);
-        
-        const data = await artRes.json();
-        setArtworks(data);
+        const artRes = await api.get('/savework/user/saved');
+        setArtworks(artRes.data);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.detail || err.message);
       } finally {
         setLoading(false);
       }
@@ -136,7 +136,7 @@ const SaveWork = () => {
   const displayedArtworks = activeTab === 'collection' ? collectionArtworks : likedArtworks;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 flex flex-col p-4 md:p-8 transition-colors duration-200">
+    <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col p-4 md:p-8 transition-colors duration-200">
 
       <div className="max-w-7xl mx-auto w-full">
         

@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import { BiSearch, BiCompass, BiCollection, BiTimeFive, BiMap, BiX, BiMoon, BiSun, BiLogOut, BiMenu } from 'react-icons/bi';
+import { BiSearch, BiCompass, BiCollection, BiUser, BiMap, BiX, BiMoon, BiSun, BiLogOut, BiMenu } from 'react-icons/bi';
 import { BsGrid } from 'react-icons/bs';
 import { HiOutlineNewspaper } from 'react-icons/hi';
 import logoImage from '../assets/soliasartlogo.png';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { api } from '../services/uploadApi';
 
 const Sidebar = ({ isDarkMode, toggleTheme }) => {
 
@@ -81,6 +82,7 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
     { icon: <HiOutlineNewspaper size={24} />, label: "Feed", path: "/feed" }, 
     { icon: <BiCollection size={24} />, label: "Collections", path: "/collections" },  
     { icon: <BiMap size={24} />, label: "ArtMaps", path: "/map" },
+    { icon: <BiUser size={24} />, label: "Artists", path: "/artist-search" }
   ];
 
   const bottomLinks = [
@@ -92,7 +94,7 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
     { 
       icon: isDarkMode ? <BiSun size={24} /> : <BiMoon size={24} />, 
       label: isDarkMode ? "Light Mode" : "Dark Mode",
-      action: toggleTheme 
+      action: toggleTheme
     },
   ];
 

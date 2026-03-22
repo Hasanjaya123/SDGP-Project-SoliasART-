@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CartItem from '../components/CartComponents/CartItem';
 import OrderSummary from '../components/CartComponents/OrderSummery';
 import { motion, AnimatePresence } from 'framer-motion';
-import { paymentService } from '../services/uploadApi';
+import { api, paymentService } from '../services/uploadApi';
 
 
 const CartPage = () => {
@@ -23,21 +23,11 @@ const CartPage = () => {
 
       try {
 
-        const response = await fetch(`http://localhost:8000/api/cart/`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setCartItems(data);
+        const response = await api.get(`/api/cart/`);
+        setCartItems(response.data);
 
       } catch (error) {
-        console.error("Error fetching cart:", error);
+        console.error("Error fetching cart:", error.response?.data?.detail || error.message);
       } finally {
         setIsLoading(false);
       }
@@ -74,24 +64,13 @@ const CartPage = () => {
     setCartItems((prevItems) => prevItems.filter(item => item.id !== cartItemId));
 
     try {
-      const response = await fetch(`http://localhost:8000/api/cart/remove/${cartItemId}`, {
-        method: 'DELETE',
-        headers: {
-          // Add the token to the Authorization header
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.detail || "Failed to delete item from database");
-      }
+      await api.delete(`/api/cart/remove/${cartItemId}`);
 
       //  remove art from the cart
       setCartItems((prevItems) => prevItems.filter(item => item.id !== cartItemId));
 
     } catch (error) {
-      console.error("Error removing item:", error);
+      console.error("Error removing item:", error.response?.data?.detail || error.message);
       // Revert to previous cart if deletion fails
       setCartItems(previousCart);
       alert("Could not remove item. Please try again.");

@@ -111,7 +111,7 @@ const ArtSearch = () => {
           </header>
 
           {/* Main content */}
-          <main className="flex-1 px-6 py-8 bg-white dark:bg-gray-950 transition-colors duration-300">
+          <main className="flex-1 px-6 py-8 bg-white dark:bg-gray-900 transition-colors duration-300">
             {loading ? (
               <div className="flex items-center justify-center py-24">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FFC247]"></div>
