@@ -1,12 +1,11 @@
-// frontend/src/components/CheckoutButton.jsx
-import axios from 'axios';
+import { api } from '../services/uploadApi';
 
 export default function CheckoutButton({ artworkId, buyerId, address, phone }) {
   
   const handlePayment = async () => {
     try {
-      //Getting the secure hash and order details from your FastAPI backend
-      const response = await axios.post("http://127.0.0.1:8000/api/checkout/initialize", {
+      
+      const response = await api.post("/api/checkout/initialize", {
         artwork_id: artworkId,
         buyer_id: buyerId,
         shipping_address: address,
@@ -14,20 +13,29 @@ export default function CheckoutButton({ artworkId, buyerId, address, phone }) {
       });
 
       const config = response.data.payhere_config;
+      
+     
+      const frontendUrl = window.location.origin; 
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-    
       const paymentObject = {
-        sandbox: true, // MUST be true for testing
+        sandbox: true, 
         merchant_id: config.merchant_id,
-        return_url: "http://localhost:5173/payment-success",
-        cancel_url: "http://localhost:5173/payment-cancel",
-        notify_url: "https://your-ngrok-url.com/api/payment/webhook", // Critical: Must be a public URL (see Step 3)
+        
+     
+        return_url: `${frontendUrl}/payment-success`,
+        cancel_url: `${frontendUrl}/payment-cancel`,
+        
+      
+        notify_url: `${backendUrl}/api/payment/webhook`, 
+        
         order_id: config.order_id,
         items: config.items,
         amount: config.amount,
         currency: config.currency,
         hash: config.hash, 
-        // Customer details (You can pass actual buyer details here)
+        
+  
         first_name: "John",
         last_name: "Doe",
         email: "john@example.com",
@@ -37,10 +45,8 @@ export default function CheckoutButton({ artworkId, buyerId, address, phone }) {
         country: "Sri Lanka"
       };
 
-      // 3. Define what happens when the modal closes
       window.payhere.onCompleted = function onCompleted(orderId) {
         console.log("Payment completed. OrderID:" + orderId);
-        // Redirect the user to a success page or show a checkmark
         window.location.href = `/order-success?order=${orderId}`;
       };
 
@@ -53,7 +59,6 @@ export default function CheckoutButton({ artworkId, buyerId, address, phone }) {
         alert("Payment failed. Please try again.");
       };
 
-      // 4. Trigger the popup!
       window.payhere.startCheckout(paymentObject);
 
     } catch (error) {

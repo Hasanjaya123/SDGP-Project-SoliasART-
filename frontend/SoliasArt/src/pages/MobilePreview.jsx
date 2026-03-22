@@ -28,7 +28,7 @@ function ModelViewer({ src }) {
             ar-placement="wall"
             auto-rotate
             camera-controls
-            shadow-intensity="1"
+            shadow-intensity="1.5"
             environment-image="neutral"
             style={{ width: "100%", height: "70vh" }}
         >
