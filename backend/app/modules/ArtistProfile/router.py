@@ -45,6 +45,9 @@ async def get_my_profile(
         if not profile_res.data:
             raise HTTPException(status_code=404, detail="Artist not found")
 
+        raw_artist = profile_res.data[0]
+        artist_id = str(raw_artist["id"])
+
         artworks_res = supabase.table("artwork").select("id, title, price, image_url, width_in, height_in, medium, view_count, likes, artists(display_name)").eq("artist_id", artist_id).execute()
         
         posts_res = supabase.table("post").select("*").eq("artist_id", artist_id).order("created_at", desc=True).execute()

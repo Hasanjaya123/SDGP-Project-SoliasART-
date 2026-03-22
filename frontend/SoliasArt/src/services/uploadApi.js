@@ -47,7 +47,7 @@ export const artistProfileService = {
     const response = await api.get(`/artists/profile/${artistId}/is-following`);
     return response.data;
   },
-  
+
   followArtist: async (artistId) => {
     const response = await api.post(`/artists/profile/${artistId}/follow`);
     return response.data;
@@ -82,7 +82,7 @@ export const artworkService = {
 
     const textFields = [
       'title', 'description', 'year', 'medium', 'category',
-      'height', 'width', 'depth', 'framing', 'price', 
+      'height', 'width', 'depth', 'framing', 'price',
       'origin', 'weight', 'shippingRate'
     ];
 
@@ -118,10 +118,10 @@ export const artworkService = {
       throw error
     }
   },
-  
+
   SearchArtWork: async (textInput, imageFile) => {
     const formData = new FormData();
-  
+
     if (textInput) {
       formData.append("query_text", textInput);
     } else if (imageFile) {
@@ -238,7 +238,7 @@ export const commissionService = {
     }
   },
 
- 
+
   getArtistCommissions: async () => {
     const response = await api.get('/commissions/artist');
     return response.data;
