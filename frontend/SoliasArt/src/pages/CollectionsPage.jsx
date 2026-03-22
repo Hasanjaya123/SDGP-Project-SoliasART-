@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { collections } from '../data/mockData';
-import { getArtworks } from '../services/api';
+import { artworkService } from '../services/uploadApi';
+import { useNavigate } from 'react-router-dom';
 
-const CollectionsPage = ({ setCurrentPage }) => {
+const CollectionsPage = () => {
+    const navigate = useNavigate();
 
     const [artworks, setArtworks] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
-            const data = await getArtworks();
+            const data = await artworkService.getArtworks();
             setArtworks(data);
         };
 
@@ -69,7 +71,7 @@ const CollectionsPage = ({ setCurrentPage }) => {
 
                             <button
                                 onClick={() =>
-                                    setCurrentPage('collectionDetail', collection.id)
+                                    navigate(`/collection/${collection.id}`)
                                 }
                                 className="mt-8 px-6 py-2 bg-[#b67e33] text-white font-semibold rounded-full hover:bg-amber-700 self-start transition-colors shadow-sm"
                             >
