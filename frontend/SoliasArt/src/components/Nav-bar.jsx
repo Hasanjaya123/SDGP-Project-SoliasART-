@@ -101,7 +101,7 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
   
   // Route them to the correct profile page based on their role
   const profileLink = userData?.role === 'artist' 
-    ? `/artist/profile/${userData.artist_id || userData.id}`
+    ? `/artist/profile`
     : `/buyer/profile`;
 
   return (
