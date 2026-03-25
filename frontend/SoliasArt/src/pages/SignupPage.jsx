@@ -84,7 +84,7 @@ const SignupPage = () => {
       const data = response.data; // Server response data
 
       // Display success message to user with their full name
-      alert(`Success! Account created for ${data.full_name}`);
+      alert(`Registration Successful!\n\nPlease check your email inbox for a verification link to activate your account.`);
       
       // Clear form after successful signup
       setFormData({

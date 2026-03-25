@@ -7,6 +7,7 @@ from jose import JWTError, jwt
 from app.core.config import settings
 from . import utils as email_utils  
 from fastapi.responses import HTMLResponse
+import os
 
 router = APIRouter()
 
@@ -87,6 +88,9 @@ def read_users_me(current_user: models.User = Depends(dependencies.get_current_u
 def verify_email(token: str, db: Session = Depends(get_db)):
  
     def create_page(icon, title, message, color="#1F4E79"):
+
+        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
         return f"""
         <!DOCTYPE html>
         <html>
@@ -107,7 +111,7 @@ def verify_email(token: str, db: Session = Depends(get_db)):
                 <div class="icon">{icon}</div>
                 <h1>{title}</h1>
                 <p>{message}</p>
-                <a href="http://localhost:5173/login" class="btn">Go to Login</a>
+                <a href="{frontend_url}/login" class="btn">Go to Login</a>
             </div>
         </body>
         </html>
