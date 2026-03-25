@@ -7,6 +7,7 @@ from jose import JWTError, jwt
 from app.core.config import settings
 from . import utils as email_utils  
 from fastapi.responses import HTMLResponse
+import os
 
 router = APIRouter()
 
@@ -87,6 +88,9 @@ def read_users_me(current_user: models.User = Depends(dependencies.get_current_u
 def verify_email(token: str, db: Session = Depends(get_db)):
  
     def create_page(icon, title, message, color="#1F4E79"):
+
+        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
         return f"""
         <!DOCTYPE html>
         <html>
@@ -107,13 +111,13 @@ def verify_email(token: str, db: Session = Depends(get_db)):
                 <div class="icon">{icon}</div>
                 <h1>{title}</h1>
                 <p>{message}</p>
-                <a href="http://localhost:5173/login" class="btn">Go to Login</a>
+                <a href="{frontend_url}/login" class="btn">Go to Login</a>
             </div>
         </body>
         </html>
         """
 
-    # 1. Decode Token
+    #  Decode Token
     try:
         from app.core.config import settings 
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
@@ -123,12 +127,12 @@ def verify_email(token: str, db: Session = Depends(get_db)):
     except JWTError:
         return HTMLResponse(content=create_page("⚠️", "Link Expired", "This verification link has expired or is invalid.", "#D32F2F"))
 
-    # 2. Find User
+    #  Find User
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if not user:
         return HTMLResponse(content=create_page("❓", "User Not Found", "We could not find a user associated with this link.", "#D32F2F"))
 
-    # 3 Already Verified?
+    #  Already Verified?
     if user.is_verified:
        
         return HTMLResponse(content=create_page(
@@ -138,7 +142,7 @@ def verify_email(token: str, db: Session = Depends(get_db)):
             color="#1F4E79" 
         ))
 
-    # Success: Mark as Verified
+    #  Mark as Verified
     user.is_verified = True
     db.commit()
 
@@ -152,4 +156,3 @@ def verify_email(token: str, db: Session = Depends(get_db)):
 @router.get("/verify-role")
 def verify_role(current_user: models.User = Depends(dependencies.get_current_user)):
     return {"role": current_user.role}
-
