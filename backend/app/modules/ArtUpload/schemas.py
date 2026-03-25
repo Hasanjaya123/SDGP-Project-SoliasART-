@@ -1,29 +1,29 @@
 from pydantic import BaseModel, Field, field_validator
-from decimal import Decimal
-from typing import Optional
+from typing import List, Optional
 from uuid import UUID
 from app.modules.ArtUpload.form import as_form
 
 
-@as_form 
+# --- INPUT SCHEMA (Request) ---
+@as_form
 class ArtUploadRequest(BaseModel):
     title: str
     description: str
     medium: str
-    year: str      
-    framing: str   
-    
-   
+    year: str
+    framing: str
+
     price: str
     weight: str
     height: str
     width: str
     depth: str
-    
+
     origin: str = "Colombo, Sri Lanka"
     shippingRate: str = "standard"
 
-    #VALIDATORS - Cleans the data automatically
+    # -------- VALIDATORS -------- #
+
     @field_validator('year')
     @classmethod
     def parse_year(cls, v: str) -> int:
@@ -48,13 +48,18 @@ class ArtUploadRequest(BaseModel):
             return 0.0
 
 
+# --- OUTPUT SCHEMA (Response) ---
 class ArtWorkResponse(BaseModel):
     id: UUID
     title: str
     description: str
-    image_url: list[str]
+    image_url: List[str]
     price: float
     is_framed: bool
-    
-    class Config:
-        from_attributes = True 
+    views: Optional[int] = 0
+    likes_count: Optional[int] = 0
+    artist_name: Optional[str] = None
+
+    model_config = {
+        "from_attributes": True
+    }
