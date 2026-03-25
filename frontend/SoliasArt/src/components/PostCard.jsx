@@ -1,14 +1,35 @@
+import { useRef, useEffect } from 'react'
 import LikeButton from './LikeButton'
 import SaveButton from './SaveButton'
 import CommentBox from './CommentBox'
 import FollowButton from './FollowButton'
+import { trackView } from '../api/feedApi'
 
 function PostCard({ card, userId }) {
     const imageSrc = Array.isArray(card.image_url) ? card.image_url[0] : card.image_url
     const artistName = card.artist_name || 'Artist'
+    const cardRef = useRef(null)
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    trackView('post', card.id, userId)
+                    observer.unobserve(cardRef.current)
+                }
+            },
+            { threshold: 0.5 } // Track when 50% of card is visible
+        )
+
+        if (cardRef.current) {
+            observer.observe(cardRef.current)
+        }
+
+        return () => observer.disconnect()
+    }, [card.id, userId])
 
     return (
-        <div className='mx-4 mb-5 overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm md:mx-0'>
+        <div ref={cardRef} className='mx-4 mb-5 overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm md:mx-0'>
             <div className='flex items-center px-3.5 py-3 gap-2.5'>
                 <div className='w-9 h-9 rounded-full bg-stone-200 flex items-center
                 justify-center text-stone-700 font-semibold text-sm flex-shrink-0'>
