@@ -84,7 +84,7 @@ const SignupPage = () => {
       const data = response.data; // Server response data
 
       // Display success message to user with their full name
-      alert(`Success! Account created for ${data.full_name}`);
+       alert(`Registration Successful!\n\nPlease check your email inbox for a verification link to activate your account.`);
       
       // Clear form after successful signup
       setFormData({
@@ -247,7 +247,7 @@ const SignupPage = () => {
       {/* The Image - fixed on right side, doesn't scroll */}
       <div className="hidden w-1/2 md:flex md:fixed md:right-0 md:top-0 md:h-screen md:items-center md:justify-center">
         <img 
-            src="./src/assets/Sign Up.jpg" 
+            src="/SignUp.jpg"
             alt="Decoration"
             className="h-full w-full object-cover rounded-bl-[20px] rounded-tl-[20px]" 
         />

@@ -6,8 +6,6 @@ import ArtDisplayCard from '../components/Art-card';
 import CommissionModal from '../components/CommissionModal';
 
 
-// --- Upload Post Modal ---
-
 const CreatePostModal = ({ artist, artistId, onClose, onPostCreated }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -121,8 +119,8 @@ const CreatePostModal = ({ artist, artistId, onClose, onPostCreated }) => {
             <label
               htmlFor="post-image-input"
               className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium transition-colors ${selectedImage
-                  ? 'bg-[#FFC247]/20 text-[#b8860b] dark:text-[#FFC247]'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-700 dark:hover:text-slate-200'
+                ? 'bg-[#FFC247]/20 text-[#b8860b] dark:text-[#FFC247]'
+                : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-700 dark:hover:text-slate-200'
                 }`}
             >
               <span className="material-symbols-outlined text-[20px]">image</span>
@@ -149,7 +147,7 @@ const CreatePostModal = ({ artist, artistId, onClose, onPostCreated }) => {
   );
 };
 
-// --- Sub-components for tab content ---
+
 
 const PortfolioTab = ({ artworks, onArtworkClick, artistName }) => (
   <div className="flex flex-wrap gap-6 items-start justify-start">
@@ -270,9 +268,9 @@ const CollectionsTab = ({ collections, onCollectionClick }) => (
               {col.artworks?.length || 0} Pieces
             </span>
             <div className="flex -space-x-2 overflow-hidden">
-               {col.artworks?.slice(0, 3).map((art, i) => (
-                  <img key={i} src={art.image_url?.[0]} className="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-900 object-cover" alt="" />
-               ))}
+              {col.artworks?.slice(0, 3).map((art, i) => (
+                <img key={i} src={art.image_url?.[0]} className="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-900 object-cover" alt="" />
+              ))}
             </div>
           </div>
         </div>
@@ -315,13 +313,13 @@ const AboutTab = ({ artist }) => (
   </div>
 );
 
-// CommissionModal is now imported from '../components/CommissionModal'
-const TABS = ['portfolio', 'uploads', 'collections', 'about'];
+
+const TABS = ['portfolio', 'uploads', 'about'];
 
 const formatFollowerCount = (count) =>
   count >= 1000 ? (count / 1000).toFixed(1) + 'k' : count;
 
-// --- Main Page Component ---
+
 
 export const ArtistProfilePage = () => {
   const { artistId: artistIdParam } = useParams();
@@ -340,9 +338,7 @@ export const ArtistProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Runs whenever artistId changes (e.g. navigating to a different artist).
-  // This is the main data-fetching hook Ã¢â‚¬â€ it calls the backend once and
-  // populates all three pieces of state (artist, artworks, posts).
+
   useEffect(() => {
 
     const token = localStorage.getItem('token');
@@ -488,8 +484,8 @@ export const ArtistProfilePage = () => {
                 onClick={handleFollowClick}
                 disabled={isFollowLoading}
                 className={`font-bold text-sm px-6 py-2 rounded-full shadow-sm transition-colors disabled:opacity-50 ${isFollowing
-                    ? 'bg-slate-200 dark:bg-zinc-800 text-slate-800 dark:text-white'
-                    : 'bg-[#FFC247] text-slate-900 hover:bg-yellow-400'
+                  ? 'bg-slate-200 dark:bg-zinc-800 text-slate-800 dark:text-white'
+                  : 'bg-[#FFC247] text-slate-900 hover:bg-yellow-400'
                   }`}
               >
                 {isFollowLoading ? '...' : (isFollowing ? 'Unfollow' : 'Follow')}
@@ -561,8 +557,8 @@ export const ArtistProfilePage = () => {
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`pb-3 border-b-2 text-sm font-bold transition-colors capitalize ${activeTab === tab
-                      ? 'border-slate-900 dark:border-white text-slate-900 dark:text-white'
-                      : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                    ? 'border-slate-900 dark:border-white text-slate-900 dark:text-white'
+                    : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                     }`}
                 >
                   {tab}
