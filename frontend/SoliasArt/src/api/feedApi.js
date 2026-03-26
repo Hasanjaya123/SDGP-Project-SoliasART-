@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -48,13 +49,23 @@ export const getFeed = (page = 1, userId =null) => {
         });
     }
 
-    // create a new post
-    export const createPost = (artistId, description, imageFile, title = '') => {
-        const formData = new FormData();
-        formData.append('artist_id', artistId);
-        formData.append('description', description);
-        formData.append('image', imageFile);
-        if (title) formData.append('title', title)
+    // Follow an artist
+    export const toggleFollow = (artistId, token) => {
+        return api.post(`/feed/${artistId}/follow`, {}, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+    }
 
-        return api.post('/posts/', formData)
-        }
+    // Unfollow an artist
+    export const unfollowArtist = (artistId, token) => {
+        return api.delete(`/feed/${artistId}/follow`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+    }
+
+    // Check if following an artist
+    export const checkFollowStatus = (artistId, token) => {
+        return api.get(`/feed/${artistId}/is-following`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+    }
