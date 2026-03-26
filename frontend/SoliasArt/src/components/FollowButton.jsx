@@ -1,99 +1,82 @@
 import { useEffect, useState } from 'react'
-import { getUserIdFromToken } from '../utils/auth'
+import { getUserIdFromToken, getAuthToken } from '../utils/auth'
+import { checkFollowStatus, unfollowArtist, toggleFollow } from '../api/feedApi'
 
-const STORAGE_KEY = 'following_artist_ids_by_user'
 const FOLLOW_EVENT = 'follow-state-changed'
-
-function readFollowMap() {
-    try {
-        const raw = localStorage.getItem(STORAGE_KEY)
-        if (!raw) return {}
-        const parsed = JSON.parse(raw)
-        return parsed && typeof parsed === 'object' ? parsed : {}
-    } catch {
-        return {}
-    }
-}
-
-function writeFollowMap(map) {
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(map))
-    } catch {
-        // Ignore storage errors in private/incognito contexts.
-    }
-}
-
-function readFollowedArtistsForUser(userKey) {
-    const map = readFollowMap()
-    const ids = map[userKey]
-    return Array.isArray(ids) ? ids : []
-}
 
 function FollowButton({ artistId }) {
     const userId = getUserIdFromToken()
-    const userKey = userId || 'guest'
+    const token = getAuthToken()
+
     const [isFollowing, setIsFollowing] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        function syncFollowState() {
-            if (!artistId) {
-                setIsFollowing(false)
-                return
-            }
-
-            const followed = readFollowedArtistsForUser(userKey)
-            setIsFollowing(followed.includes(String(artistId)))
-        }
-
-        function handleStorage(event) {
-            if (!event.key || event.key === STORAGE_KEY) {
-                syncFollowState()
-            }
-        }
-
-        syncFollowState()
-        window.addEventListener('storage', handleStorage)
-        window.addEventListener(FOLLOW_EVENT, syncFollowState)
-
-        return () => {
-            window.removeEventListener('storage', handleStorage)
-            window.removeEventListener(FOLLOW_EVENT, syncFollowState)
-        }
-    }, [artistId, userKey])
-
-    function handleToggleFollow() {
-        if (!artistId) return
-
-        const artistKey = String(artistId)
-        const followMap = readFollowMap()
-        const followed = readFollowedArtistsForUser(userKey)
-
-        let next
-        if (followed.includes(artistKey)) {
-            next = followed.filter((id) => id !== artistKey)
+        if (!userId || !artistId || !token) {
             setIsFollowing(false)
-        } else {
-            // Set enforces one follow per artist per user.
-            next = [...new Set([...followed, artistKey])]
-            setIsFollowing(true)
+            return
         }
 
-        followMap[userKey] = next
-        writeFollowMap(followMap)
-        window.dispatchEvent(new Event(FOLLOW_EVENT))
+        checkFollowStatus(artistId, token)
+            .then(response => setIsFollowing(response.data.is_following))
+            .catch(error => console.error('Failed to check follow status:', error))
+
+        // Listen for follow state changes from other FollowButton components
+        function handleFollowStateChange(event) {
+            const changedArtistId = event.detail?.artistId
+            // If this is for the same artist, refresh the status
+            if (changedArtistId === String(artistId)) {
+                checkFollowStatus(artistId, token)
+                    .then(response => setIsFollowing(response.data.is_following))
+                    .catch(error => console.error('Failed to sync follow status:', error))
+            }
+        }
+
+        window.addEventListener(FOLLOW_EVENT, handleFollowStateChange)
+        return () => window.removeEventListener(FOLLOW_EVENT, handleFollowStateChange)
+    }, [artistId, userId, token])
+
+    async function handleToggleFollow() {
+        if (!artistId || !userId || !token || loading) return
+
+        setLoading(true)
+        try {
+            // Based on current state, either follow or unfollow
+            if (isFollowing) {
+                // Currently following, so unfollow
+                await unfollowArtist(artistId, token)
+            } else {
+                // Currently not following, so follow
+                await toggleFollow(artistId, token)
+            }
+
+            // After successful toggle, check the new status to verify
+            const response = await checkFollowStatus(artistId, token)
+            setIsFollowing(response.data.is_following)
+
+            // Broadcast the change to all other FollowButton components
+            const event = new CustomEvent(FOLLOW_EVENT, {
+                detail: { artistId: String(artistId), isFollowing: response.data.is_following }
+            })
+            window.dispatchEvent(event)
+        } catch (error) {
+            console.error('Error toggling follow:', error)
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
         <button
             type="button"
             onClick={handleToggleFollow}
-            disabled={!artistId}
+            disabled={!artistId || !userId || loading}
             className={`text-xs font-semibold border rounded-full px-3 py-1 transition ${isFollowing
                 ? 'text-stone-700 border-stone-300 bg-stone-100 hover:bg-stone-200'
                 : 'text-amber-600 border-amber-600 hover:bg-amber-50'
-                } ${!artistId ? 'opacity-50 cursor-not-allowed' : ''}`}
+                } ${(!artistId || !userId || loading) ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-            {isFollowing ? 'Following' : 'Follow'}
+            {loading ? 'Loading...' : (isFollowing ? 'Following' : 'Follow')}
         </button>
     )
 }
