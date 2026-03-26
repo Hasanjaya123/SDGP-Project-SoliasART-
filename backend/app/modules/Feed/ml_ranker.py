@@ -11,8 +11,8 @@ from app.modules.Feed.model import FeedLike, FeedSave, FeedInteraction
 
 EVENT_WEIGHTS = {
     "view":1,
-    "like":3,
-    "save":5
+    "like":5,
+    "save":10
 }
 
 def _recency_factor(created_at: datetime) -> float:
@@ -129,7 +129,7 @@ def get_unified_feed(user_id: str, db:Session, page: int = 1, page_size: int = 1
 
         if taste_profile is not None and artwork.embedding is not None:
             similarity = cosine_similarity(taste_profile, np.array(artwork.embedding).reshape(1, -1))[0][0]
-            score = (similarity * 5 + likes * 3 + views * 1 + 1.0) * recency
+            score = (similarity * 10 + likes * 3 + views * 1 + 1.0) * recency
         else:
             # +1.0 baseline ensures new/unseen content surfaces instead of scoring 0
             score = (likes * 3 + views * 1 + 1.0) * recency
@@ -183,7 +183,7 @@ def get_unified_feed(user_id: str, db:Session, page: int = 1, page_size: int = 1
         
         if taste_profile is not None and post.embedding is not None:
             similarity = cosine_similarity(taste_profile, np.array(post.embedding).reshape(1, -1))[0][0]
-            score = (similarity * 5 + likes * 3 + views * 1 + bonus + 1.0) * recency
+            score = (similarity * 10 + likes * 3 + views * 1 + bonus + 1.0) * recency
         else:
             # +1.0 baseline ensures new posts surface regardless of engagement
             score = (likes * 3 + views * 1 + bonus + 1.0) * recency
