@@ -29,16 +29,28 @@ const ArtworkDetailsPage = () => {
 
       try {
         // Check saved status
-        const saveRes = await api.get('/savework/user/saved').catch(() => ({ data: [] }));
-        const savedArtworks = saveRes.data;
+        const saveRes = await fetch(`${BACKEND_URL}/savework/user/saved`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (saveRes.ok) {
+          const savedArtworks = await saveRes.json();
 
-        // Check if this specific artwork ID exists in the user's saved list
-        const alreadySaved = savedArtworks.some(art => String(art.id) === String(id));
-        setIsSaved(alreadySaved);
+          // Check if this specific artwork ID exists in the user's saved list
+          const alreadySaved = savedArtworks.some(art => String(art.id) === String(id));
+          setIsSaved(alreadySaved);
+        }
 
         // Check like status
-        const likeRes = await api.get(`/api/artworks/${id}/check-like`).catch(() => ({ data: { is_liked: false } }));
-        setIsLiked(likeRes.data.is_liked);
+        const likeRes = await fetch(`${BACKEND_URL}/api/artworks/${id}/check-like`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (likeRes.ok) {
+          const likeData = await likeRes.json();
+
+          // Check if already liked
+          setIsLiked(likeData.is_liked); 
+        }
 
       } catch (err) {
         console.error("Error checking save status:", err);
@@ -124,14 +136,22 @@ const ArtworkDetailsPage = () => {
       alert("Please log in to like artworks!");
       return;
     }
-
     const wasLiked = isLiked;
     setLiveLikesCount(prev => wasLiked ? prev - 1 : prev + 1);
     setIsLiked(!wasLiked);
 
     try {
       // The API Call
-      await api.post(`/api/artworks/${id}/like`);
+      const response = await fetch(`${BACKEND_URL}/api/artworks/${id}/like`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+         } 
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update like');
+      }
     } catch (err) {
 
       // Revert if the backend fails 
@@ -164,7 +184,7 @@ const ArtworkDetailsPage = () => {
   const qrCodeUrl = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${encodeURIComponent(arUrl)}`;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 pb-24 pt-12 md:pt-16">
+    <div className="min-h-screen bg-white dark:bg-gray-900 pt-12 md:pt-16">
       <div className="max-w-7xl mx-auto px-8 md:px-12 lg:px-20">
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
@@ -186,15 +206,15 @@ const ArtworkDetailsPage = () => {
 
           {/* Rightside details component */}
           <div className="lg:col-span-5">
-            <ArtworkDetailsCard
-              artwork={artwork}
-              artist={artwork.artist}
-              onArClick={handleOpenArModal}
+            <ArtworkDetailsCard 
+              artwork={artwork} 
+              artist={artwork.artist} 
+              onArClick = {handleOpenArModal}
               // props for save
-              onSaveClick={handleToggleSave}
+              onSaveClick={handleToggleSave} 
               isSaved={isSaved}
               // props for like
-              liveLikesCount={liveLikesCount}
+              liveLikesCount={liveLikesCount} 
               isLiked={isLiked}
               onLikeClick={handleToggleLike}
             />
@@ -250,10 +270,11 @@ const ArtworkDetailsPage = () => {
       )}
 
       {/* Related Artworks from the same artist */}
-      <ArtistOtherArtworks
-        artistId={artwork.artist?.id}
-        currentArtworkId={artwork.id}
+      <ArtistOtherArtworks 
+        artistId={artwork.artist?.id} 
+        currentArtworkId={artwork.id} 
       />
+      
     </div>
   );
 };

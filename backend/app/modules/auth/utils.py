@@ -9,7 +9,6 @@ from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from pydantic import EmailStr
 from dotenv import load_dotenv
 
-# Utility functions for authentication and token management
 
 # Setup password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -51,7 +50,8 @@ conf = ConnectionConfig(
 )
 
 async def send_verification_email(email: EmailStr, first_name: str, token: str):
-    url = f"http://localhost:8000/auth/verify/{token}"
+    base_url = os.getenv("VITE_BACKEND_URL", "http://localhost:8000")
+    url = f"{base_url}/auth/verify/{token}"
 
     logo_url = "https://ik.imagekit.io/sjunnxn6x/Public/soliasartlogo.png"
 
