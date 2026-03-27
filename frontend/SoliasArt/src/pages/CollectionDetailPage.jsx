@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { collections } from '../data/mockData';
-import { ArtworkCard } from '../components/ArtworkCard';
+import { artworkService } from '../services/uploadApi';
+import { ArtworkCard } from './ArtworkCard';
 import { Heart, Eye, ShoppingCart, ArrowLeft } from 'lucide-react';
 
 export const CollectionDetailPage = ({

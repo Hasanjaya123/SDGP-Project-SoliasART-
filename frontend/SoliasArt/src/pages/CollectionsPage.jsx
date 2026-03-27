@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { collections } from '../data/mockData';
-import { getArtworks } from '../services/api';
+import { artworkService } from '../services/uploadApi';
 
 const CollectionsPage = ({ setCurrentPage }) => {
 
@@ -8,7 +8,7 @@ const CollectionsPage = ({ setCurrentPage }) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const data = await getArtworks();
+            const data = await artworkService.getArtWorks();
             setArtworks(data);
         };
 
@@ -60,7 +60,7 @@ const CollectionsPage = ({ setCurrentPage }) => {
                                         <img
                                             key={id}
                                             className="inline-block h-12 w-12 rounded-full ring-2 ring-white dark:ring-gray-900"
-                                            src={artwork.imageUrls[0]}
+                                            src={Array.isArray(artwork.image_url) ? artwork.image_url[0] : artwork.image_url}
                                             alt={artwork.title}
                                         />
                                     ) : null;
