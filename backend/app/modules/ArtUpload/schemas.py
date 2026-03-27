@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, field_validator
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 from app.modules.ArtUpload.form import as_form
 
@@ -56,6 +56,9 @@ class ArtWorkResponse(BaseModel):
     image_url: List[str]
     price: float
     is_framed: bool
+    views: Optional[int] = 0
+    likes_count: Optional[int] = 0
+    artist_name: Optional[str] = None
 
     model_config = {
         "from_attributes": True

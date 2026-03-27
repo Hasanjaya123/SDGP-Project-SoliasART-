@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from "react";
-
 
 import './App.css'
 import UploadArtPage from './pages/ArtUpload'
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import SignupPage from './pages/SignupPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
@@ -16,9 +14,7 @@ import MobilePreview from './pages/MobilePreview.jsx';
 import Layout from './components/Layout';
 import CartPage from './pages/CartPage';
 import ArtSearch from './pages/ArtSearch.jsx';
-import { ArtistSearch } from './components/ArtistSearch.jsx';
-import CollectionsPage from './pages/CollectionsPage.jsx';
-
+import React, { useState, useEffect } from 'react';
 import ArtistDashboard from './pages/Dashboard.jsx';
 import CommissionRequestsPage from './pages/CommissionRequestsPage.jsx';
 
@@ -72,6 +68,11 @@ function ArtistGuard({ children }) {
 
   return children;
 }
+
+
+
+
+
 
 
 function App() {

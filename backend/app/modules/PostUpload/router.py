@@ -1,8 +1,11 @@
 from fastapi import APIRouter, HTTPException, File, UploadFile, Depends
+from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import List, Optional
 
+from app.core.image_kit import imagekit
 from app.core.database import get_db
+from app.core.supabase import supabase
 from app.modules.PostUpload.model import Post
 from app.modules.PostUpload.schemas import PostUploadRequest, PostResponse
 from app.modules.ArtUpload.embeddings import generate_image_embedding
@@ -41,8 +44,7 @@ async def upload_post(
 
         # Upload images to ImageKit Posts folder
         if has_images:
-            await images.read()
-            image_links.append("https://via.placeholder.com/300")
+            image_content = await images.read()
 
             upload_result = await run_in_threadpool(
                 imagekit.files.upload,
