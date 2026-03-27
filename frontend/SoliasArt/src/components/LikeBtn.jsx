@@ -30,7 +30,14 @@ const LikeButton = ({ artworkId, initialLikes, initialIsLiked = false, currentUs
     setLocalIsLiked(!localIsLiked);
 
     try {
-      await api.post(`/api/artworks/${artworkId}/like`);
+      await fetch(`http://localhost:8000/api/artworks/${artworkId}/like`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Use JWT instead of hardcoded ID
+        }
+        // Deleted the hardcoded body!
+      });
     } catch (error) {
       setLocalLikes(localIsLiked ? localLikes + 1 : localLikes - 1);
       setLocalIsLiked(localIsLiked);
