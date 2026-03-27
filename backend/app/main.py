@@ -29,7 +29,7 @@ app = FastAPI(title=settings.PROJECT_NAME)
 Base.metadata.create_all(bind=engine)
 
 
-origins = ["http://localhost:5173", "https://sdgp-project-974eghwb1-sdgp-team.vercel.app", "https://soliasart.com", "https://www.soliasart.com", "http://10.121.78.134:5173", "http://10.121.78.134:8000"]
+origins = ["http://localhost:5173", "https://sdgp-project-974eghwb1-sdgp-team.vercel.app", "https://soliasart.com", "https://www.soliasart.com", "http://192.168.1.9:5173", "http://192.168.1.9:8000"]
 
 
 app.add_middleware(
