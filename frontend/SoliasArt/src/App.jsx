@@ -24,6 +24,8 @@ import { jwtDecode } from "jwt-decode";
 import { authService } from './services/uploadApi';
 import ArtMapPage from './pages/ArtMapPage.jsx';
 import SaveWork from './pages/saveWork.jsx';
+import { ArtistSearch } from './components/ArtistSearch';
+import CollectionsPage from './pages/CollectionsPage';
 
 
 // Verifies role against backend, not just the JWT
@@ -69,12 +71,6 @@ function ArtistGuard({ children }) {
   return children;
 }
 
-
-
-
-
-
-
 function App() {
 
   return (
@@ -115,11 +111,13 @@ function App() {
           {/* Artwork details page */}
           <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
           <Route path="/search" element={<ArtSearch />} />
+          <Route path="/artist-search" element={<ArtistSearch />} />
           <Route path="/artist/profile" element={<ArtistProfilePage />} />
           <Route path="/artist/profile/:artistId" element={<ArtistProfilePage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/map" element={<ArtMapPage />} />
           <Route path="/buyer/profile" element={<SaveWork />} />
+          <Route path="/collections" element={<CollectionsPage />} />
 
           <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
           <Route path="/dashboard/commissions" element={<ArtistGuard><CommissionRequestsPage /></ArtistGuard>} />
