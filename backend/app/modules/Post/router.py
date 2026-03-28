@@ -7,7 +7,7 @@ from typing import Optional
 from uuid import UUID
 
 from app.core.database import get_db
-from app.modules.Post.model import Post
+from app.modules.PostUpload.model import Post
 from app.modules.ArtUpload.image_kit import imagekit
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
