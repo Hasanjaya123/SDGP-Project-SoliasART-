@@ -67,13 +67,13 @@ function FeedPage() {
     }
 
     return (
-        <div className='min-h-screen bg-stone-50 md:flex'>
+        <div className='min-h-screen bg-stone-50 dark:bg-gray-950 md:flex transition-colors duration-200'>
             <div className='flex-1 pt-6'>
                 <div className='mx-auto max-w-[470px]'>
                     {/*Error message*/}
                     {error && (
-                        <div className="mx-4 my-3 p-3 bg-red-50 border border-red-200
-                            rounded-lg text-sm text-red-600">
+                        <div className="mx-4 my-3 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800
+                            rounded-lg text-sm text-red-600 dark:text-red-400">
                             {error}
                         </div>
                     )}
@@ -108,15 +108,15 @@ function FeedPage() {
 
                     {/*Empty state*/}
                     {!loading && feedData.length === 0 && !error && (
-                        <div className="text-center py-16 text-stone-400 text-sm">
+                        <div className="text-center py-16 text-stone-400 dark:text-gray-500 text-sm">
                             No Post yet
                         </div>
                     )}
 
                     {/*Load more Button*/}
                     {loadMoreError && (
-                        <div className="mx-4 my-2 p-3 bg-red-50 border border-red-200
-                            rounded-lg text-sm text-red-600 text-center">
+                        <div className="mx-4 my-2 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800
+                            rounded-lg text-sm text-red-600 dark:text-red-400 text-center">
                             {loadMoreError}
                         </div>
                     )}
@@ -124,8 +124,8 @@ function FeedPage() {
                         <div className="flex justify-center py-6">
                             <button
                                 onClick={loadMore}
-                                className="bg-stone-800 text-white text-sm font-medium
-                               px-8 py-2.5 rounded-full"
+                                className="bg-stone-800 dark:bg-gray-700 hover:dark:bg-gray-600 text-white text-sm font-medium
+                               px-8 py-2.5 rounded-full transition-colors"
                             >
                                 Load more
                             </button>
