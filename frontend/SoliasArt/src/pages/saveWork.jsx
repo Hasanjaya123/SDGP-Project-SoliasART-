@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Nav-bar';
 import ArtDisplayCard from '../components/Art-card';
-import Footer from '../components/Footer';
 import UserProfile from '../comp/UserProfile';
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
 
-// ─── Seeded random so numbers stay stable across re-renders ───
+//Seeded random so numbers stay stable across re-renders ───
 function seededRandom(seed, min, max) {
   let hash = 0;
   for (let i = 0; i < seed.length; i++) {
@@ -20,7 +18,7 @@ function seededRandom(seed, min, max) {
 }
 
 
-// ─── Icons ───
+//Icons
 const EyeIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3 h-3 shrink-0">
     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -46,7 +44,7 @@ const PaletteIcon = () => (
 );
 
 
-// ─── Card wrapper ─────────────────────────────────────────────
+//Card wrapper
 function CardWithRealInfo({ artwork }) {
   const image = artwork.image_url?.[0] || '';
 
@@ -82,18 +80,18 @@ function CardWithRealInfo({ artwork }) {
   );
 }
 
-// ─── Loading skeleton ─────────────────────────────────────────
+//Loading skeleton
 function SkeletonCard() {
   return (
     <div className="w-[220px] animate-pulse">
-      <div className="bg-gray-800 rounded h-[320px] mb-3" />
-      <div className="bg-gray-800 rounded h-3 w-2/3 mx-auto mb-2" />
-      <div className="bg-gray-800 rounded h-3 w-1/2 mx-auto" />
+      <div className="bg-gray-200 dark:bg-gray-800 rounded h-[320px] mb-3" />
+      <div className="bg-gray-200 dark:bg-gray-800 rounded h-3 w-2/3 mx-auto mb-2" />
+      <div className="bg-gray-200 dark:bg-gray-800 rounded h-3 w-1/2 mx-auto" />
     </div>
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────
+//Page
 const SaveWork = () => {
   const navigate = useNavigate();
   const [artworks, setArtworks] = useState([]);
@@ -125,7 +123,7 @@ const SaveWork = () => {
         const data = await artRes.json();
         setArtworks(data);
       } catch (err) {
-        setError(err.response?.data?.detail || err.message);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -191,7 +189,9 @@ const SaveWork = () => {
         {!loading && !error && (
           <div className="flex flex-wrap gap-6 items-start justify-center">
             {artworks.length === 0 ? (
-              <p className="text-gray-500 text-sm mt-10">No artworks found in your collection.</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mt-10">
+                No artworks found in your collection.
+              </p>
             ) : (
               artworks.map(artwork => (
                 <CardWithRealInfo key={artwork.id} artwork={artwork} />

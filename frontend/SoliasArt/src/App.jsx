@@ -72,6 +72,7 @@ function ArtistGuard({ children }) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 
@@ -84,6 +85,8 @@ function ArtistGuard({ children }) {
 
 =======
 >>>>>>> cc8a755f8ff19251030188671453fd12724c7ac6
+=======
+>>>>>>> 739241e8ee21387bd99866ff251977da11b90b53
 function App() {
 
   return (
