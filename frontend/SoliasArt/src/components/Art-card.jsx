@@ -37,26 +37,19 @@ const ArtDisplayCard = ({ image, formData }) => {
 
         if (!hasDimensions) {
             return {
-                height: '340px',
-                width: 'auto',
+                width: '100%',
+                maxHeight: '380px',
                 aspectRatio: '3/4'
             };
         }
 
-        const ratio = w / h;
-        if (ratio >= 1) {
-            return {
-                width: '100%',
-                height: 'auto',
-                aspectRatio: `${w}/${h}`
-            };
-        } else {
-            return {
-                height: '380px',
-                width: 'auto',
-                aspectRatio: `${w}/${h}`
-            };
-        }
+        return {
+            width: '100%',
+            height: 'auto',
+            maxHeight: '400px',
+            aspectRatio: `${w}/${h}`,
+            objectFit: 'contain'
+        };
     }, [formData.height, formData.width]);
 
     return (
