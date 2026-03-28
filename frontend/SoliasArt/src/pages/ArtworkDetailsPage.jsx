@@ -23,9 +23,6 @@ const ArtworkDetailsPage = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
   useEffect(() => {
-    setIsSaved(false);
-    setIsLiked(false);
-
     const checkSaveStatus = async () => {
       const token = localStorage.getItem('token');
       if (!token) return;
@@ -63,7 +60,7 @@ const ArtworkDetailsPage = () => {
     if (id) checkSaveStatus();
   }, [id, BACKEND_URL]);
 
-  //  Function to handle the Save/Unsave btn
+  // NEW: Function to handle the Save/Unsave toggle
   const handleToggleSave = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -71,6 +68,7 @@ const ArtworkDetailsPage = () => {
       return;
     }
 
+    // Optimistic UI update
     const previousSaveStatus = isSaved;
     setIsSaved(!previousSaveStatus);
 
