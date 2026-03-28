@@ -10,6 +10,7 @@ class FeedCard(BaseModel):
     created_at: datetime
     artist_id: Optional[UUID]
     artist_name: Optional[str] = None
+    artist_profile_image: Optional[str] = None
     title: Optional[str] = None
     description: Optional[str] = None
     image_url: list[str]

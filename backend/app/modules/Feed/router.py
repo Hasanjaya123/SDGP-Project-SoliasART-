@@ -7,9 +7,9 @@ from uuid import UUID
 
 from app.core.database import get_db
 from app.modules.ArtUpload.model import ArtWork
-from app.modules.ArtistOnboarding.model import Artist
+from app.modules.ArtistProfile.model import Artist
 from app.modules.auth.models import User
-from app.modules.Post.model import Post
+from app.modules.PostUpload.model import Post
 from app.modules.Feed.model import FeedLike, FeedComment, FeedSave, FeedInteraction, UserFollow
 from app.modules.Feed.schemas import FeedCard, FeedResponse, CommentCreate, CommentResponse
 from app.modules.Feed.ml_ranker import get_unified_feed
@@ -55,9 +55,12 @@ def get_feed(
         # Guest: merge posts + artworks sorted by date
         posts = db.query(Post).all()
         artworks = db.query(ArtWork).all()
-        artist_names = {
-            artist.id: artist.display_name
-            for artist in db.query(Artist.id, Artist.display_name).all()
+        artist_data = {
+            artist.id: {
+                'name': artist.display_name,
+                'profile_image': artist.profile_image_url
+            }
+            for artist in db.query(Artist.id, Artist.display_name, Artist.profile_image_url).all()
         }
         merged = []
         for p in posts:
@@ -74,10 +77,12 @@ def get_feed(
         for item in paged:
             obj = item["obj"]
             is_artwork = item["type"] == "artwork"
+            artist_info = artist_data.get(obj.artist_id, {})
             cards.append(FeedCard(
                 id=obj.id, type=item["type"], created_at=item["created_at"],
                 artist_id=obj.artist_id,
-                artist_name=artist_names.get(obj.artist_id),
+                artist_name=artist_info.get('name'),
+                artist_profile_image=artist_info.get('profile_image'),
                 title=obj.title, description=obj.description, image_url=obj.image_url,
                 price=obj.price if is_artwork else None,
                 medium=obj.medium if is_artwork else None,

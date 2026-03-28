@@ -5,8 +5,8 @@ from sqlalchemy import func
 from sklearn.metrics.pairwise import cosine_similarity
 
 from app.modules.ArtUpload.model import ArtWork
-from app.modules.ArtistOnboarding.model import Artist
-from app.modules.Post.model import Post
+from app.modules.ArtistProfile.model import Artist
+from app.modules.PostUpload.model import Post
 from app.modules.Feed.model import FeedLike, FeedSave, FeedInteraction
 
 EVENT_WEIGHTS = {
@@ -73,9 +73,12 @@ def get_unified_feed(user_id: str, db:Session, page: int = 1, page_size: int = 1
     }
     
     scored_items = []
-    artist_names = {
-        artist.id: artist.display_name
-        for artist in db.query(Artist.id, Artist.display_name).all()
+    artist_data = {
+        artist.id: {
+            'name': artist.display_name,
+            'profile_image': artist.profile_image_url
+        }
+        for artist in db.query(Artist.id, Artist.display_name, Artist.profile_image_url).all()
     }
 
     #score the artworks using embedding similarity
@@ -140,7 +143,8 @@ def get_unified_feed(user_id: str, db:Session, page: int = 1, page_size: int = 1
             "id": artwork.id,
             "created_at": artwork.create_at,
             "artist_id": artwork.artist_id,
-            "artist_name": artist_names.get(artwork.artist_id),
+            "artist_name": artist_data.get(artwork.artist_id, {}).get('name'),
+            "artist_profile_image": artist_data.get(artwork.artist_id, {}).get('profile_image'),
             "title": artwork.title,
             "description": artwork.description,
             "image_url": artwork.image_url,
@@ -194,7 +198,8 @@ def get_unified_feed(user_id: str, db:Session, page: int = 1, page_size: int = 1
             "id"          : post.id,
             "created_at"  : post.created_at,
             "artist_id"   : post.artist_id,
-            "artist_name" : artist_names.get(post.artist_id),
+            "artist_name" : artist_data.get(post.artist_id, {}).get('name'),
+            "artist_profile_image" : artist_data.get(post.artist_id, {}).get('profile_image'),
             "title"       : post.title,
             "description" : post.description,
             "image_url"   : post.image_url,
