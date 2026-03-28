@@ -52,3 +52,24 @@ export const artGalleries = [
     { id: 103, name: "Lionel Wendt Art Centre", location: "Guildford Crescent, Colombo 7" },
     { id: 104, name: "Paradise Road The Gallery Café", location: "Alfred House Road, Colombo 3" }
 ];
+
+export const collections = [
+    {
+        id: 1,
+        name: "Island Inspiration",
+        curator: "Nimmi Perera",
+        description: "A collection of contemporary Sri Lankan landscapes and abstract works inspired by the island's natural beauty.",
+        coverImageUrl: "https://images.unsplash.com/photo-1541451373351-40344b4bde5a?auto=format&fit=crop&q=80&w=800",
+        artworkIds: [1, 2],
+        artworks: []
+    },
+    {
+        id: 2,
+        name: "Heritage & Soul",
+        curator: "Aruni Silva",
+        description: "Works that explore the rich cultural tapestry and historical roots of Sri Lankan artistic traditions.",
+        coverImageUrl: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&q=80&w=800",
+        artworkIds: [3, 4],
+        artworks: []
+    }
+];
