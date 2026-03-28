@@ -54,6 +54,9 @@ def _build_summary_html(commission_data: dict) -> str:
 
 def _build_email_html(buyer_name: str, artist_name: str, status_text: str, status_color: str, summary_html: str) -> str:
     """Build the complete branded HTML email."""
+
+    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip('/')
+
     return f"""
     <!DOCTYPE html>
     <html>
@@ -109,7 +112,7 @@ def _build_email_html(buyer_name: str, artist_name: str, status_text: str, statu
                 {summary_html}
                 <br>
                 <p style="text-align:center; margin-top:30px;">
-                    <a href="http://localhost:5173" style="display:inline-block; padding:14px 30px; background-color:#1F4E79; color:#ffffff !important; text-decoration:none; border-radius:50px; font-weight:bold; font-size:16px; box-shadow: 0 4px 6px rgba(31, 78, 121, 0.3);">
+                    <a href="{frontend_url}" style="display:inline-block; padding:14px 30px; background-color:#1F4E79; color:#ffffff !important; text-decoration:none; border-radius:50px; font-weight:bold; font-size:16px; box-shadow: 0 4px 6px rgba(31, 78, 121, 0.3);">
                         Visit SoliasArt
                     </a>
                 </p>
