@@ -1,3 +1,7 @@
+export function getAuthToken() {
+    return localStorage.getItem('token')
+}
+
 export function getUserIdFromToken() {
     const token = localStorage.getItem('token')
     if (!token) return null
