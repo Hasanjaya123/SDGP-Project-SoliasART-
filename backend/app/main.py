@@ -28,10 +28,18 @@ from app.modules.Commission.router import router as commission_router
 # Initialise the API application
 app = FastAPI(title=settings.PROJECT_NAME)
 
-Base.metadata.create_all(bind=engine)
 
 
-origins = ["http://localhost:5173", "https://sdgp-project-974eghwb1-sdgp-team.vercel.app", "https://soliasart.com", "https://www.soliasart.com", "http://10.162.240.145:8000","http://10.162.240.145:5173"]
+
+
+origins = [
+    "http://localhost:5173",
+    "http://10.162.240.145:5173",
+    "http://10.162.240.145:8000",
+    "https://sdgp-project-974eghwb1-sdgp-team.vercel.app",
+    "https://soliasart.com",
+    "https://www.soliasart.com"
+]
 
 
 app.add_middleware(

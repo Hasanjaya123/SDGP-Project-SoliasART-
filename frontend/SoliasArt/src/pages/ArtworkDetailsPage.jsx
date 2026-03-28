@@ -29,7 +29,7 @@ const ArtworkDetailsPage = ({ onToggleSave, savedItemIds = [] }) => {
       if (!token) return;
 
       try {
-
+        // Check like status
         const likeRes = await api.get(`/api/artworks/${id}/check-like`).catch(() => ({ data: { is_liked: false } }));
         setIsLiked(likeRes.data.is_liked);
 
@@ -39,49 +39,17 @@ const ArtworkDetailsPage = ({ onToggleSave, savedItemIds = [] }) => {
         });
         if (saveRes.ok) {
           const savedArtworks = await saveRes.json();
-
           // Check if this specific artwork ID exists in the user's saved list
           const alreadySaved = savedArtworks.some(art => String(art.id) === String(id));
           setIsSaved(alreadySaved);
         }
-
-        // Check like status
-        const likeRes = await fetch(`${BACKEND_URL}/api/artworks/${id}/check-like`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        if (likeRes.ok) {
-          const likeData = await likeRes.json();
-
-          // Check if already liked
-          setIsLiked(likeData.is_liked);
-        }
-
-        // Check if this specific artwork ID exists in the user's saved list
-        const alreadySaved = savedArtworks.some(art => String(art.id) === String(id));
-        setIsSaved(alreadySaved);
+      } catch (err) {
+        console.error("Error checking like status:", err);
       }
+    };
 
-        // Check like status
-        const likeRes = await fetch(`${BACKEND_URL}/api/artworks/${id}/check-like`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      if (likeRes.ok) {
-        const likeData = await likeRes.json();
-
-        // Check if already liked
-        setIsLiked(likeData.is_liked);
-      }
-
->>>>>>> e45b82d4e8e156010b0f8ecdbe016af4623a8362
-    } catch (err) {
-      console.error("Error checking like status:", err);
-    }
-  };
-
-  if (id) checkLikeStatus();
-}, [id, BACKEND_URL]);
+    if (id) checkLikeStatus();
+  }, [id, BACKEND_URL]);
 
 //  Function to handle the Save/Unsave btn
 const handleToggleSave = () => {

@@ -10,14 +10,14 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     # Token active time
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 300
-    DATABASE_URL: str = os.getenv("DATABASE_URL")
+    DATABASE_URL: str | None = os.getenv("DATABASE_URL")
 
     # PayHere Payment Gateway
-    PAYHERE_MERCHANT_ID: str = ""
-    PAYHERE_MERCHANT_SECRET: str = ""
+    PAYHERE_MERCHANT_ID: str | None = os.getenv("PAYHERE_MERCHANT_ID")
+    PAYHERE_MERCHANT_SECRET: str | None = os.getenv("PAYHERE_MERCHANT_SECRET")
     
-    FRONTEND_URL: str = ""
-    BACKEND_URL: str = ""
+    FRONTEND_URL: str | None = os.getenv("FRONTEND_URL", "http://localhost:5173")
+    BACKEND_URL: str | None = os.getenv("BACKEND_URL", "http://localhost:8000")
 
     model_config = SettingsConfigDict(
         env_file=".env",
