@@ -18,13 +18,13 @@ function SaveButton({ targetType, targetId, initialSaved, userId }) {
     }
 
     return (
-        <button onClick={handleClick} className="ml-auto outline-none focus:outline-none focus-visible:outline-none active:outline-none ring-0 focus:ring-0" style={{ outline: 'none', border: 'none' }}>
+        <button onClick={handleClick} className="ml-auto outline-none focus:outline-none focus-visible:outline-none active:outline-none ring-0 focus:ring-0 hover:opacity-75 transition-opacity" style={{ outline: 'none', border: 'none' }}>
             <svg
                 width="20"
                 height="20"
                 viewBox="0 0 24 24"
                 fill={saved ? '#c47c2b' : 'none'}
-                stroke={saved ? '#c47c2b' : '#57534e'}
+                stroke={saved ? '#c47c2b' : (document.documentElement.classList.contains('dark') ? '#9ca3af' : '#57534e')}
                 strokeWidth="1.8"
                 strokeLinecap="round"
                 strokeLinejoin="round"
