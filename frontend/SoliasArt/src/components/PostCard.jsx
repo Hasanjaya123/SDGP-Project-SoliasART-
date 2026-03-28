@@ -8,6 +8,7 @@ import { trackView } from '../api/feedApi'
 function PostCard({ card, userId }) {
     const imageSrc = Array.isArray(card.image_url) ? card.image_url[0] : card.image_url
     const artistName = card.artist_name || 'Artist'
+    const profileImage = card.artist_profile_image
     const cardRef = useRef(null)
 
     useEffect(() => {
@@ -29,20 +30,27 @@ function PostCard({ card, userId }) {
     }, [card.id, userId])
 
     return (
-        <div ref={cardRef} className='mx-4 mb-5 overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm md:mx-0'>
+        <div ref={cardRef} className='mx-4 mb-5 overflow-hidden rounded-2xl border border-stone-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm md:mx-0'>
             <div className='flex items-center px-3.5 py-3 gap-2.5'>
-                <div className='w-9 h-9 rounded-full bg-stone-200 flex items-center
-                justify-center text-stone-700 font-semibold text-sm flex-shrink-0'>
+                {profileImage ? (
+                    <img
+                        src={profileImage}
+                        alt={artistName}
+                        className='w-9 h-9 rounded-full object-cover flex-shrink-0 bg-stone-200 dark:bg-gray-700'
+                        onError={(e) => e.target.style.display = 'none'}
+                    />
+                ) : null}
+                <div className={`w-9 h-9 rounded-full bg-stone-200 dark:bg-gray-700 flex items-center justify-center text-stone-700 dark:text-gray-200 font-semibold text-sm flex-shrink-0 ${profileImage ? 'hidden' : ''}`}>
                     {/*get the first letter ofthe name*/}
                     {artistName ? artistName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : 'AR'}
                 </div>
 
                 {/*Name and time*/}
                 <div className="flex-1">
-                    <p className='text-sm font-semibold text-stone-800'>
+                    <p className='text-sm font-semibold text-stone-800 dark:text-gray-100'>
                         {artistName}
                     </p>
-                    <p className="text-xs text-stone-400">
+                    <p className="text-xs text-stone-400 dark:text-gray-500">
                         {new Date(card.created_at).toLocaleDateString()}
                     </p>
                 </div>
@@ -72,7 +80,7 @@ function PostCard({ card, userId }) {
                 />
 
                 {/*Clicking count just display, ifyou click open the comments*/}
-                <button className='flex items-center gap-1.5 text-stone-600'>
+                <button className='flex items-center gap-1.5 text-stone-600 dark:text-gray-400'>
                     <svg
                         width='20' height='20' viewBox="0 0 24 24" fill='none'
                         stroke='currentColor' strokeWidth="1.8" strokeLinecap='round' strokeLinejoin='round'>
@@ -91,10 +99,10 @@ function PostCard({ card, userId }) {
 
             {/*Description*/}
             <div className='px-3.5 pb-2'>
-                <p className="text-sm text-stone-800">
+                <p className="text-sm text-stone-800 dark:text-gray-100">
                     <span className="font-semibold">{artistName} </span>
                 </p>
-                <p className="text-sm text-stone-700 mt-0.5 leading-snug">
+                <p className="text-sm text-stone-700 dark:text-gray-300 mt-0.5 leading-snug">
                     {card.description}
                 </p>
             </div>
