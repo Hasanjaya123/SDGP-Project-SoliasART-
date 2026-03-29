@@ -1,6 +1,6 @@
 # Import FastAPI utilities for routing, exceptions, file uploads, and dependency injection
 
-from fastapi import HTTPException, APIRouter, Form, UploadFile, File, Depends
+from fastapi import HTTPException, APIRouter, Form, UploadFile, File, Depends, Query
 from app.modules.auth.dependencies import get_current_user
 from app.modules.ArtUpload.embeddings import generate_image_embedding, generate_text_embedding
 from app.core.supabase import supabase
@@ -29,26 +29,42 @@ async def search_artworks(
     query_image: Optional[UploadFile] = File(None)
 ):
     try:
-        vector = None
-
-        if query_text:
-            vector = generate_text_embedding(query_text)
-        elif query_image:
-            file_bytes = await query_image.read()
-            vector = generate_image_embedding(file_bytes)
-        else:
+        if not query_text and not query_image:
             raise HTTPException(status_code=400, detail="Must provide text or an image to search.")
 
-        res = supabase.rpc("match_artworks", {
-            "query_embedding": vector,
-            "match_threshold": 0.20,
-            "match_count": 12
-        }).execute()
-
-        return {
-            "status": "success",
-            "results": res.data
-        }
+        # For text search - do simple keyword matching first
+        if query_text:
+            print(f"Text search for: {query_text}")
+            search_results = supabase.table("artwork").select("*").ilike("title", f"%{query_text}%").execute()
+            if search_results.data:
+                return {"status": "success", "results": search_results.data}
+            
+            # If no results, try vector search
+            try:
+                vector = generate_text_embedding(query_text)
+                res = supabase.rpc("match_artworks", {
+                    "query_embedding": vector,
+                    "match_threshold": 0.20,
+                    "match_count": 12
+                }).execute()
+                return {"status": "success", "results": res.data if res.data else []}
+            except Exception as rpc_error:
+                print(f"Vector search failed: {rpc_error}")
+                return {"status": "success", "results": []}
+        
+        elif query_image:
+            try:
+                file_bytes = await query_image.read()
+                vector = generate_image_embedding(file_bytes)
+                res = supabase.rpc("match_artworks", {
+                    "query_embedding": vector,
+                    "match_threshold": 0.20,
+                    "match_count": 12
+                }).execute()
+                return {"status": "success", "results": res.data if res.data else []}
+            except Exception as e:
+                print(f"Image search failed: {e}")
+                return {"status": "success", "results": []}
 
     except HTTPException:
         raise
@@ -58,15 +74,30 @@ async def search_artworks(
 # Endpoint to retrieve artworks for the explore page
 
 @router.get("/")
-async def get_art_work(current_user: str = Depends(get_current_user)):
-    
-   
-    get_artwork = supabase.table("artwork").select("id, title, price, image_url, width_in, height_in, medium, view_count, likes, artists(display_name)").execute()
-    
-    if not get_artwork.data:
-        raise HTTPException(status_code=404, detail="Artist not found")
-    
-    return get_artwork.data
+async def get_art_work(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100)
+):
+    try:
+        offset = (page - 1) * limit
+        get_artwork = supabase.table("artwork").select("*").range(offset, offset + limit - 1).execute()
+        
+        try:
+            count_result = supabase.table("artwork").select("id", count="exact").execute()
+            total = count_result.count if hasattr(count_result, 'count') else 0
+        except:
+            total = len(get_artwork.data) if get_artwork.data else 0
+        
+        return {
+            "status": "success",
+            "data": get_artwork.data if get_artwork.data else [],
+            "total": total,
+            "page": page,
+            "limit": limit
+        }
+    except Exception as e:
+        print(f"Get artworks error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch artworks")
     
 
     

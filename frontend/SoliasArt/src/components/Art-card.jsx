@@ -56,7 +56,7 @@ const ArtDisplayCard = ({ image, formData }) => {
 
         <div className="bg-transparent rounded-sm overflow-hidden p-2.5 flex flex-col items-center transform transition-transform duration-500 hover:scale-[1.01]">
             <div
-                className="relative border-[7px] border-gray-700 dark:border-gray-600 p-1.5 bg-transparent mb-3 transition-all duration-500 ease-in-out flex items-center justify-center"
+                className="relative border-[7px] border-black dark:border-gray-800 p-1.5 bg-transparent mb-3 transition-all duration-500 ease-in-out flex items-center justify-center"
                 style={previewStyle}
             >
                 <div className="w-full h-full bg-transparent overflow-hidden relative group flex items-center justify-center">
@@ -88,7 +88,7 @@ const ArtDisplayCard = ({ image, formData }) => {
                 <span className="inline-block px-2.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 text-[9px] font-bold uppercase tracking-wider mb-1.5 rounded-sm">
                     {formData.category || 'New Release'}
                 </span>
-                <p className="text-[11px] font-medium text-gray-800 dark:text-gray-400 mb-0.5">{formData.artist_name || 'No name'}</p>
+                <p className="text-[11px] font-medium text-gray-800 dark:text-gray-400 mb-0.5">No name</p>
                 <h4 className="text-lg font-black text-black dark:text-white uppercase tracking-tight mb-1.5">
                     {formData.title || 'UNTITLED ARTWORK'}
                 </h4>
@@ -96,12 +96,13 @@ const ArtDisplayCard = ({ image, formData }) => {
                 <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400 text-[11px] font-medium mb-2">
                     <div className="flex items-center gap-1">
                         <EyeIcon className="w-3.5 h-3.5" />
-                        <span>{formData.views || 0}</span>
+                        <span>--</span>
                     </div>
                     <div className="flex items-center gap-1">
                         <HeartIcon className="w-3.5 h-3.5" />
-                        <span>{formData.likes || 0}</span>
+                        <span>--</span>
                     </div>
+
                 </div>
 
                 <div className="flex flex-col items-center gap-0.5 mb-2.5 opacity-80">

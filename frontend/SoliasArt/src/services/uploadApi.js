@@ -111,7 +111,7 @@ export const artworkService = {
 
   getArtWorks: async () => {
     try {
-      const response = await api.get("/explore")
+      const response = await api.get("/feed")
       return response.data
     } catch (error) {
       console.log("failed to load artworks", error.response?.data?.detail || error.message)
@@ -141,6 +141,7 @@ export const artworkService = {
     }
   },
 
+<<<<<<< HEAD
   getArtworksByArtist: async (artistId) => {
     try {
       const response = await api.get(`/api/artworks?artist_id=${artistId}`);
@@ -158,6 +159,20 @@ export const artworkService = {
     return response.data;
   },
 
+=======
+  getExploreArtworks: async (page = 1, limit = 20) => {
+    try {
+      const response = await api.get("/explore", {
+        params: { page, limit }
+      })
+      return response.data.data || []
+    } catch (error) {
+      console.log("failed to load explore artworks", error.response?.data?.detail || error.message)
+      throw error
+    }
+  },
+
+>>>>>>> 66d7e728c7c9fca9fc3e38fc6c2f43ed3b2312a7
   uploadArtist: async (formDataState) => {
     const formData = new FormData();
 

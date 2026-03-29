@@ -12,6 +12,3 @@ __pycache__/
 node_modules/
 
 backend/.env
-backend/storage/
-
-frontend/SoliasArt/.env
