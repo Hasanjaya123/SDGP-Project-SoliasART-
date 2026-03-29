@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.modules.savework.schemas import ArtworkCard
 from app.core.database import get_db
-from app.modules.savework.models import UserSave
+from app.modules.savework.models import UserSave, UserLike
 from app.modules.auth.dependencies import get_current_user
 
 router = APIRouter()
@@ -82,6 +82,17 @@ async def _fetch_artist_names(rows: list) -> dict:
         return {}
 
 
+async def _fetch_artworks_by_ids(artwork_ids: list) -> list:
+    """Shared helper — fetch full artwork rows from Supabase by a list of IDs."""
+    return await _supabase_get(
+        "artwork",
+        params={
+            "id": "in.(" + ",".join(artwork_ids) + ")",
+            "select": "id,title,medium,price,image_url,height_in,width_in,artist_id,year_created,description,is_framed,view_count,likes",
+        }
+    )
+
+
 # ─── Endpoints ────────────────────────────────────────────────
 
 @router.get("/artworks", response_model=List[ArtworkCard])
@@ -89,10 +100,7 @@ async def get_artworks(
     limit: int = Query(default=20, le=100),
     offset: int = Query(default=0, ge=0),
 ):
-    """
-    Fetch artworks from Supabase for the SaveWork page.
-    Returns title, medium, price, images, dimensions, artist name, view count, and likes.
-    """
+    """Fetch paginated artworks from Supabase."""
     try:
         rows = await _supabase_get(
             "artwork",
@@ -133,13 +141,16 @@ async def get_single_artwork(artwork_id: str):
 
 
 @router.post("/save/{artwork_id}")
-async def save_artwork(artwork_id: str, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
-
+async def save_artwork(
+    artwork_id: str,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+):
     user_id_str = str(current_user.id)
-    # Check if already saved to prevent duplicates
+
     existing_save = db.query(UserSave).filter(
         UserSave.user_id == user_id_str,
-        UserSave.artwork_id == artwork_id
+        UserSave.artwork_id == artwork_id,
     ).first()
 
     if existing_save:
@@ -156,23 +167,38 @@ async def save_artwork(artwork_id: str, db: Session = Depends(get_db), current_u
 @router.get("/user/saved", response_model=List[ArtworkCard])
 async def get_my_saved_artworks(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(get_current_user),
 ):
-    # Get saved artwork IDs
-    saved_records = db.query(UserSave).filter(UserSave.user_id == str(current_user.id)).all()
+    """Return all artworks the current user has saved."""
+    saved_records = db.query(UserSave).filter(
+        UserSave.user_id == str(current_user.id)
+    ).all()
 
     if not saved_records:
         return []
 
     artwork_ids = [str(record.artwork_id) for record in saved_records]
+    rows = await _fetch_artworks_by_ids(artwork_ids)
 
-    rows = await _supabase_get(
-        "artwork",
-        params={
-            "id": "in.(" + ",".join(artwork_ids) + ")",
-            "select": "id,title,medium,price,image_url,height_in,width_in,artist_id,year_created,description,is_framed,view_count,likes",
-        }
-    )
+    artist_map = await _fetch_artist_names(rows)
+    return [_map_row(r, artist_name=artist_map.get(str(r.get("artist_id")))) for r in rows]
+
+
+@router.get("/user/liked", response_model=List[ArtworkCard])
+async def get_my_liked_artworks(
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+):
+    """Return all artworks the current user has liked (from user_likes table)."""
+    liked_records = db.query(UserLike).filter(
+        UserLike.user_id == str(current_user.id)
+    ).all()
+
+    if not liked_records:
+        return []
+
+    artwork_ids = [str(record.artwork_id) for record in liked_records]
+    rows = await _fetch_artworks_by_ids(artwork_ids)
 
     artist_map = await _fetch_artist_names(rows)
     return [_map_row(r, artist_name=artist_map.get(str(r.get("artist_id")))) for r in rows]
