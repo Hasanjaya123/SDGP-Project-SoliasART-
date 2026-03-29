@@ -54,11 +54,11 @@ async def search_artworks(
                 if res.data:
                     ids = [r["id"] for r in res.data if r.get("id")]
                     if ids:
-                        enriched = supabase.table("artwork").select("id, artists(display_name)").in_("id", ids).execute()
-                        name_map = {e["id"]: (e.get("artists") or {}).get("display_name", "") for e in (enriched.data or [])}
+                        enriched = supabase.table("artwork").select("*, artists(display_name)").in_("id", ids).execute()
+                        enriched_dict = {e["id"]: dict(e) for e in (enriched.data or [])}
                         for r in res.data:
-                            flat = dict(r)
-                            flat["artist_name"] = name_map.get(r.get("id"), "")
+                            flat = enriched_dict.get(r["id"], dict(r))
+                            flat["artist_name"] = (flat.get("artists") or {}).get("display_name", "")
                             results.append(flat)
                     else:
                         results = res.data
@@ -81,11 +81,11 @@ async def search_artworks(
                 if res.data:
                     ids = [r["id"] for r in res.data if r.get("id")]
                     if ids:
-                        enriched = supabase.table("artwork").select("id, artists(display_name)").in_("id", ids).execute()
-                        name_map = {e["id"]: (e.get("artists") or {}).get("display_name", "") for e in (enriched.data or [])}
+                        enriched = supabase.table("artwork").select("*, artists(display_name)").in_("id", ids).execute()
+                        enriched_dict = {e["id"]: dict(e) for e in (enriched.data or [])}
                         for r in res.data:
-                            flat = dict(r)
-                            flat["artist_name"] = name_map.get(r.get("id"), "")
+                            flat = enriched_dict.get(r["id"], dict(r))
+                            flat["artist_name"] = (flat.get("artists") or {}).get("display_name", "")
                             results.append(flat)
                     else:
                         results = res.data

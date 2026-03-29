@@ -11,10 +11,15 @@ router = APIRouter(prefix="/artists", tags=["ArtistProfile"])
 
 @router.get("/")
 async def get_all_artists():
-
     try:
-        res = supabase.table("artists").select("*").execute()
-        return res.data
+        # Fetch artworks for each artist to get the count
+        res = supabase.table("artists").select("*, artwork(id)").execute()
+        artists_data = res.data
+        for artist in artists_data:
+            artist["artworks_count"] = len(artist.get("artwork", []))
+            # Remove artwork list from response to save bandwidth
+            artist.pop("artwork", None)
+        return artists_data
     except Exception as e:
         print(f"Error fetching all artists: {e}")
         raise HTTPException(status_code=500, detail="Could not load artists")
