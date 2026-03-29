@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import ArtDisplayCard from "../components/Art-card";
 import Sidebar from "../components/Nav-bar";
 import Footer from "../components/Footer";
-// 1. FIXED IMPORT: We need artistProfileService for the dashboard data
 import { artistProfileService } from "../services/uploadApi"; 
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
@@ -49,10 +48,6 @@ const AlertIcon = ({ className }) => (
   </svg>
 );
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 2e1b79ff1d48aeb0093e7b1479676fa4910e59dd
 const getImageSrc = (image_url) => {
   if (!image_url) return null;
   if (Array.isArray(image_url)) return image_url[0] ?? null;
@@ -85,38 +80,44 @@ const deriveMetrics = (artworks) => {
   return { total, sold, totalRevenue, views, likes };
 };
 
+// ─── Skeleton & Metric Cards (dark-mode aware) ────────────────────────────────
 const SkeletonCard = () => (
-  <div className="bg-white border border-slate-200 rounded-lg p-4 animate-pulse">
-    <div className="bg-slate-200 rounded aspect-[3/4] mb-4" />
-    <div className="h-3 bg-slate-200 rounded w-1/2 mx-auto mb-2" />
-    <div className="h-4 bg-slate-200 rounded w-3/4 mx-auto mb-3" />
-    <div className="h-3 bg-slate-200 rounded w-1/3 mx-auto" />
+  <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg p-4 animate-pulse">
+    <div className="bg-slate-200 dark:bg-gray-700 rounded aspect-[3/4] mb-4" />
+    <div className="h-3 bg-slate-200 dark:bg-gray-700 rounded w-1/2 mx-auto mb-2" />
+    <div className="h-4 bg-slate-200 dark:bg-gray-700 rounded w-3/4 mx-auto mb-3" />
+    <div className="h-3 bg-slate-200 dark:bg-gray-700 rounded w-1/3 mx-auto" />
   </div>
 );
 
 const MetricCard = ({ label, value, badge, badgeClass, iconClass, Icon, loading, span2 }) => (
-  <div className={`bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow${span2 ? " col-span-2" : ""}`}>
+  <div className={`bg-white dark:bg-gray-800 p-5 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow${span2 ? " col-span-2" : ""}`}>
     <div className="flex items-center justify-between mb-3">
       <span className={`p-2 rounded-lg ${iconClass}`}>
         <Icon className="w-5 h-5" />
       </span>
       {loading ? (
-        <div className="h-6 w-14 bg-slate-200 rounded animate-pulse" />
+        <div className="h-6 w-14 bg-slate-200 dark:bg-gray-700 rounded animate-pulse" />
       ) : (
         <span className={`text-xs font-bold px-2.5 py-1 rounded ${badgeClass}`}>{badge}</span>
       )}
     </div>
-    <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">{label}</p>
+    <p className="text-slate-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">{label}</p>
     {loading ? (
-      <div className="h-8 w-24 bg-slate-200 rounded animate-pulse mt-1" />
+      <div className="h-8 w-24 bg-slate-200 dark:bg-gray-700 rounded animate-pulse mt-1" />
     ) : (
-      <h3 className="text-2xl font-bold mt-1 text-slate-900">{value}</h3>
+      <h3 className="text-2xl font-bold mt-1 text-slate-900 dark:text-white">{value}</h3>
     )}
   </div>
 );
 
+// ─── Main Component ───────────────────────────────────────────────────────────
 const ArtistDashboard = () => {
   const { userId } = useParams();
+
+  //  Dark mode state lives here so the whole page reacts to it
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const toggleTheme = () => setIsDarkMode((prev) => !prev);
 
   const [artworks, setArtworks] = useState([]);
   const [artist, setArtist] = useState(null);
@@ -126,11 +127,9 @@ const ArtistDashboard = () => {
   const [search,   setSearch]   = useState("");
 
   useEffect(() => {
-    // 2. FIXED: Removed 'if (!userId) return;' because the API uses the JWT token, not the URL param
     setLoading(true);
     setError(null);
 
-    // 3. FIXED: Changed from artworkService to artistProfileService
     artistProfileService
       .getdashboardData()
       .then((data) => {
@@ -143,7 +142,7 @@ const ArtistDashboard = () => {
       )
       .finally(() => setLoading(false));
 
-  }, []); // Run once on mount
+  }, []);
 
   const recentSales = useMemo(
     () =>
@@ -172,21 +171,25 @@ const ArtistDashboard = () => {
   const likes = statistics?.total_likes ?? deriveMetrics(artworks).likes;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-stone-50 font-sans">
-      <Sidebar />
+    // 🌙 Toggle the "dark" class on the root div — Tailwind dark: variants activate here
+    <div className={`flex h-screen overflow-hidden font-sans transition-colors duration-200 ${isDarkMode ? "dark bg-gray-950" : "bg-stone-50"}`}>
+      
+      {/* Pass isDarkMode + toggleTheme down to the Sidebar */}
+      <Sidebar isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="h-20 flex-shrink-0 bg-white border-b border-slate-200 flex items-center justify-between px-8 gap-6">
+        <header className="h-20 flex-shrink-0 bg-white dark:bg-gray-900 border-b border-slate-200 dark:border-gray-800 flex items-center justify-between px-8 gap-6 transition-colors duration-200">
           <div className="flex-shrink-0">
-            <h2 className="text-xl font-bold text-slate-900">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
               {artist ? `Good Morning, ${artist.name}!` : "Good Morning!"}
             </h2>
-            <p className="text-sm text-slate-500">Welcome back to your command center.</p>
+            <p className="text-sm text-slate-500 dark:text-gray-400">Welcome back to your command center.</p>
           </div>
           {artist && (
             <img
               src={artist.profileImageUrl}
               alt={artist.name}
-              className="w-12 h-12 rounded-full object-cover border border-slate-200"
+              className="w-12 h-12 rounded-full object-cover border border-slate-200 dark:border-gray-700"
             />
           )}
 
@@ -198,12 +201,12 @@ const ArtistDashboard = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search your inventory..."
-                className="pl-9 pr-8 py-2.5 bg-slate-100 border-none rounded-lg focus:ring-2 focus:ring-amber-400 w-72 text-sm outline-none transition-all placeholder:text-slate-400"
+                className="pl-9 pr-8 py-2.5 bg-slate-100 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500 border-none rounded-lg focus:ring-2 focus:ring-amber-400 w-72 text-sm outline-none transition-all placeholder:text-slate-400"
               />
               {search && (
                 <button
                   onClick={() => setSearch("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-gray-200 text-xs font-bold"
                 >
                   ✕
                 </button>
@@ -272,10 +275,10 @@ const ArtistDashboard = () => {
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
               <div className="xl:col-span-2 space-y-4">
-                <h3 className="text-xl font-bold text-slate-900">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                   Active Artworks
                   {!loading && search && (
-                    <span className="ml-2 text-sm font-normal text-slate-400">
+                    <span className="ml-2 text-sm font-normal text-slate-400 dark:text-gray-500">
                       — {filtered.length} result{filtered.length !== 1 ? "s" : ""} for &ldquo;{search}&rdquo;
                     </span>
                   )}
@@ -288,20 +291,20 @@ const ArtistDashboard = () => {
                 )}
 
                 {!loading && error && (
-                  <div className="bg-red-50 border border-red-200 rounded-xl p-8 flex items-center gap-4">
+                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-8 flex items-center gap-4">
                     <AlertIcon className="w-8 h-8 text-red-400 flex-shrink-0" />
                     <div>
-                      <p className="text-red-700 font-semibold">Failed to load artworks</p>
-                      <p className="text-red-500 text-sm mt-0.5">{error}</p>
+                      <p className="text-red-700 dark:text-red-400 font-semibold">Failed to load artworks</p>
+                      <p className="text-red-500 dark:text-red-500 text-sm mt-0.5">{error}</p>
                     </div>
                   </div>
                 )}
 
                 {!loading && !error && filtered.length === 0 && search && (
-                  <div className="bg-white border border-slate-200 rounded-xl p-14 flex flex-col items-center text-center">
-                    <SearchIcon className="w-12 h-12 text-slate-200 mb-4" />
-                    <p className="text-slate-600 font-semibold">No artworks match &ldquo;{search}&rdquo;</p>
-                    <p className="text-slate-400 text-sm mt-1">Try searching by title, medium, or status</p>
+                  <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl p-14 flex flex-col items-center text-center">
+                    <SearchIcon className="w-12 h-12 text-slate-200 dark:text-gray-600 mb-4" />
+                    <p className="text-slate-600 dark:text-gray-300 font-semibold">No artworks match &ldquo;{search}&rdquo;</p>
+                    <p className="text-slate-400 dark:text-gray-500 text-sm mt-1">Try searching by title, medium, or status</p>
                     <button
                       onClick={() => setSearch("")}
                       className="mt-4 text-amber-500 text-sm font-bold hover:text-amber-600 transition-colors"
@@ -312,10 +315,10 @@ const ArtistDashboard = () => {
                 )}
 
                 {!loading && !error && artworks.length === 0 && !search && (
-                  <div className="bg-white border border-dashed border-slate-300 rounded-xl p-14 flex flex-col items-center text-center">
-                    <BrushIcon className="w-12 h-12 text-slate-200 mb-4" />
-                    <p className="text-slate-600 font-semibold">No artworks yet</p>
-                    <p className="text-slate-400 text-sm mt-1">Upload your first artwork to get started</p>
+                  <div className="bg-white dark:bg-gray-800 border border-dashed border-slate-300 dark:border-gray-600 rounded-xl p-14 flex flex-col items-center text-center">
+                    <BrushIcon className="w-12 h-12 text-slate-200 dark:text-gray-600 mb-4" />
+                    <p className="text-slate-600 dark:text-gray-300 font-semibold">No artworks yet</p>
+                    <p className="text-slate-400 dark:text-gray-500 text-sm mt-1">Upload your first artwork to get started</p>
                     <a
                       href="/dashboard/upload"
                       className="mt-4 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold px-4 py-2 rounded-lg text-sm transition-colors"
@@ -331,12 +334,12 @@ const ArtistDashboard = () => {
                       const { image, formData } = toCardProps(art);
                       return (
                         <div
-                    key={art.id}
-                    onClick={() => handleArtworkClick(art.id)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <ArtDisplayCard image={image} formData={formData} />
-                  </div>
+                          key={art.id}
+                          onClick={() => handleArtworkClick(art.id)}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <ArtDisplayCard image={image} formData={formData} />
+                        </div>
                       );
                     })}
                   </div>
@@ -344,47 +347,47 @@ const ArtistDashboard = () => {
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-xl font-bold text-slate-900">Recent Sales</h3>
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm divide-y divide-slate-100">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Recent Sales</h3>
+                <div className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-700 shadow-sm divide-y divide-slate-100 dark:divide-gray-700">
 
                   {loading && [1, 2, 3].map((i) => (
                     <div key={i} className="p-4 flex items-center gap-4 animate-pulse">
-                      <div className="w-12 h-12 rounded-lg bg-slate-200 flex-shrink-0" />
+                      <div className="w-12 h-12 rounded-lg bg-slate-200 dark:bg-gray-700 flex-shrink-0" />
                       <div className="flex-1 space-y-2">
-                        <div className="h-3 bg-slate-200 rounded w-3/4" />
-                        <div className="h-3 bg-slate-200 rounded w-1/2" />
+                        <div className="h-3 bg-slate-200 dark:bg-gray-700 rounded w-3/4" />
+                        <div className="h-3 bg-slate-200 dark:bg-gray-700 rounded w-1/2" />
                       </div>
                       <div className="space-y-2">
-                        <div className="h-3 bg-slate-200 rounded w-14" />
-                        <div className="h-2 bg-slate-200 rounded w-10 ml-auto" />
+                        <div className="h-3 bg-slate-200 dark:bg-gray-700 rounded w-14" />
+                        <div className="h-2 bg-slate-200 dark:bg-gray-700 rounded w-10 ml-auto" />
                       </div>
                     </div>
                   ))}
 
                   {!loading && recentSales.length === 0 && (
                     <div className="p-8 text-center">
-                      <p className="text-slate-400 text-sm">No sales yet</p>
+                      <p className="text-slate-400 dark:text-gray-500 text-sm">No sales yet</p>
                     </div>
                   )}
 
                   {!loading && recentSales.map((art) => {
                     const imgSrc = getImageSrc(art.image_url);
                     return (
-                      <div key={art.id} className="p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors">
+                      <div key={art.id} className="p-4 flex items-center gap-4 hover:bg-slate-50 dark:hover:bg-gray-700/50 transition-colors">
                         <img
-                          className="w-12 h-12 rounded-lg object-cover bg-slate-100 flex-shrink-0"
+                          className="w-12 h-12 rounded-lg object-cover bg-slate-100 dark:bg-gray-700 flex-shrink-0"
                           src={imgSrc}
                           alt={art.title}
                         />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold truncate text-slate-900">{art.title}</p>
-                          <p className="text-xs text-slate-500">
+                          <p className="text-sm font-bold truncate text-slate-900 dark:text-white">{art.title}</p>
+                          <p className="text-xs text-slate-500 dark:text-gray-400">
                             {art.buyer_name ? `${art.buyer_name} • ` : ""}
                             {art.sold_at ? new Date(art.sold_at).toLocaleDateString() : ""}
                           </p>
                         </div>
                         <div className="text-right flex-shrink-0">
-                          <p className="text-sm font-bold text-slate-900">
+                          <p className="text-sm font-bold text-slate-900 dark:text-white">
                             LKR {parseInt(art.price ?? 0).toLocaleString()}
                           </p>
                           <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">
