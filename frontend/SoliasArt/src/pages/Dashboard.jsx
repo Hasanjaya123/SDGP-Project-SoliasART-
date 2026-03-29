@@ -399,11 +399,6 @@ const ArtistDashboard = () => {
               </div>
 
             </div>
-<<<<<<< HEAD
-
-            {/* ── Footer*/}
-=======
->>>>>>> 2e1b79ff1d48aeb0093e7b1479676fa4910e59dd
             <Footer />
           </div>
         </div>
