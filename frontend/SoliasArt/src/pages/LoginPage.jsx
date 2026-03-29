@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FcGoogle } from 'react-icons/fc'; // Icon for the Google button
+import { FiEye, FiEyeOff } from 'react-icons/fi'; // Icon for password visibility
 import { useNavigate } from 'react-router-dom'; // for navigation
 import { api } from '../services/uploadApi';
 
@@ -18,6 +19,9 @@ const LoginPage = () => {
 
   // State for tracking API request loading status
   const [loading, setLoading] = useState(false);
+
+  // State for toggling password visibility
+  const [showPassword, setShowPassword] = useState(false);
 
   // State for storing and displaying error messages
   const [error, setError] = useState(null);
@@ -110,16 +114,26 @@ const LoginPage = () => {
                         Forgot Password?
                         </a>
                     </div>
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        className={inputClass}
-                        value={formData.password}
-                        onChange={handleChange}
-                        autoComplete="current-password"
-                        required
-                    />
+                    <div className="relative">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            name="password"
+                            placeholder="Password"
+                            className={`${inputClass} pr-12`}
+                            value={formData.password}
+                            onChange={handleChange}
+                            autoComplete="current-password"
+                            required
+                        />
+                        <div
+                            role="button"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
+                            onClick={() => setShowPassword(!showPassword)}
+                            tabIndex="-1"
+                        >
+                            {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                        </div>
+                    </div>
                     </div>
 
                     {/* "Remember for 30 days" Checkbox */}

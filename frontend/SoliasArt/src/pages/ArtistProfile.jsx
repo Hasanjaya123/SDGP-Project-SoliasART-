@@ -119,8 +119,8 @@ const CreatePostModal = ({ artist, artistId, onClose, onPostCreated }) => {
             <label
               htmlFor="post-image-input"
               className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium transition-colors ${selectedImage
-                  ? 'bg-[#FFC247]/20 text-[#b8860b] dark:text-[#FFC247]'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-700 dark:hover:text-slate-200'
+                ? 'bg-[#FFC247]/20 text-[#b8860b] dark:text-[#FFC247]'
+                : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-700 dark:hover:text-slate-200'
                 }`}
             >
               <span className="material-symbols-outlined text-[20px]">image</span>
@@ -292,7 +292,7 @@ export const ArtistProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  
+
   useEffect(() => {
 
     const token = localStorage.getItem('token');
@@ -433,8 +433,8 @@ export const ArtistProfilePage = () => {
                 onClick={handleFollowClick}
                 disabled={isFollowLoading}
                 className={`font-bold text-sm px-6 py-2 rounded-full shadow-sm transition-colors disabled:opacity-50 ${isFollowing
-                    ? 'bg-slate-200 dark:bg-zinc-800 text-slate-800 dark:text-white'
-                    : 'bg-[#FFC247] text-slate-900 hover:bg-yellow-400'
+                  ? 'bg-slate-200 dark:bg-zinc-800 text-slate-800 dark:text-white'
+                  : 'bg-[#FFC247] text-slate-900 hover:bg-yellow-400'
                   }`}
               >
                 {isFollowLoading ? '...' : (isFollowing ? 'Unfollow' : 'Follow')}
@@ -506,8 +506,8 @@ export const ArtistProfilePage = () => {
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`pb-3 border-b-2 text-sm font-bold transition-colors capitalize ${activeTab === tab
-                      ? 'border-slate-900 dark:border-white text-slate-900 dark:text-white'
-                      : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                    ? 'border-slate-900 dark:border-white text-slate-900 dark:text-white'
+                    : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                     }`}
                 >
                   {tab}

@@ -17,6 +17,7 @@ import ArtSearch from './pages/ArtSearch.jsx';
 import React, { useState, useEffect } from 'react';
 import ArtistDashboard from './pages/Dashboard.jsx';
 import CommissionRequestsPage from './pages/CommissionRequestsPage.jsx';
+import FeedPage from './pages/FeedPage.jsx';
 
 import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
@@ -111,6 +112,7 @@ function App() {
         <Route element={<Layout />}>
           {/* Artwork details page */}
           <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
+          <Route path="/feed" element={<FeedPage />} />
           <Route path="/search" element={<ArtSearch />} />
           <Route path="/artist-search" element={<ArtistSearch />} />
           <Route path="/artist/profile" element={<ArtistProfilePage />} />

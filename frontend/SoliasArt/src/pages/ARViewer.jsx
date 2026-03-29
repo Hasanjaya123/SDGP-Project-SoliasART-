@@ -55,7 +55,6 @@ export default function ARViewer() {
 
     try {
       await api.get(`/ar/generate-ar/${id}`, {
-        headers: { "ngrok-skip-browser-warning": "true" },
         responseType: "blob"
       });
 

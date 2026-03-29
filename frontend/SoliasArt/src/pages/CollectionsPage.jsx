@@ -8,8 +8,14 @@ const CollectionsPage = ({ setCurrentPage }) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const data = await artworkService.getArtWorks();
-            setArtworks(data);
+            try {
+                const data = await artworkService.getArtWorks();
+                const artworksArray = Array.isArray(data) ? data : (data?.cards || []);
+                setArtworks(artworksArray);
+            } catch (error) {
+                console.error("Error fetching artworks:", error);
+                setArtworks([]);
+            }
         };
 
         fetchData();
