@@ -9,6 +9,16 @@ from app.modules.ArtistProfile.model import Follow
 
 router = APIRouter(prefix="/artists", tags=["ArtistProfile"])
 
+@router.get("/")
+async def get_all_artists():
+
+    try:
+        res = supabase.table("artists").select("*").execute()
+        return res.data
+    except Exception as e:
+        print(f"Error fetching all artists: {e}")
+        raise HTTPException(status_code=500, detail="Could not load artists")
+
 @router.get("/profile")
 async def get_full_artist_profile(
     current_user: str = Depends(get_current_artist)
