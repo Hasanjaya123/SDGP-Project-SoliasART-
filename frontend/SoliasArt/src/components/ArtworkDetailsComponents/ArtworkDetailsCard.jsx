@@ -54,16 +54,15 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick, onSaveC
   setIsProcessing(true);
 
   try {
-    // IMPORTANT: Backend expects a List[str] called 'artwork_ids'
-    // We wrap the single ID in an array to satisfy the backend model
+    // Call backend to get payment details for this artwork
     const paymentData = await paymentService.initiatePayment([String(artwork.id)]);
 
-    // Log this to your console to verify the flat structure
+    // Log the received payment data for debugging
     console.log("Payment Data Received:", paymentData);
 
-    // Since the backend model you showed is FLAT, access properties directly
+    // Map the backend response to PayHere's expected format
     const payment = {
-      sandbox: true, // Keep true for testing
+      sandbox: true, // true for testing
       merchant_id: paymentData.merchant_id,
       return_url: paymentData.return_url,
       cancel_url: paymentData.cancel_url,
