@@ -25,6 +25,7 @@ class FeedCard(BaseModel):
     price: Optional[Decimal] = None
     medium: Optional[str] = None
     is_framed: Optional[bool] = None
+    status: Optional[str] = "available"
 
 class FeedResponse(BaseModel):
     cards : list[FeedCard]
