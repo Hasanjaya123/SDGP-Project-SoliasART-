@@ -32,9 +32,14 @@ async def search_artworks(
         # For text search - do simple keyword matching first
         if query_text:
             print(f"Text search for: {query_text}")
-            search_results = supabase.table("artwork").select("*").ilike("title", f"%{query_text}%").execute()
+            search_results = supabase.table("artwork").select("*, artists(display_name)").ilike("title", f"%{query_text}%").execute()
             if search_results.data:
-                return {"status": "success", "results": search_results.data}
+                results = []
+                for item in search_results.data:
+                    flat = dict(item)
+                    flat["artist_name"] = (item.get("artists") or {}).get("display_name", "")
+                    results.append(flat)
+                return {"status": "success", "results": results}
             
             # If no results, try vector search
             try:
@@ -44,7 +49,20 @@ async def search_artworks(
                     "match_threshold": 0.20,
                     "match_count": 12
                 }).execute()
-                return {"status": "success", "results": res.data if res.data else []}
+                # Enrich RPC results with artist name
+                results = []
+                if res.data:
+                    ids = [r["id"] for r in res.data if r.get("id")]
+                    if ids:
+                        enriched = supabase.table("artwork").select("id, artists(display_name)").in_("id", ids).execute()
+                        name_map = {e["id"]: (e.get("artists") or {}).get("display_name", "") for e in (enriched.data or [])}
+                        for r in res.data:
+                            flat = dict(r)
+                            flat["artist_name"] = name_map.get(r.get("id"), "")
+                            results.append(flat)
+                    else:
+                        results = res.data
+                return {"status": "success", "results": results}
             except Exception as rpc_error:
                 print(f"Vector search failed: {rpc_error}")
                 return {"status": "success", "results": []}
@@ -58,7 +76,20 @@ async def search_artworks(
                     "match_threshold": 0.20,
                     "match_count": 12
                 }).execute()
-                return {"status": "success", "results": res.data if res.data else []}
+                # Enrich with artist name
+                results = []
+                if res.data:
+                    ids = [r["id"] for r in res.data if r.get("id")]
+                    if ids:
+                        enriched = supabase.table("artwork").select("id, artists(display_name)").in_("id", ids).execute()
+                        name_map = {e["id"]: (e.get("artists") or {}).get("display_name", "") for e in (enriched.data or [])}
+                        for r in res.data:
+                            flat = dict(r)
+                            flat["artist_name"] = name_map.get(r.get("id"), "")
+                            results.append(flat)
+                    else:
+                        results = res.data
+                return {"status": "success", "results": results}
             except Exception as e:
                 print(f"Image search failed: {e}")
                 return {"status": "success", "results": []}
@@ -76,7 +107,10 @@ async def get_art_work(
 ):
     try:
         offset = (page - 1) * limit
-        get_artwork = supabase.table("artwork").select("*").range(offset, offset + limit - 1).execute()
+        get_artwork = supabase.table("artwork").select("*, artists(display_name)").range(offset, offset + limit - 1).execute()
+        # Flatten artist name into each artwork
+        for item in (get_artwork.data or []):
+            item["artist_name"] = (item.get("artists") or {}).get("display_name", "")
         
         try:
             count_result = supabase.table("artwork").select("id", count="exact").execute()
