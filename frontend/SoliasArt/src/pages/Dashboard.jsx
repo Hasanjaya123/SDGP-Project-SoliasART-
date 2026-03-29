@@ -92,7 +92,7 @@ const SkeletonCard = () => (
 );
 
 const MetricCard = ({ label, value, badge, badgeClass, iconClass, Icon, loading, span2 }) => (
-  <div className={`bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow${span2 ? " col-span-2" : ""}`}>
+  <div className={`bg-white dark:bg-gray-800 p-5 rounded-xl border border-slate-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-all${span2 ? " col-span-2" : ""}`}>
     <div className="flex items-center justify-between mb-3">
       <span className={`p-2 rounded-lg ${iconClass}`}>
         <Icon className="w-5 h-5" />
@@ -107,7 +107,7 @@ const MetricCard = ({ label, value, badge, badgeClass, iconClass, Icon, loading,
     {loading ? (
       <div className="h-8 w-24 bg-slate-200 rounded animate-pulse mt-1" />
     ) : (
-      <h3 className="text-2xl font-bold mt-1 text-slate-900">{value}</h3>
+      <h3 className="text-2xl font-bold mt-1 text-slate-900 dark:text-white">{value}</h3>
     )}
   </div>
 );
@@ -161,69 +161,69 @@ const ArtistDashboard = () => {
   const likes = statistics?.total_likes ?? deriveMetrics(artworks).likes;
 
   return (
-    <div className="flex flex-col min-h-full bg-stone-50 font-sans">
-      <header className="h-20 flex-shrink-0 bg-white border-b border-slate-200 flex items-center justify-between px-8 gap-6 sticky top-0 z-10">
-        <div className="flex-shrink-0">
-          <h2 className="text-xl font-bold text-slate-900">
-            {artist ? `Good Morning, ${artist.name}!` : "Good Morning!"}
-          </h2>
-          <p className="text-sm text-slate-500">Welcome back to your command center.</p>
-        </div>
-        {artist && (
-          <img
-            src={artist.profileImageUrl}
-            alt={artist.name}
-            className="w-12 h-12 rounded-full object-cover border border-slate-200"
-          />
-        )}
+    <div className="flex flex-col min-h-full bg-stone-50 font-sans dark:bg-gray-900 transition-colors">
+      <header className="min-h-[5rem] py-3 lg:py-0 lg:h-20 flex-shrink-0 bg-white dark:bg-gray-900 border-b border-slate-200 dark:border-gray-800 flex flex-wrap lg:flex-nowrap items-center justify-between px-4 lg:px-8 gap-4 sticky top-0 z-50 transition-all">
+  
+  {/* Left Section: Welcome Message & Avatar */}
+  <div className="flex items-center gap-3">
+    {artist && (
+      <img
+        src={artist.profileImageUrl}
+        alt={artist.name}
+        className="w-10 h-10 lg:w-12 lg:h-12 rounded-full object-cover border border-slate-200 dark:border-gray-700 shadow-sm"
+      />
+    )}
+    <div className="flex-shrink-0">
+      <h2 className="text-base lg:text-xl font-bold text-slate-900 dark:text-white truncate max-w-[120px] sm:max-w-none">
+        {artist ? `Hi, ${artist.name.split(' ')[0]}!` : "Good Morning!"}
+      </h2>
+      <p className="text-[10px] lg:text-sm text-slate-500 dark:text-gray-400 font-medium">Command Center</p>
+    </div>
+  </div>
 
-        <div className="flex items-center gap-4 ml-auto">
-          <div className="relative hidden lg:block">
-            <SearchIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search your inventory..."
-              className="pl-9 pr-8 py-2.5 bg-slate-100 border-none rounded-lg focus:ring-2 focus:ring-amber-400 w-72 text-sm outline-none transition-all placeholder:text-slate-400"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
-              >
-                ✕
-              </button>
-            )}
-          </div>
+  {/* Center Section: Search Bar (Hidden on mobile, appears on larger screens) */}
+  <div className="relative hidden md:block flex-1 max-w-xs lg:max-w-md mx-2">
+    <SearchIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+    <input
+      type="text"
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      placeholder="Search inventory..."
+      className="w-full pl-9 pr-8 py-2 bg-slate-100 dark:bg-gray-800 border-none rounded-lg focus:ring-2 focus:ring-amber-400 text-sm outline-none transition-all dark:text-white placeholder:text-slate-400"
+    />
+  </div>
 
-          <a
-            href="/dashboard/commissions"
-            className="border-2 border-amber-400 text-amber-600 hover:bg-amber-50 active:scale-95 font-bold px-5 py-2 rounded-lg flex items-center gap-2 transition-all text-sm whitespace-nowrap"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-            See Commissions
-          </a>
+  {/* Right Section: Actions */}
+  <div className="flex items-center gap-2 lg:gap-4 ml-auto">
+    <a
+      href="/dashboard/commissions"
+      className="border-2 border-amber-400 text-amber-600 hover:bg-amber-50 active:scale-95 font-bold p-2 lg:px-5 lg:py-2 rounded-lg flex items-center gap-2 transition-all text-sm whitespace-nowrap"
+      title="See Commissions"
+    >
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+      <span className="hidden sm:inline">Commissions</span>
+    </a>
 
-          <a
-            href="/dashboard/upload"
-            className="bg-amber-400 hover:bg-amber-500 active:scale-95 text-slate-900 font-bold px-5 py-2.5 rounded-lg flex items-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap"
-          >
-            <PlusCircleIcon className="w-4 h-4" />
-            Upload New Artwork
-          </a>
-        </div>
-      </header>
+    <a
+      href="/dashboard/upload"
+      className="bg-amber-400 hover:bg-amber-500 active:scale-95 text-slate-900 font-bold p-2 lg:px-5 lg:py-2.5 rounded-lg flex items-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap"
+      title="Upload New"
+    >
+      <PlusCircleIcon className="w-5 h-5 dark:text-amber-900" />
+      <span className="hidden sm:inline dark:text-amber-900">Upload Artwork</span>
+    </a>
+  </div>
+</header>
 
       <div className="flex-1 p-8">
         <div className="max-w-[1400px] mx-auto space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
             <MetricCard
               label="Total Revenue"
               value={`LKR ${totalRevenue.toLocaleString()}`}
-              badge={`+12.5%`}
+              badge={``}
               badgeClass="text-emerald-600 bg-emerald-50"
               iconClass="bg-emerald-50 text-emerald-600"
               Icon={TrendUpIcon}
@@ -269,7 +269,7 @@ const ArtistDashboard = () => {
 
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
             <div className="xl:col-span-2 space-y-4">
-              <h3 className="text-xl font-bold text-slate-900">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 Active Artworks
                 {!loading && search && (
                   <span className="ml-2 text-sm font-normal text-slate-400">
@@ -341,8 +341,8 @@ const ArtistDashboard = () => {
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-slate-900">Recent Sales</h3>
-              <div className="bg-white rounded-xl border border-slate-200 shadow-sm divide-y divide-slate-100">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">Recent Sales</h3>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-gray-600 shadow-sm divide-y divide-gray-200 dark:divide-gray-600">
 
                 {loading && [1, 2, 3].map((i) => (
                   <div key={i} className="p-4 flex items-center gap-4 animate-pulse">
@@ -367,21 +367,21 @@ const ArtistDashboard = () => {
                 {!loading && recentSales.map((art) => {
                   const imgSrc = getImageSrc(art.image_url);
                   return (
-                    <div key={art.id} className="p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors">
+                    <div key={art.id} className="p-4 flex items-center gap-4 transition-colors">
                       <img
                         className="w-12 h-12 rounded-lg object-cover bg-slate-100 flex-shrink-0"
                         src={imgSrc}
                         alt={art.title}
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold truncate text-slate-900">{art.title}</p>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-sm font-bold truncate text-slate-900 dark:text-white">{art.title}</p>
+                        <p className="text-xs text-slate-500 dark:text-gray-400">
                           {art.buyer_name ? `${art.buyer_name} • ` : ""}
                           {art.sold_at ? new Date(art.sold_at).toLocaleDateString() : ""}
                         </p>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <p className="text-sm font-bold text-slate-900">
+                        <p className="text-sm font-bold text-slate-900 dark:text-white">
                           LKR {parseInt(art.price ?? 0).toLocaleString()}
                         </p>
                         <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">

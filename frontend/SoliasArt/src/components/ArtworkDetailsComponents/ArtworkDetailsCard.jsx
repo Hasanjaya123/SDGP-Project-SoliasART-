@@ -8,10 +8,13 @@ import { FaHeart, FaBookmark } from 'react-icons/fa';
 import { MdOutlineViewInAr } from 'react-icons/md';
 
 const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick, onSaveClick, isSaved }) => {
+
+  console.log("This is the artwork object data:", artwork);
   const [likesCount, setLikesCount] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const isSold = artwork?.status?.toLowerCase() === 'sold';
 
   // Initialize the navigation hook
   const navigate = useNavigate(); 
@@ -115,7 +118,7 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick, onSaveC
 };
 
   return (
-    <div className="flex flex-col h-full animate-fade-in-up">
+    <div className="flex flex-col h-full animate-fade-in-up dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
       
       {/* Category */}
       <div className="mb-3">
@@ -171,8 +174,8 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick, onSaveC
       </div>
 
       {/* Price */}
-      <div className="mb-8 flex flex-col gap-1">
-        <span className="text-xs text-gray-900 uppercase font-bold tracking-wide">Price</span>
+      <div className={`mb-8 flex flex-col gap-1 transition-all ${isSold ? 'opacity-50 blur-[2px] pointer-events-none' : ''}`}>
+        <span className="text-xs text-gray-900 dark:text-white uppercase font-bold tracking-wide">Price</span>
         <p className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
           LKR {artwork.price.toLocaleString()}
         </p>
@@ -180,28 +183,35 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick, onSaveC
 
       {/* Buttons */}
       <div className="space-y-3 mt-auto">
-        <div className="grid grid-cols-2 gap-3">
-            
-            {/*Add to Cart button */}
+        {!isSold ? (
+          <div className="grid grid-cols-2 gap-3">
+            {/* Add to Cart button */}
             <button 
               onClick={handleAddToCart} 
               disabled={isAddingToCart}
               className={`w-full py-3.5 text-white font-bold text-sm rounded-lg shadow-sm transition-all focus:!outline-none 
-                ${isAddingToCart ? 'bg-amber-500 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600 hover:!border-gray-200 dark:hover:!border-gray-800'}`}
+                ${isAddingToCart ? 'bg-amber-500 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600'}`}
             >
                 {isAddingToCart ? 'Adding...' : 'Add to Cart'}
             </button>
             
-            {/*Buy Now button */}
+            {/* Buy Now button */}
             <button 
               onClick={handleBuyNow} 
               disabled={isProcessing}
               className={`w-full py-3.5 text-white font-bold text-sm rounded-lg shadow-sm transition-all focus:!outline-none 
-                ${isProcessing ? 'bg-[#153654] cursor-not-allowed' : 'bg-[#153654] hover:bg-[#0F263B] hover:!border-gray-200 dark:hover:!border-gray-800'}`}
+                ${isProcessing ? 'bg-[#153654] cursor-not-allowed' : 'bg-[#153654] hover:bg-[#0F263B]'}`}
             >
                 {isProcessing ? 'Processing...' : 'Buy Now'}
             </button>
-        </div>
+          </div>
+        ) : (
+          /* Placeholder when sold to keep layout consistent, or you can leave it empty */
+          <div className="w-full py-3.5 bg-gray-200 dark:bg-gray-500 text-red-600 dark:text-red-400 text-center font-bold text-lg rounded-lg cursor-not-allowed">
+            Artwork Sold
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-3">
             
             {/*Save button */}
