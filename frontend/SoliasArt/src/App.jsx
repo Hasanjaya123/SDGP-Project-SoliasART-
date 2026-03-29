@@ -72,18 +72,6 @@ function ArtistGuard({ children }) {
 }
 
 
-<<<<<<< HEAD
-
-
-
-
-
-
-
-
-
-=======
->>>>>>> 1dfabeb6c44e1bcd6be6a0ca5a376667ea739fdb
 function App() {
 
   return (
