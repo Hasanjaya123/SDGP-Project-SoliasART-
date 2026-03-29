@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { FcGoogle } from 'react-icons/fc';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/uploadApi';
@@ -139,19 +138,6 @@ const LoginPage = () => {
                     </button>
                 </form>
 
-                <div className="relative my-6 flex items-center">
-                    <div className="flex-grow border-t border-gray-200"></div>
-                    <span className="mx-4 text-sm text-gray-400">Or</span>
-                    <div className="flex-grow border-t border-gray-200"></div>
-                </div>
-
-                <button
-                    type="button"
-                    className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
-                >
-                    <FcGoogle className="text-xl" />
-                    Sign in with Google
-                </button>
 
                 <p className="mt-8 text-center text-sm text-gray-600">
                     Don't have an account?{' '}
