@@ -1,4 +1,4 @@
-﻿from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.modules.ArtUpload.router import router as art_upload_router
@@ -30,7 +30,7 @@ app = FastAPI(title=settings.PROJECT_NAME)
 Base.metadata.create_all(bind=engine)
 
 
-origins = ["http://localhost:5173", "https://sdgp-project-974eghwb1-sdgp-team.vercel.app", "https://soliasart.com", "https://www.soliasart.com", "http://192.168.8.105:5173", "http://192.168.8.105:8000"]
+origins = ["http://localhost:5173", "https://sdgp-project-974eghwb1-sdgp-team.vercel.app", "https://soliasart.com", "https://www.soliasart.com", "http://192.168.8.102:5173", "http://192.168.8.102:8000"]
 
 
 app.add_middleware(
@@ -63,6 +63,5 @@ app.include_router(artwork_router, prefix="/api/artworks", tags=["Artwork"])
 app.include_router(purchase_router, prefix="/api", tags=["Purchase"])
 app.include_router(dashboard_router)
 app.include_router(payhere_router, prefix="/payhere", tags=["PayHere"])
-app.include_router(commission_router)
-
+app.include_router(commission_router, prefix="/commissions", tags=["Commissions"])
 
