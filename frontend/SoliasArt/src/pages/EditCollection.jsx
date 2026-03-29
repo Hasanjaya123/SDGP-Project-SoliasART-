@@ -192,7 +192,7 @@ const EditCollection = () => {
                         {artworks.length === 0 ? (
                             <div className="text-center py-20 bg-gray-50 dark:bg-gray-900 rounded-3xl border-2 border-dashed border-gray-200 dark:border-gray-800">
                                 <p className="text-gray-400">You haven't uploaded any artworks yet.</p>
-                                <button onClick={() => navigate('/upload')} className="text-amber-500 font-bold mt-2">Upload Now</button>
+                                <button onClick={() => navigate('/dashboard/upload')} className="text-amber-500 font-bold mt-2">Upload Now</button>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
