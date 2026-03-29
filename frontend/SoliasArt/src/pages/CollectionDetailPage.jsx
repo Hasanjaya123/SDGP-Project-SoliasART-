@@ -1,28 +1,61 @@
-import React, { useState } from 'react';
-import { collections } from '../data/mockData';
-import { artworkService } from '../services/uploadApi';
-import { ArtworkCard } from './ArtworkCard';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { collectionService } from '../services/uploadApi';
+import ArtDisplayCard from '../components/Art-card';
 import { Heart, Eye, ShoppingCart, ArrowLeft } from 'lucide-react';
 
 export const CollectionDetailPage = ({
-  collectionId,
-  artworks: allArtworks,
+  collectionId: propCollectionId,
   setCurrentPage,
   onToggleSave,
   savedItemIds,
   onAddToCartBatch
 }) => {
+  const { id } = useParams();
+  const collectionId = propCollectionId || id;
+  const navigate = useNavigate();
   const [likes, setLikes] = useState({});
+  const [collection, setCollection] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Find the specific collection based on the passed ID
-  const collection = collections.find(c => c.id === collectionId);
+  useEffect(() => {
+    const fetchCollection = async () => {
+      try {
+        const data = await collectionService.getCollectionById(collectionId);
+        setCollection(data);
+      } catch (error) {
+        console.error("Failed to fetch collection details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (collectionId) {
+      fetchCollection();
+    }
+  }, [collectionId]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center flex-col items-center py-20 min-h-[50vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-600 mb-4"></div>
+        <p className="text-gray-500">Loading collection...</p>
+      </div>
+    );
+  }
 
   if (!collection) {
     return (
       <div className="text-center py-20">
         <p className="text-gray-500 dark:text-gray-400 mb-6 text-xl">Collection not found</p>
         <button
-          onClick={() => setCurrentPage('collections')}
+          onClick={() => {
+            if (setCurrentPage) {
+              setCurrentPage('collections');
+            } else {
+              navigate('/collections');
+            }
+          }}
           className="px-6 py-2 bg-amber-600 text-white rounded-full hover:bg-amber-700 transition-colors"
         >
           Back to Collections
@@ -42,11 +75,17 @@ export const CollectionDetailPage = ({
   };
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="max-w-6xl mx-auto px-4 md:px-6 py-12 min-h-screen pb-20">
       {/* Back Button */}
       <div className="mb-8">
         <button
-          onClick={() => setCurrentPage('collections')}
+          onClick={() => {
+            if (setCurrentPage) {
+              setCurrentPage('collections');
+            } else {
+              navigate(-1);
+            }
+          }}
           className="text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-semibold flex items-center gap-2 group transition-all"
         >
           <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
@@ -57,7 +96,7 @@ export const CollectionDetailPage = ({
       {/* Hero Header Section */}
       <div className="relative h-80 md:h-[400px] rounded-2xl overflow-hidden shadow-2xl mb-12">
         <img
-          src={collection.coverImageUrl || (artworks[0]?.imageUrls[0])}
+          src={artworks?.[0]?.image_url?.[0] || "https://images.unsplash.com/photo-1541451373351-40344b4bde5a?auto=format&fit=crop&q=80&w=800"}
           alt={collection.name}
           className="w-full h-full object-cover"
         />
@@ -73,18 +112,12 @@ export const CollectionDetailPage = ({
                 <h1 className="text-4xl md:text-6xl font-bold mb-2 tracking-tight">{collection.name}</h1>
                 <p className="text-amber-400 font-semibold text-lg flex items-center gap-2">
                   <span className="w-8 h-[2px] bg-amber-400"></span>
-                  Curated by {collection.curator}
+                  Curated by {collection.curator || "Solias ART"}
                 </p>
               </div>
 
               <div className="flex gap-4">
-                <button
-                  onClick={() => onAddToCartBatch(artworks)}
-                  className="px-8 py-3 bg-white text-gray-900 font-bold rounded-full hover:bg-gray-100 transition-colors flex items-center gap-2 shadow-lg"
-                >
-                  <ShoppingCart size={20} />
-                  Buy Entire Collection
-                </button>
+                
               </div>
             </div>
           </div>
@@ -92,7 +125,7 @@ export const CollectionDetailPage = ({
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-14">
 
         {/* Left Column - About Section & Artworks */}
         <div className="lg:col-span-2 space-y-12">
@@ -102,7 +135,7 @@ export const CollectionDetailPage = ({
               About the Collection
             </h2>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
-              {collection.description}
+              {collection.description || "A beautifully curated collection of premium artworks. This selection brings together unique pieces that speak to aesthetic excellence and artistic vision."}
             </p>
           </section>
 
@@ -115,13 +148,23 @@ export const CollectionDetailPage = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               {artworks.map((artwork) => (
-                <ArtworkCard
-                  key={artwork.id}
-                  artwork={artwork}
-                  onView={() => { }}
-                  onToggleSave={onToggleSave}
-                  isSaved={savedItemIds.includes(artwork.id)}
-                />
+                <div 
+                  key={artwork.id} 
+                  onClick={() => navigate(`/artwork/${artwork.id}`)}
+                  className="cursor-pointer"
+                >
+                  <ArtDisplayCard 
+                    image={Array.isArray(artwork.image_url) ? artwork.image_url[0] : artwork.image_url} 
+                    formData={{
+                      title: artwork.title,
+                      price: artwork.price,
+                      category: artwork.medium || 'Artwork',
+                      height: artwork.height_in || '',
+                      width: artwork.width_in || '',
+                      images: Array.isArray(artwork.image_url) ? artwork.image_url : [artwork.image_url]
+                    }} 
+                  />
+                </div>
               ))}
             </div>
           </section>
@@ -129,25 +172,25 @@ export const CollectionDetailPage = ({
 
         {/* Right Column - Collection Summary */}
         <div className="lg:col-span-1">
-          <div className="bg-gray-900 text-white p-8 md:p-10 rounded-3xl sticky top-8 shadow-2xl border border-gray-800">
-            <h3 className="text-2xl font-bold mb-8 pb-4 border-b border-gray-800">Collection Insight</h3>
+          <div className="bg-white dark:bg-gray-900/50 backdrop-blur-md text-gray-900 dark:text-white p-8 md:p-10 rounded-3xl sticky top-8 shadow-xl border border-gray-100 dark:border-gray-800">
+            <h3 className="text-2xl font-bold mb-8 pb-4 border-b border-gray-100 dark:border-gray-800">Collection Insight</h3>
 
             {/* Summary Stats */}
             <div className="space-y-8 mb-10">
               <div className="flex justify-between items-center">
-                <span className="text-gray-400 font-medium">Total Pieces</span>
+                <span className="text-gray-500 dark:text-gray-400 font-medium">Total Pieces</span>
                 <span className="font-bold text-xl">{artworks.length}</span>
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-gray-400 font-medium">Estimated Value</span>
+                <span className="text-gray-500 dark:text-gray-400 font-medium">Estimated Value</span>
                 <span className="font-bold text-xl text-amber-500">
                   LKR {totalValue.toLocaleString()}
                 </span>
               </div>
 
-              <div className="pt-6 border-t border-gray-800">
-                <p className="text-sm text-gray-400 mb-4 leading-relaxed">
+              <div className="pt-6 border-t border-gray-100 dark:border-gray-800">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">
                   This collection has been verified for authenticity and condition by our senior curators.
                 </p>
                 <div className="flex items-center gap-3 text-amber-500 text-sm font-bold uppercase tracking-widest">
@@ -160,14 +203,12 @@ export const CollectionDetailPage = ({
             {/* Actions */}
             <div className="space-y-4">
               <button
-                onClick={() => onAddToCartBatch(artworks)}
-                className="w-full py-4 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-2xl transition-all shadow-lg hover:shadow-amber-900/40 active:scale-[0.98]"
-              >
-                Acquire Full Collection
-              </button>
-              <button className="w-full py-4 bg-transparent border-2 border-gray-700 hover:border-gray-500 text-white font-bold rounded-2xl transition-all">
-                Download Catalog (PDF)
-              </button>
+                  onClick={() => onAddToCartBatch && onAddToCartBatch(artworks)}
+                  disabled={artworks.length === 0}
+                  className="w-full py-4 bg-amber-600 hover:bg-amber-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-bold rounded-2xl transition-all shadow-lg hover:shadow-amber-900/40 active:scale-[0.98] cursor-pointer"
+                >
+                  Acquire Full Collection
+                </button>
             </div>
           </div>
         </div>

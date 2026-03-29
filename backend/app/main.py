@@ -17,6 +17,7 @@ from app.modules.PostUpload.router import router as post_upload_router
 from app.modules.ArtistDashbooard.router import router as dashboard_router
 from app.modules.PayHere.router import router as payhere_router
 from app.modules.Commission.router import router as commission_router
+from app.modules.Collection.router import router as collections_router
 from app.modules.Feed.router import router as feed_router
 from app.modules.ArtSearch.router import router as art_search_router
 from app.modules.Artwork.router import router as artwork_router
@@ -65,4 +66,5 @@ app.include_router(purchase_router, prefix="/api", tags=["Purchase"])
 app.include_router(dashboard_router)
 app.include_router(payhere_router, prefix="/payhere", tags=["PayHere"])
 app.include_router(commission_router, prefix="/commissions", tags=["Commissions"])
+app.include_router(collections_router)
 

@@ -27,7 +27,9 @@ import ArtMapPage from './pages/ArtMapPage.jsx';
 import SaveWork from './pages/saveWork.jsx';
 import { ArtistSearch } from './components/ArtistSearch';
 import CollectionsPage from './pages/CollectionsPage';
-
+import CreateCollection from './pages/CreateCollection.jsx';
+import EditCollection from './pages/EditCollection.jsx';
+import CollectionDetailPage from './pages/CollectionDetailPage.jsx';
 
 // Verifies role against backend, not just the JWT
 function NotArtistGuard({ children }) {
@@ -121,6 +123,10 @@ function App() {
           <Route path="/map" element={<ArtMapPage />} />
           <Route path="/buyer/profile" element={<SaveWork />} />
           <Route path="/collections" element={<CollectionsPage />} />
+          <Route path="/collections/:id" element={<CollectionDetailPage />} />
+          <Route path="/create-collection" element={<NotArtistGuard><Navigate to="/search" replace /></NotArtistGuard>} /> { /* Fallback for accessibility */ }
+          <Route path="/dashboard/collections/create" element={<ArtistGuard><CreateCollection /></ArtistGuard>} />
+          <Route path="/dashboard/collections/edit/:id" element={<ArtistGuard><EditCollection /></ArtistGuard>} />
 
           <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
           <Route path="/dashboard/commissions" element={<ArtistGuard><CommissionRequestsPage /></ArtistGuard>} />

@@ -207,7 +207,7 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick, onSaveC
           </div>
         ) : (
           /* Placeholder when sold to keep layout consistent, or you can leave it empty */
-          <div className="w-full py-3.5 bg-gray-200 dark:bg-gray-500 text-red-600 dark:text-red-400 text-center font-bold text-lg rounded-lg cursor-not-allowed">
+          <div className="w-full py-3.5 bg-gray-200 dark:bg-gray-600 text-red-600 dark:text-red-400 text-center font-bold text-lg rounded-lg cursor-not-allowed">
             Artwork Sold
           </div>
         )}
