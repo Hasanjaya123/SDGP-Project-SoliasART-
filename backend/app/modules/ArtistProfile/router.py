@@ -90,7 +90,7 @@ async def get_full_artist_profile_by_id(
         raw_artist = profile_res.data[0]
         actual_artist_id = str(raw_artist["id"])
 
-        artworks_res = supabase.table("artwork").select("id, title, price, image_url, width_in, height_in, medium").eq("artist_id", actual_artist_id).execute()
+        artworks_res = supabase.table("artwork").select("id, title, price, image_url, width_in, height_in, medium, view_count, likes, artists(display_name)").eq("artist_id", actual_artist_id).execute()
         
         posts_res = supabase.table("post").select("*").eq("artist_id", actual_artist_id).order("created_at", desc=True).execute()
 

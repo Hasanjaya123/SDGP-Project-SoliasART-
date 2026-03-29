@@ -10,7 +10,7 @@ from app.modules.ArtUpload.model import ArtWork
 from app.modules.ArtistProfile.model import Artist
 from app.modules.auth.models import User
 from app.modules.PostUpload.model import Post
-from app.modules.Feed.model import FeedLike, FeedComment, FeedSave, FeedInteraction, UserFollow
+from app.modules.Feed.model import FeedLike, FeedComment, FeedSave, FeedInteraction
 from app.modules.Feed.schemas import FeedCard, FeedResponse, CommentCreate, CommentResponse
 from app.modules.Feed.ml_ranker import get_unified_feed
 from app.modules.auth.dependencies import get_current_user
@@ -87,6 +87,7 @@ def get_feed(
                 price=obj.price if is_artwork else None,
                 medium=obj.medium if is_artwork else None,
                 is_framed=obj.is_framed if is_artwork else None,
+                status=obj.status if is_artwork else None,
             ))
 
     return FeedResponse(
@@ -204,51 +205,3 @@ def track_view(target_type: str, target_id: UUID, user_id: UUID = Query(...), db
         db.commit()
 
     return {"message": "view recorded"}
-
-# Follow Endpoints
-@router.post("/{artist_id}/follow")
-def follow_artist(artist_id: UUID, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    """Follow an artist"""
-    artist = db.query(Artist).filter(Artist.id == artist_id).first()
-    if not artist:
-        raise HTTPException(status_code=404, detail="Artist not found")
-    
-    existing = db.query(UserFollow).filter(
-        UserFollow.follower_id == current_user.id,
-        UserFollow.artist_id == artist_id
-    ).first()
-    
-    if existing:
-        raise HTTPException(status_code=400, detail="Already following this artist")
-    
-    follow = UserFollow(follower_id=current_user.id, artist_id=artist_id)
-    db.add(follow)
-    db.commit()
-    
-    return {"message": "Successfully followed artist"}
-
-@router.delete("/{artist_id}/follow")
-def unfollow_artist(artist_id: UUID, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    """Unfollow an artist"""
-    follow = db.query(UserFollow).filter(
-        UserFollow.follower_id == current_user.id,
-        UserFollow.artist_id == artist_id
-    ).first()
-    
-    if not follow:
-        raise HTTPException(status_code=404, detail="Not following this artist")
-    
-    db.delete(follow)
-    db.commit()
-    
-    return {"message": "Successfully unfollowed artist"}
-
-@router.get("/{artist_id}/is-following")
-def is_following_artist(artist_id: UUID, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    """Check if current user follows an artist"""
-    follow = db.query(UserFollow).filter(
-        UserFollow.follower_id == current_user.id,
-        UserFollow.artist_id == artist_id
-    ).first()
-    
-    return {"is_following": follow is not None}

@@ -117,15 +117,7 @@ export const CollectionDetailPage = ({
               </div>
 
               <div className="flex gap-4">
-                {artworks.length > 0 && (
-                  <button
-                    onClick={() => onAddToCartBatch && onAddToCartBatch(artworks)}
-                    className="px-8 py-3 bg-white text-gray-900 font-bold rounded-full hover:bg-gray-100 transition-colors flex items-center gap-2 shadow-lg cursor-pointer"
-                  >
-                    <ShoppingCart size={20} />
-                    Buy Entire Collection
-                  </button>
-                )}
+                
               </div>
             </div>
           </div>

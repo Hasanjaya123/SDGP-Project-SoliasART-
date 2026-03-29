@@ -338,6 +338,7 @@ const AboutTab = ({ artist }) => (
 
 
 
+
 const formatFollowerCount = (count) =>
   count >= 1000 ? (count / 1000).toFixed(1) + 'k' : count;
 
@@ -405,7 +406,19 @@ export const ArtistProfilePage = () => {
         if (!cancelled) setLoading(false);
       });
 
-    return () => { cancelled = true; };
+    const handleFollowStateChange = (event) => {
+      const eventArtistId = event.detail?.artistId;
+      if (artistIdParam && eventArtistId === String(artistIdParam)) {
+        setIsFollowing(event.detail?.isFollowing);
+      }
+    };
+    
+    window.addEventListener('follow-state-changed', handleFollowStateChange);
+
+    return () => { 
+      cancelled = true; 
+      window.removeEventListener('follow-state-changed', handleFollowStateChange);
+    };
   }, [artistIdParam]);
 
   const handleFollowClick = async () => {
@@ -416,10 +429,16 @@ export const ArtistProfilePage = () => {
         await artistProfileService.unfollowArtist(artistId);
         setIsFollowing(false);
         setArtist(prev => ({ ...prev, followers: Math.max(0, (parseInt(prev.followers) || 0) - 1) }));
+        window.dispatchEvent(new CustomEvent('follow-state-changed', {
+          detail: { artistId: String(artistId), isFollowing: false }
+        }));
       } else {
         await artistProfileService.followArtist(artistId);
         setIsFollowing(true);
         setArtist(prev => ({ ...prev, followers: (parseInt(prev.followers) || 0) + 1 }));
+        window.dispatchEvent(new CustomEvent('follow-state-changed', {
+          detail: { artistId: String(artistId), isFollowing: true }
+        }));
       }
     } catch (err) {
       console.error('Follow toggle failed:', err);

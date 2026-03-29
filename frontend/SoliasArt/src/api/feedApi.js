@@ -50,21 +50,21 @@ export const trackView = (tragetType, targetId, userId) => {
 
 // Follow an artist
 export const toggleFollow = (artistId, token) => {
-    return api.post(`/feed/${artistId}/follow`, {}, {
+    return api.post(`/artists/profile/${artistId}/follow`, {}, {
         headers: { 'Authorization': `Bearer ${token}` }
     });
 }
 
 // Unfollow an artist
 export const unfollowArtist = (artistId, token) => {
-    return api.delete(`/feed/${artistId}/follow`, {
+    return api.post(`/artists/profile/${artistId}/unfollow`, {}, {
         headers: { 'Authorization': `Bearer ${token}` }
     });
 }
 
 // Check if following an artist
 export const checkFollowStatus = (artistId, token) => {
-    return api.get(`/feed/${artistId}/is-following`, {
+    return api.get(`/artists/profile/${artistId}/is-following`, {
         headers: { 'Authorization': `Bearer ${token}` }
     });
 }

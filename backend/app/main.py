@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+﻿from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.modules.ArtUpload.router import router as art_upload_router
@@ -31,7 +31,7 @@ app = FastAPI(title=settings.PROJECT_NAME)
 Base.metadata.create_all(bind=engine)
 
 
-origins = ["http://localhost:5173", "https://sdgp-project-974eghwb1-sdgp-team.vercel.app", "https://soliasart.com", "https://www.soliasart.com", "http://192.168.1.9:5173", "http://192.168.1.9:8000", "http://192.168.1.9:5173"]
+origins = ["http://localhost:5173", "https://sdgp-project-974eghwb1-sdgp-team.vercel.app", "https://soliasart.com", "https://www.soliasart.com", "http://192.168.1.4:5173", "http://192.168.1.4:8000"]
 
 
 app.add_middleware(
@@ -43,6 +43,7 @@ app.add_middleware(
     expose_headers=["Content-Disposition", "X-Cache"]  # Expose this header to the frontend for file downloads
 )
 
+@app.get("/")
 @app.post("/")
 def read_root():
     return {"status": "SoliasArt Backend is Active"}

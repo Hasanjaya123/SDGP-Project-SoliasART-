@@ -1,36 +1,35 @@
 from passlib.context import CryptContext
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from jose import jwt
 from app.core.config import settings
+from datetime import datetime, timedelta, timezone
+
 import os
-from dotenv import load_dotenv
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from pydantic import EmailStr
+from dotenv import load_dotenv
 
 
 # Setup password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
-
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-
 def create_access_token(data: dict):
     # Create JWT Token
     to_encode = data.copy()
-
-    # Token expiry
-    expire = datetime.now(timezone.utc) + timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
-    )
+    
+    # Calculate when the token expires (Now + 30 mins)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
-
+    
+    # Sign the token using your SECRET_KEY from config.py
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    
     return encoded_jwt
 
 # Function to send verification email
@@ -39,11 +38,11 @@ def create_access_token(data: dict):
 load_dotenv()
 
 conf = ConnectionConfig(
-    MAIL_USERNAME=os.getenv("MAIL_USERNAME", ""),
-    MAIL_PASSWORD=os.getenv("MAIL_PASSWORD", ""),
-    MAIL_FROM=os.getenv("MAIL_FROM", "noreply@soliasart.com"),
-    MAIL_PORT=int(os.getenv("MAIL_PORT", "587")),
-    MAIL_SERVER=os.getenv("MAIL_SERVER", ""),
+    MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
+    MAIL_PASSWORD=os.getenv("MAIL_PASSWORD"),
+    MAIL_FROM=os.getenv("MAIL_FROM"),
+    MAIL_PORT=int(os.getenv("MAIL_PORT", 587)),
+    MAIL_SERVER=os.getenv("MAIL_SERVER"),
     MAIL_STARTTLS=True,
     MAIL_SSL_TLS=False,
     USE_CREDENTIALS=True,
@@ -137,13 +136,5 @@ async def send_verification_email(email: EmailStr, first_name: str, token: str):
         subtype=MessageType.html
     )
 
-    encoded_jwt = token
     fm = FastMail(conf)
     await fm.send_message(message)
-    return encoded_jwt
-
-
-# ✅ TEMP: Disable email sending (to avoid dependency errors)
-async def send_verification_email(email: str, first_name: str, token: str):
-    print("Email sending disabled (TEMP)")
-    print(f"User: {first_name}, Email: {email}, Token: {token}")

@@ -51,14 +51,14 @@ function ArtworkCard({ card, userId }) {
                         onError={(e) => e.target.style.display = 'none'}
                     />
                 ) : null}
-                <div
+                <div 
                     onClick={() => navigate(`/artist/profile/${card.artist_id}`)}
                     className={`w-9 h-9 rounded-full bg-stone-200 dark:bg-gray-700 flex items-center justify-center text-stone-700 dark:text-gray-200 font-semibold text-sm flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity ${profileImage ? 'hidden' : ''}`}
                 >
                     {artistName.split(' ').map(word => word[0]).join('').slice(0, 2).toUpperCase()}
                 </div>
                 <div className='flex-1'>
-                    <p
+                    <p 
                         onClick={() => navigate(`/artist/profile/${card.artist_id}`)}
                         className='text-sm font-semibold text-stone-800 dark:text-gray-100 cursor-pointer hover:underline'
                     >
@@ -112,11 +112,11 @@ function ArtworkCard({ card, userId }) {
                     </p>
                 )}
                 <p className="text-sm text-stone-700 dark:text-gray-300 mt-0.5 leading-snug">
-                    {showFullCaption || !isLongCaption
-                        ? description
+                    {showFullCaption || !isLongCaption 
+                        ? description 
                         : `${description.slice(0, 100)}...`}
                     {isLongCaption && (
-                        <span
+                        <span 
                             onClick={() => setShowFullCaption(!showFullCaption)}
                             className="text-stone-500 font-medium hover:text-stone-700 dark:hover:text-stone-300 ml-1 cursor-pointer select-none"
                         >
@@ -138,12 +138,21 @@ function ArtworkCard({ card, userId }) {
                 <span className="text-base font-bold text-stone-900 dark:text-gray-100">
                     LKR. {Number(card.price).toLocaleString()}
                 </span>
-                <button
-                    onClick={() => navigate(`/artwork/${card.id}`)}
-                    className="bg-amber-600 hover:bg-amber-700 dark:bg-amber-700 dark:hover:bg-amber-600 text-white text-sm font-semibold
-                                    px-6 py-2.5 rounded-full active:bg-amber-800 transition-colors">
-                    Buy
-                </button>
+                {card.status?.toLowerCase() === 'sold' ? (
+                    <button
+                        onClick={() => navigate(`/artwork/${card.id}`)}
+                        className="bg-stone-400 dark:bg-stone-600 text-white text-sm font-semibold
+                                        px-6 py-2.5 rounded-full cursor-not-allowed opacity-75">
+                        Sold
+                    </button>
+                ) : (
+                    <button
+                        onClick={() => navigate(`/artwork/${card.id}`)}
+                        className="bg-amber-600 hover:bg-amber-700 dark:bg-amber-700 dark:hover:bg-amber-600 text-white text-sm font-semibold
+                                        px-6 py-2.5 rounded-full active:bg-amber-800 transition-colors">
+                        Buy
+                    </button>
+                )}
             </div>
         </div>
     )

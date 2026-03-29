@@ -1,21 +1,11 @@
 import React, { useState } from 'react';
-import { FcGoogle } from 'react-icons/fc'; // Icon for the Google button
-import { FiEye, FiEyeOff } from 'react-icons/fi'; // Icon for password visibility
+import { FcGoogle } from 'react-icons/fc';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { api } from '../services/uploadApi';
 
-/**
- * SignupPage Component
- * Displays a user registration form with fields for name, email, password, and terms agreement.
- * Handles form submission to the backend API for creating new user accounts.
- */
+// SignupPage: Manages new user registration
 const SignupPage = () => {
-
-    // State for managing form input values
-    // - full_name: User's complete name
-    // - email: User's email address
-    // - password: User's password
-    // - confirmPassword: Password confirmation for validation
-    // - agreeToTerms: Checkbox for terms and conditions agreement
+    // --- State Management ---
     const [formData, setFormData] = useState({
         first_name: '',
         last_name: '',
@@ -25,60 +15,40 @@ const SignupPage = () => {
         agreeToTerms: false,
     });
 
-    // State for tracking API request loading status
     const [loading, setLoading] = useState(false);
-
-    // States for toggling password visibility
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-    // State for storing and displaying error messages
     const [error, setError] = useState(null);
 
-    // Tailwind CSS classes for input fields (reusable styling)
     const inputClass = "w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 focus:border-yellow-600 focus:outline-none focus:ring-1 focus:ring-yellow-600 transition-colors";
 
-    /**
-     * handleChange: Updates form state when user types in input fields
-     * @param {Event} e - The change event from input/checkbox elements
-     * 
-     * For regular inputs: captures the 'value' property
-     * For checkboxes: captures the 'checked' property to determine true/false state
-     */
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData((prev) => ({
             ...prev,
             [name]: type === 'checkbox' ? checked : value,
         }));
-    }
+    };
 
-    /**
-     * handleSubmit: Form submission handler
-     * Validates form data, calls the backend signup API, and handles responses
-     * @param {Event} e - The form submit event
-     */
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Prevent default form submission behavior
-        setError(null); // Clear any previous error messages
+        e.preventDefault();
+        setError(null);
 
-        // Validation 1: Check if passwords match
+        // Basic form validation
         if (formData.password !== formData.confirmPassword) {
             setError("Passwords do not match");
             return;
         }
 
-        // Validation 2: Check if user agreed to terms and conditions
         if (!formData.agreeToTerms) {
             setError("You must agree to the terms and conditions");
             return;
         }
 
-        setLoading(true); // Disable form to prevent multiple submissions
+        setLoading(true);
 
         try {
-
-            // Send signup request to backend API
+            // Call backend signup API
             const response = await api.post('/auth/signup', {
                 first_name: formData.first_name,
                 last_name: formData.last_name,
@@ -86,12 +56,10 @@ const SignupPage = () => {
                 password: formData.password,
             });
 
-            const data = response.data; // Server response data
+            const data = response.data;
 
-            // Display success message to user with their full name
             alert(`Registration Successful!\n\nPlease check your email inbox for a verification link to activate your account.`);
 
-            // Clear form after successful signup
             setFormData({
                 first_name: '',
                 last_name: '',
@@ -102,19 +70,15 @@ const SignupPage = () => {
             });
 
         } catch (err) {
-            // Catch and display any errors that occurred during signup
             setError(err.response?.data?.detail || err.message || "An unexpected error occurred");
         } finally {
-            // Re-enable the form after request completes (success or error)
             setLoading(false);
         }
     };
 
     return (
-        // This is the main container for the page - flex layout with form on left, fixed image on right
         <div className="flex min-h-screen w-full bg-white">
-
-            {/* The Form - scrollable on its own */}
+            {/* --- Signup Form Section --- */}
             <div className="flex w-full flex-col justify-center px-8 py-12 md:w-1/2 lg:px-24 overflow-y-auto">
                 <div className="w-full max-w-md mx-auto">
                     <h2 className="mb-8 text-3xl font-bold text-gray-900">
@@ -195,8 +159,6 @@ const SignupPage = () => {
                             </div>
                         </div>
 
-                        {/* Confirm Password Input */}
-
                         <div>
                             <label className="mb-1 block text-sm font-semibold text-gray-700">
                                 Confirm Password
@@ -204,12 +166,12 @@ const SignupPage = () => {
                             <div className="relative">
                                 <input
                                     type={showConfirmPassword ? "text" : "password"}
-                                    name="confirmPassword"      // <--- MUST match state key
+                                    name="confirmPassword"
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
                                     autoComplete="new-password"
                                     placeholder="Confirm your password"
-                                    className={`${inputClass} pr-12`}      // Re-using our style variable!
+                                    className={`${inputClass} pr-12`}
                                     required
                                 />
                                 <div
@@ -269,7 +231,7 @@ const SignupPage = () => {
                 </div>
             </div>
 
-            {/* The Image - fixed on right side, doesn't scroll */}
+            {/* --- Side Decorative Image --- */}
             <div className="hidden w-1/2 md:flex md:fixed md:right-0 md:top-0 md:h-screen md:items-center md:justify-center">
                 <img
                     src="/SignUp.jpg"
