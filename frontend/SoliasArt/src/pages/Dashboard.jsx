@@ -209,7 +209,7 @@ const ArtistDashboard = () => {
           </a>
 
           <a
-            href="/dashboard/collections/new"
+            href="/dashboard/collections/create"
             className="border-2 border-amber-400 text-amber-600 hover:bg-amber-50 active:scale-95 font-bold px-5 py-2.5 rounded-lg flex items-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap"
           >
             <BiCollection className="w-4 h-4" />

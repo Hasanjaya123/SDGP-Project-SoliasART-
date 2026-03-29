@@ -27,12 +27,13 @@ const EditCollection = () => {
                 }
                 
                 const profile = await artistProfileService.getProfile();
-                
+                const actualArtistId = profile.artist?.id || profile.id;
+
                 // Fetch collection details
                 const collection = await collectionService.getCollectionById(collectionId);
                 
                 // Security check: ensure this artist owns the collection
-                if (collection.artist_id && collection.artist_id !== profile.id) {
+                if (collection.artist_id && collection.artist_id !== actualArtistId) {
                      navigate('/search');
                      return;
                 }
@@ -42,8 +43,30 @@ const EditCollection = () => {
                 setSelectedIds(collection.artworks?.map(a => a.id) || []);
 
                 // Fetch artist artworks
-                const userArtworks = await artworkService.getArtworksByArtist(profile.id);
-                setArtworks(userArtworks);
+                let userArtworks = [];
+                try {
+                    userArtworks = await artworkService.getArtworksByArtist(actualArtistId);
+                } catch (apiErr) {
+                    console.warn("Retrying with profile artworks due to API failure:", apiErr);
+                    userArtworks = profile.artworks || [];
+                }
+
+                // Filter out artworks that are assigned to other collections (not this one)
+                try {
+                    const allArtistCollections = await collectionService.getCollectionsByArtist(actualArtistId);
+                    const takenByOthersIds = new Set();
+                    allArtistCollections.forEach(col => {
+                        if (col.id !== collectionId) {
+                            col.artworks?.forEach(art => takenByOthersIds.add(art.id));
+                        }
+                    });
+                    
+                    const availableArtworks = userArtworks.filter(art => !takenByOthersIds.has(art.id));
+                    setArtworks(availableArtworks);
+                } catch (colErr) {
+                    console.warn("Failed to fetch other collections for filtering, showing all artworks.", colErr);
+                    setArtworks(userArtworks);
+                }
             } catch (err) {
                 console.error("Error loading data:", err);
                 setError("Failed to load collection details. Please try again.");
@@ -68,6 +91,14 @@ const EditCollection = () => {
         setSelectedIds(prev => 
             prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
         );
+    };
+
+    const handleSelectAll = () => {
+        if (selectedIds.length === artworks.length) {
+            setSelectedIds([]);
+        } else {
+            setSelectedIds(artworks.map(art => art.id));
+        }
     };
 
     const handleUpdate = async (e) => {
@@ -118,7 +149,7 @@ const EditCollection = () => {
                     <div className="flex items-center gap-3">
                         <img src={soliasartlogo} alt="SoliasART" className="h-8 w-auto cursor-pointer" onClick={() => navigate('/search')} />
                         <h1 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight ml-4">
-                            Edit Collection
+                            EDIT COLLECTIONS
                         </h1>
                     </div>
                     <div className="flex items-center gap-6">
@@ -184,9 +215,19 @@ const EditCollection = () => {
 
                     {/* Right Column: Artworks Selection */}
                     <div className="lg:col-span-2">
-                        <div className="mb-6">
-                            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">Update Artworks</h2>
-                            <p className="text-sm text-gray-400">Modify the pieces included in this collection.</p>
+                        <div className="mb-6 flex items-end justify-between">
+                            <div>
+                                <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">Update Artworks</h2>
+                                <p className="text-sm text-gray-400">Modify the pieces included in this collection.</p>
+                            </div>
+                            {artworks.length > 0 && (
+                                <button 
+                                    onClick={handleSelectAll}
+                                    className="text-xs font-bold text-amber-500 hover:text-amber-600 uppercase tracking-widest px-3 py-1.5 border border-amber-500/20 rounded-lg hover:bg-amber-500/5 transition-all"
+                                >
+                                    {selectedIds.length === artworks.length ? 'Deselect All' : 'Select All'}
+                                </button>
+                            )}
                         </div>
 
                         {artworks.length === 0 ? (
@@ -207,14 +248,14 @@ const EditCollection = () => {
                                         onClick={() => toggleSelection(art.id)}
                                     >
                                         <ArtDisplayCard 
-                                            image={Array.isArray(art.image_url) ? art.image_url[0] : art.image_url} 
+                                            image={Array.isArray(art.imageUrls || art.image_url) ? (art.imageUrls || art.image_url)[0] : (art.imageUrls || art.image_url)} 
                                             formData={{
                                                 title: art.title,
                                                 price: art.price,
                                                 category: art.medium || '',
                                                 height: art.height_in || '',
                                                 width: art.width_in || '',
-                                                images: Array.isArray(art.image_url) ? art.image_url : [art.image_url]
+                                                images: Array.isArray(art.imageUrls || art.image_url) ? (art.imageUrls || art.image_url) : [(art.imageUrls || art.image_url)]
                                             }} 
                                         />
                                         {selectedIds.includes(art.id) && (

@@ -6,7 +6,7 @@ const CollectionsPage = ({ setCurrentPage, artworks }) => {
         <div>
             <div className="text-center mb-12">
                 <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
-                    Curated Collections
+                    Collections
                 </h1>
                 <p className="mt-3 max-w-2xl mx-auto text-xl text-gray-500 dark:text-gray-300">
                     Explore collections handpicked by gallery owners, designers, and our own curators to inspire your next acquisition.

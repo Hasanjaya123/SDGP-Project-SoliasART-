@@ -31,17 +31,17 @@ const CollectionsPage = ({ setCurrentPage }) => {
     }
 
     return (
-        <div>
-            <div className="text-center mb-12">
-                <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
-                    Curated Collections
+        <div className="max-w-6xl mx-auto px-4 md:px-6 py-12">
+            <div className="text-center mb-16">
+                <h1 className="text-4xl font-black tracking-tight text-gray-900 dark:text-white uppercase italic">
+                    Art Collections
                 </h1>
-                <p className="mt-3 max-w-2xl mx-auto text-xl text-gray-500 dark:text-gray-300">
+                <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-500 dark:text-gray-400">
                     Explore collections handpicked by gallery owners, designers, and our own curators to inspire your next acquisition.
                 </p>
             </div>
 
-            <div className="space-y-12">
+            <div className="space-y-14">
                 {collections.length === 0 ? (
                     <div className="text-center text-gray-500 py-10">
                         No collections available yet.

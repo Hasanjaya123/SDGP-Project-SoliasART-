@@ -153,6 +153,17 @@ export const artworkService = {
     }
   },
 
+  getArtworksByArtist: async (artistId) => {
+    try {
+      const response = await api.get(`/api/artworks/?artist_id=${artistId}`);
+      return response.data;
+    } catch (error) {
+      console.error("failed to load artworks by artist", error.response?.data?.detail || error.message);
+      throw error;
+    }
+  },
+
+
   uploadArtist: async (formDataState) => {
     const formData = new FormData();
 

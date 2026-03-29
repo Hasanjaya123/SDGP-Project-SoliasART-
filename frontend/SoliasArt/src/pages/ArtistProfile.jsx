@@ -242,17 +242,6 @@ const UploadsTab = ({ posts, onCreatePost, isOwner }) => (
 
 const CollectionsTab = ({ collections, onCollectionClick, onCreateCollection, onEditCollection, onDeleteCollection, isOwner }) => (
   <div>
-    {isOwner && (
-      <div className="flex justify-end mb-6">
-        <button
-          onClick={onCreateCollection}
-          className="flex items-center gap-2 bg-[#FFC247] text-slate-900 font-bold text-sm px-5 py-2.5 rounded-full hover:bg-yellow-400 transition-colors shadow-sm"
-        >
-          <span className="material-symbols-outlined text-[18px]">add_circle</span>
-          Create Collection
-        </button>
-      </div>
-    )}
 
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {collections.map((col) => (

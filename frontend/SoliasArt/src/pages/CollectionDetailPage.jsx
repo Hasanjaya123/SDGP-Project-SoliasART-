@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { collectionService } from '../services/uploadApi';
-import ArtworkCard from '../components/ArtworkCard';
+import ArtDisplayCard from '../components/Art-card';
 import { Heart, Eye, ShoppingCart, ArrowLeft } from 'lucide-react';
 
 export const CollectionDetailPage = ({
@@ -75,7 +75,7 @@ export const CollectionDetailPage = ({
   };
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="max-w-6xl mx-auto px-4 md:px-6 py-12 min-h-screen pb-20">
       {/* Back Button */}
       <div className="mb-8">
         <button
@@ -133,7 +133,7 @@ export const CollectionDetailPage = ({
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-14">
 
         {/* Left Column - About Section & Artworks */}
         <div className="lg:col-span-2 space-y-12">
@@ -156,13 +156,23 @@ export const CollectionDetailPage = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               {artworks.map((artwork) => (
-                <ArtworkCard
-                  key={artwork.id}
-                  card={artwork}
-                  onView={() => navigate(`/artwork/${artwork.id}`)}
-                  onToggleSave={onToggleSave}
-                  isSaved={savedItemIds?.includes(artwork.id)}
-                />
+                <div 
+                  key={artwork.id} 
+                  onClick={() => navigate(`/artwork/${artwork.id}`)}
+                  className="cursor-pointer"
+                >
+                  <ArtDisplayCard 
+                    image={Array.isArray(artwork.image_url) ? artwork.image_url[0] : artwork.image_url} 
+                    formData={{
+                      title: artwork.title,
+                      price: artwork.price,
+                      category: artwork.medium || 'Artwork',
+                      height: artwork.height_in || '',
+                      width: artwork.width_in || '',
+                      images: Array.isArray(artwork.image_url) ? artwork.image_url : [artwork.image_url]
+                    }} 
+                  />
+                </div>
               ))}
             </div>
           </section>
@@ -170,25 +180,25 @@ export const CollectionDetailPage = ({
 
         {/* Right Column - Collection Summary */}
         <div className="lg:col-span-1">
-          <div className="bg-gray-900 text-white p-8 md:p-10 rounded-3xl sticky top-8 shadow-2xl border border-gray-800">
-            <h3 className="text-2xl font-bold mb-8 pb-4 border-b border-gray-800">Collection Insight</h3>
+          <div className="bg-white dark:bg-gray-900/50 backdrop-blur-md text-gray-900 dark:text-white p-8 md:p-10 rounded-3xl sticky top-8 shadow-xl border border-gray-100 dark:border-gray-800">
+            <h3 className="text-2xl font-bold mb-8 pb-4 border-b border-gray-100 dark:border-gray-800">Collection Insight</h3>
 
             {/* Summary Stats */}
             <div className="space-y-8 mb-10">
               <div className="flex justify-between items-center">
-                <span className="text-gray-400 font-medium">Total Pieces</span>
+                <span className="text-gray-500 dark:text-gray-400 font-medium">Total Pieces</span>
                 <span className="font-bold text-xl">{artworks.length}</span>
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-gray-400 font-medium">Estimated Value</span>
+                <span className="text-gray-500 dark:text-gray-400 font-medium">Estimated Value</span>
                 <span className="font-bold text-xl text-amber-500">
                   LKR {totalValue.toLocaleString()}
                 </span>
               </div>
 
-              <div className="pt-6 border-t border-gray-800">
-                <p className="text-sm text-gray-400 mb-4 leading-relaxed">
+              <div className="pt-6 border-t border-gray-100 dark:border-gray-800">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">
                   This collection has been verified for authenticity and condition by our senior curators.
                 </p>
                 <div className="flex items-center gap-3 text-amber-500 text-sm font-bold uppercase tracking-widest">
@@ -207,9 +217,6 @@ export const CollectionDetailPage = ({
                 >
                   Acquire Full Collection
                 </button>
-              <button className="w-full py-4 bg-transparent border-2 border-gray-700 hover:border-gray-500 text-white font-bold rounded-2xl transition-all cursor-pointer">
-                Download Catalog (PDF)
-              </button>
             </div>
           </div>
         </div>
