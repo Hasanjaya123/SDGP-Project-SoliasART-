@@ -8,7 +8,7 @@ from app.modules.auth.models import User
 from app.modules.ArtistProfile.model import Artist
 from app.modules.ArtUpload.model import ArtWork
 from app.modules.Collection.model import Collection
-from app.modules.Collection.schemas import CollectionCreate, CollectionOut
+from app.modules.Collection.schemas import CollectionCreate, CollectionOut, CollectionUpdate
 
 router = APIRouter(prefix="/api/collections", tags=["Collections"])
 
@@ -107,3 +107,46 @@ async def delete_collection(
     db.commit()
     
     return {"message": "Collection deleted successfully"}
+
+@router.patch("/{collection_id}", response_model=CollectionOut)
+async def update_collection(
+    collection_id: UUID,
+    payload: CollectionUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    artist = db.query(Artist).filter(Artist.user_id == current_user.id).first()
+    if not artist:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    
+    collection = db.query(Collection).filter(
+        Collection.id == collection_id,
+        Collection.artist_id == artist.id
+    ).first()
+    
+    if not collection:
+        raise HTTPException(status_code=404, detail="Collection not found or access denied")
+    
+    if payload.name is not None:
+        collection.name = payload.name
+    if payload.description is not None:
+        collection.description = payload.description
+    
+    if payload.artwork_ids is not None:
+        artworks = db.query(ArtWork).filter(
+            ArtWork.id.in_(payload.artwork_ids),
+            ArtWork.artist_id == artist.id
+        ).all()
+        
+        if len(artworks) != len(payload.artwork_ids):
+             raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="One or more artwork IDs are invalid or do not belong to you"
+            )
+        
+        collection.artworks = artworks
+    
+    db.commit()
+    db.refresh(collection)
+    
+    return collection

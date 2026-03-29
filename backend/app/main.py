@@ -17,29 +17,18 @@ from app.modules.ArtSearch.router import router as art_search_router
 from app.core.database import Base, engine
 from app.modules.savework.router import router as savework_router  
 from app.modules.PostUpload.router import router as post_upload_router
-from app.modules.ArtistDashbooard.router import router as dashboard_router             
-from app.modules.Collection.router import router as collections_router
 from app.modules.ArtistDashbooard.router import router as dashboard_router
 from app.modules.PayHere.router import router as payhere_router
 from app.modules.Commission.router import router as commission_router
-
-
+from app.modules.Collection.router import router as collections_router
 
 # Initialise the API application
 app = FastAPI(title=settings.PROJECT_NAME)
 
+Base.metadata.create_all(bind=engine)
 
 
-
-
-origins = [
-    "http://localhost:5173",
-    "http://10.162.240.145:5173",
-    "http://10.162.240.145:8000",
-    "https://sdgp-project-974eghwb1-sdgp-team.vercel.app",
-    "https://soliasart.com",
-    "https://www.soliasart.com"
-]
+origins = ["http://localhost:5173", "https://sdgp-project-974eghwb1-sdgp-team.vercel.app", "https://soliasart.com", "https://www.soliasart.com", "http://192.168.1.9:5173", "http://192.168.1.9:8000", "http://192.168.1.9:5173"]
 
 
 app.add_middleware(
@@ -70,9 +59,9 @@ app.include_router(artworks_router, prefix="/api/artworks", tags=["Artworks Gall
 app.include_router(cart_router, prefix="/api", tags=["Cart"])
 app.include_router(art_search_router)
 app.include_router(dashboard_router)
-app.include_router(collections_router)
 app.include_router(payhere_router, prefix="/payhere", tags=["PayHere Payment"])
 app.include_router(commission_router, prefix="/commissions", tags=["Commissions"])
+app.include_router(collections_router)
 
 
 

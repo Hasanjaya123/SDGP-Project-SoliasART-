@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { collectionService } from '../services/uploadApi';
-import { collections } from '../data/mockData';
 import { ArtworkCard } from '../components/ArtworkCard';
 import { Heart, Eye, ShoppingCart, ArrowLeft } from 'lucide-react';
 
 export const CollectionDetailPage = ({
-  onToggleSave = () => { },
-  savedItemIds = [],
-  onAddToCartBatch = () => { }
+  collectionId: propCollectionId,
+  setCurrentPage,
+  onToggleSave,
+  savedItemIds,
+  onAddToCartBatch
 }) => {
-  const { id: collectionId } = useParams();
+  const { id } = useParams();
+  const collectionId = propCollectionId || id;
   const navigate = useNavigate();
+  const [likes, setLikes] = useState({});
   const [collection, setCollection] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [likes, setLikes] = useState({});
 
   useEffect(() => {
     const fetchCollection = async () => {
@@ -28,21 +30,32 @@ export const CollectionDetailPage = ({
       }
     };
 
-    fetchCollection();
+    if (collectionId) {
+      fetchCollection();
+    }
   }, [collectionId]);
 
   if (loading) {
-    return <div className="text-center py-20">Loading collection details...</div>;
+    return (
+      <div className="flex justify-center flex-col items-center py-20 min-h-[50vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-600 mb-4"></div>
+        <p className="text-gray-500">Loading collection...</p>
+      </div>
+    );
   }
-
-  // The collection is already being fetched and stored in state via useEffect
 
   if (!collection) {
     return (
       <div className="text-center py-20">
         <p className="text-gray-500 dark:text-gray-400 mb-6 text-xl">Collection not found</p>
         <button
-          onClick={() => navigate('/collections')}
+          onClick={() => {
+            if (setCurrentPage) {
+              setCurrentPage('collections');
+            } else {
+              navigate('/collections');
+            }
+          }}
           className="px-6 py-2 bg-amber-600 text-white rounded-full hover:bg-amber-700 transition-colors"
         >
           Back to Collections
@@ -66,7 +79,13 @@ export const CollectionDetailPage = ({
       {/* Back Button */}
       <div className="mb-8">
         <button
-          onClick={() => navigate('/collections')}
+          onClick={() => {
+            if (setCurrentPage) {
+              setCurrentPage('collections');
+            } else {
+              navigate(-1);
+            }
+          }}
           className="text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-semibold flex items-center gap-2 group transition-all"
         >
           <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
@@ -77,7 +96,7 @@ export const CollectionDetailPage = ({
       {/* Hero Header Section */}
       <div className="relative h-80 md:h-[400px] rounded-2xl overflow-hidden shadow-2xl mb-12">
         <img
-          src={collection.coverImageUrl || (artworks[0]?.image_url?.[0])}
+          src={artworks?.[0]?.image_url?.[0] || "https://images.unsplash.com/photo-1541451373351-40344b4bde5a?auto=format&fit=crop&q=80&w=800"}
           alt={collection.name}
           className="w-full h-full object-cover"
         />
@@ -93,18 +112,20 @@ export const CollectionDetailPage = ({
                 <h1 className="text-4xl md:text-6xl font-bold mb-2 tracking-tight">{collection.name}</h1>
                 <p className="text-amber-400 font-semibold text-lg flex items-center gap-2">
                   <span className="w-8 h-[2px] bg-amber-400"></span>
-                  Curated by {collection.curator}
+                  Curated by {collection.curator || "Solias ART"}
                 </p>
               </div>
 
               <div className="flex gap-4">
-                <button
-                  onClick={() => onAddToCartBatch(artworks)}
-                  className="px-8 py-3 bg-white text-gray-900 font-bold rounded-full hover:bg-gray-100 transition-colors flex items-center gap-2 shadow-lg"
-                >
-                  <ShoppingCart size={20} />
-                  Buy Entire Collection
-                </button>
+                {artworks.length > 0 && (
+                  <button
+                    onClick={() => onAddToCartBatch && onAddToCartBatch(artworks)}
+                    className="px-8 py-3 bg-white text-gray-900 font-bold rounded-full hover:bg-gray-100 transition-colors flex items-center gap-2 shadow-lg cursor-pointer"
+                  >
+                    <ShoppingCart size={20} />
+                    Buy Entire Collection
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -122,7 +143,7 @@ export const CollectionDetailPage = ({
               About the Collection
             </h2>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
-              {collection.description}
+              {collection.description || "A beautifully curated collection of premium artworks. This selection brings together unique pieces that speak to aesthetic excellence and artistic vision."}
             </p>
           </section>
 
@@ -138,9 +159,9 @@ export const CollectionDetailPage = ({
                 <ArtworkCard
                   key={artwork.id}
                   artwork={artwork}
-                  onView={(id) => navigate(`/artwork/${id}`)}
+                  onView={() => navigate(`/artwork/${artwork.id}`)}
                   onToggleSave={onToggleSave}
-                  isSaved={savedItemIds.includes(artwork.id)}
+                  isSaved={savedItemIds?.includes(artwork.id)}
                 />
               ))}
             </div>
@@ -180,12 +201,13 @@ export const CollectionDetailPage = ({
             {/* Actions */}
             <div className="space-y-4">
               <button
-                onClick={() => onAddToCartBatch(artworks)}
-                className="w-full py-4 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-2xl transition-all shadow-lg hover:shadow-amber-900/40 active:scale-[0.98]"
-              >
-                Acquire Full Collection
-              </button>
-              <button className="w-full py-4 bg-transparent border-2 border-gray-700 hover:border-gray-500 text-white font-bold rounded-2xl transition-all">
+                  onClick={() => onAddToCartBatch && onAddToCartBatch(artworks)}
+                  disabled={artworks.length === 0}
+                  className="w-full py-4 bg-amber-600 hover:bg-amber-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-bold rounded-2xl transition-all shadow-lg hover:shadow-amber-900/40 active:scale-[0.98] cursor-pointer"
+                >
+                  Acquire Full Collection
+                </button>
+              <button className="w-full py-4 bg-transparent border-2 border-gray-700 hover:border-gray-500 text-white font-bold rounded-2xl transition-all cursor-pointer">
                 Download Catalog (PDF)
               </button>
             </div>

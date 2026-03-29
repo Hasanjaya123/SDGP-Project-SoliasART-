@@ -26,6 +26,11 @@ class CollectionCreate(BaseModel):
     description: Optional[str] = None
     artwork_ids: List[UUID]
 
+class CollectionUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    artwork_ids: Optional[List[UUID]] = None
+
 class CollectionOut(BaseModel):
     id: UUID
     name: str

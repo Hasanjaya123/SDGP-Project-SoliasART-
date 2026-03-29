@@ -63,13 +63,6 @@ export const artworks = [
     }
 ];
 
-export const collections = [
-    {
-        id: 1,
-        name: "Modern Art Collection",
-        artworkIds: [1, 2]
-    }
-];
 
 export const artGalleries = [
     { id: 101, name: "Saskia Fernando Gallery", location: "Horton Place, Colombo 7" },
@@ -77,3 +70,4 @@ export const artGalleries = [
     { id: 103, name: "Lionel Wendt Art Centre", location: "Guildford Crescent, Colombo 7" },
     { id: 104, name: "Paradise Road The Gallery Café", location: "Alfred House Road, Colombo 3" }
 ];
+

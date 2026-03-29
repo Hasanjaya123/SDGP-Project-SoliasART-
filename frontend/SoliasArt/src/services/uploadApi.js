@@ -236,6 +236,11 @@ export const collectionService = {
     const response = await api.delete(`/api/collections/${collectionId}`);
     return response.data;
   },
+
+  updateCollection: async (collectionId, collectionData) => {
+    const response = await api.patch(`/api/collections/${collectionId}`, collectionData);
+    return response.data;
+  },
 };
 
 export const paymentService = {

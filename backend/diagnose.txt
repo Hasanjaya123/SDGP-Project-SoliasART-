@@ -1,0 +1,48 @@
+--- USERS ---
+User: kasun.p@example.com, Role: artist, ID: 8c2a0157-8f91-44d6-8ad1-8599ff33bd0c
+User: sarah.j@webmail.com, Role: buyer, ID: 4bee2d31-8721-44c6-ba11-d34b6fc05235
+User: amal.silva@provider.net, Role: artist, ID: 80008f11-6d95-45b9-a8d7-a940a4307f7b
+User: priyantha.k@domain.com, Role: buyer, ID: cd315f3c-062c-4e16-986c-0b3badb3e76e
+User: nimali.f@example.lk, Role: buyer, ID: 300c8cd4-f36c-4729-890e-a3639b0f83d9
+User: elena.r@artmail.org, Role: artist, ID: 7ad9e483-5e51-49d4-8db6-d693b3036127
+User: david.m@fastmail.com, Role: buyer, ID: 680938e5-f170-46ad-ba95-f7776a2f04fc
+User: anura.b@gallery.com, Role: artist, ID: 5914028a-ef94-45b9-bebb-b06c0302aa4c
+User: testuser1@example.com, Role: buyer, ID: f9cff61a-bed0-4b51-b736-2afb11d11c94
+User: user2@example.com, Role: buyer, ID: b29c685a-3969-4014-bd2a-d30e0ef68c7f
+User: john123@gmail.com, Role: buyer, ID: abc83098-eaab-4bf8-899c-8247bf562c05
+User: kamal@gmail.com, Role: buyer, ID: 28fca77a-5569-4bc2-8c36-c81fc40df01c
+User: testuser2@gmail.com, Role: buyer, ID: 7b382289-d3dc-4211-88ca-59c45afad3fa
+User: m47cdqkd@evoprem.my.id, Role: buyer, ID: 857493e1-0a65-4cad-9ae5-966b4e7c8fb0
+User: nexanip461@dmener.com, Role: buyer, ID: 33f031c7-5c3d-4cad-92bb-37614891e3a0
+User: testsignup@gmail.com, Role: buyer, ID: 39d39832-76a2-4736-9376-588eb4d190b5
+User: testloginafterupdate@gmail.com, Role: buyer, ID: 0800e5e9-3b1f-46ef-adb8-005af2243c55
+User: danith@gmail.com, Role: buyer, ID: 69541f0b-8eff-4b79-a25d-d06ec69eef87
+User: danith123@gmail.com, Role: buyer, ID: 25344e8b-1cfa-4a2a-b2e7-0f842eede585
+User: thinalprabasha@gmail.com, Role: buyer, ID: 6362a1a3-0844-4038-9c02-974247c5af28
+User: sevin.20232208@iit.ac.lk, Role: artist, ID: 52f86647-31c6-42d2-aec0-9b94248196af
+User: hasa@gmail.com, Role: buyer, ID: 7029cb25-7993-48df-a318-77f3c3bc6716
+User: thinalkulathunga@gmail.com, Role: artist, ID: cdfc1708-cf36-4efa-abfc-6cee44e628e6
+User: dhpfiverr1@gmail.com, Role: artist, ID: ed8716bb-938a-4ad2-b002-d2df99d9579d
+User: hasa567@gmail.com, Role: buyer, ID: 7452fc9c-4630-4dcb-a7c0-3629e84f91c0
+User: thinalp2004@gmail.com, Role: buyer, ID: 54b1e5df-5154-4a55-a6b9-450f653e0cca
+User: dulithaweerasinghe2@gmail.com, Role: buyer, ID: f15cca02-8498-45c9-abde-fe328be8d6b2
+User: damsethsenanayake@gmail.com, Role: artist, ID: 12cd518e-58de-4b87-9236-4d5d5121a59e
+User: janindunanayakkara96@gmail.com, Role: buyer, ID: 1b7b49e6-9c47-48d7-b817-2e794a8498b4
+User: test@example.com, Role: buyer, ID: 753298e6-6ce0-472a-97cc-b6a89508ed64
+User: test-final@example.com, Role: buyer, ID: 3a720bdf-9cd4-44c8-92cc-580cc6f1fa53
+User: sandsenanayake@gmail.com, Role: artist, ID: 1da918e4-c8a5-40d3-8fc5-fda8b84a20a8
+User: nadeesha.20232949@iit.ac.lk, Role: buyer, ID: d551e2d0-4c7c-4b23-8328-ada03daffb0e
+User: janindunanayakkara69@gmail.com, Role: artist, ID: ac2e82f9-e378-4d87-b16b-bcdba3ba3b22
+User: danith.20231509@iit.ac.lk, Role: buyer, ID: a0d4c27f-8d65-4eaa-9315-ad530ae992ee
+User: rioytgaming444@gmail.com, Role: artist, ID: 3790dd09-c3b8-44e8-bad9-0cd3dfd1bd38
+User: hiru77456@gmail.com, Role: buyer, ID: bafb0d08-5a0a-4cb1-9e7c-ed9bbbd6f8e2
+User: sahanrko@gmail.com, Role: buyer, ID: 5bac7aeb-a199-4344-b30b-7d6fa89ac947
+User: vibercat723@gmail.com, Role: artist, ID: 679f024a-33d6-4e7f-9862-352141c46b16
+
+--- ARTISTS ---
+Artist: Eric Matthew, User ID: 3790dd09-c3b8-44e8-bad9-0cd3dfd1bd38, Artist ID: d1fcd7db-3ae7-4186-a7ed-b90959193ed8
+Artist: Sevin kawsika, User ID: 52f86647-31c6-42d2-aec0-9b94248196af, Artist ID: 904db527-78a7-4237-8e86-5edeb89d69db
+Artist: janindu, User ID: ac2e82f9-e378-4d87-b16b-bcdba3ba3b22, Artist ID: d6c34a1a-1aa7-4eac-960f-f281046a928d
+Artist: Thinal, User ID: cdfc1708-cf36-4efa-abfc-6cee44e628e6, Artist ID: 3dff7d1a-467b-431f-b4f0-9541e7d6c318
+Artist: Danith Perera, User ID: 679f024a-33d6-4e7f-9862-352141c46b16, Artist ID: 41364621-866d-4403-9cf3-938cdae2ccbf
+Artist: Hasanjaya Perera, User ID: ed8716bb-938a-4ad2-b002-d2df99d9579d, Artist ID: 6e659f90-caea-4e7a-a31c-3525c6233d21

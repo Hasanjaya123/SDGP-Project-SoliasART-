@@ -73,7 +73,7 @@ export const ArtworkCard = ({ artwork, onView, onToggleSave, isSaved }) => {
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            onToggleSave(artwork.id);
+                            onToggleSave && onToggleSave(artwork.id);
                         }}
                         className="absolute top-2 right-2 bg-white/90 dark:bg-black/70 p-2 rounded-full shadow-lg hover:scale-110 transition-transform flex items-center justify-center border border-gray-100 dark:border-gray-800"
                     >
