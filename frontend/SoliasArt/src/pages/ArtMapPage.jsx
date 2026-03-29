@@ -121,7 +121,7 @@ export function ArtMapPage({ theme = 'dark', artists = [] }) {
   }, [selected]);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-zinc-100 font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-white dark:bg-gray-900 text-zinc-900 dark:text-zinc-100 font-sans transition-colors duration-300">
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
 

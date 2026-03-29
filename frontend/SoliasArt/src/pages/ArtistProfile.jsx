@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ICONS } from '../constants';
-import { artistProfileService } from '../services/uploadApi';
+import { artistProfileService, collectionService } from '../services/uploadApi';
 import ArtDisplayCard from '../components/Art-card';
 import CommissionModal from '../components/CommissionModal';
 
+const TABS = ['portfolio', 'uploads', 'collections', 'about'];
 
 const CreatePostModal = ({ artist, artistId, onClose, onPostCreated }) => {
   const [title, setTitle] = useState('');
@@ -119,8 +120,8 @@ const CreatePostModal = ({ artist, artistId, onClose, onPostCreated }) => {
             <label
               htmlFor="post-image-input"
               className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium transition-colors ${selectedImage
-                  ? 'bg-[#FFC247]/20 text-[#b8860b] dark:text-[#FFC247]'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-700 dark:hover:text-slate-200'
+                ? 'bg-[#FFC247]/20 text-[#b8860b] dark:text-[#FFC247]'
+                : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-700 dark:hover:text-slate-200'
                 }`}
             >
               <span className="material-symbols-outlined text-[20px]">image</span>
@@ -239,6 +240,73 @@ const UploadsTab = ({ posts, onCreatePost, isOwner }) => (
   </div>
 );
 
+const CollectionsTab = ({ collections, onCollectionClick, onCreateCollection, onEditCollection, onDeleteCollection, isOwner }) => (
+  <div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {collections.map((col) => (
+        <div
+          key={col.id}
+          className="group relative bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden border border-slate-100 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1"
+        >
+          <div className="aspect-[16/9] relative overflow-hidden cursor-pointer" onClick={() => onCollectionClick(col.id)}>
+            <img
+              src={col.cover_image_url || col.artworks?.[0]?.image_url?.[0] || 'https://via.placeholder.com/600x400?text=No+Image'}
+              alt={col.name}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+              <span className="text-white font-bold text-sm uppercase tracking-widest flex items-center gap-2">
+                View details
+                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </span>
+            </div>
+          </div>
+          
+          {isOwner && (
+            <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button 
+                onClick={(e) => { e.stopPropagation(); onEditCollection(col.id); }}
+                className="p-2 bg-white/90 dark:bg-zinc-800/90 text-slate-700 dark:text-slate-200 rounded-full hover:bg-[#FFC247] hover:text-slate-900 transition-colors shadow-md"
+                title="Edit Collection"
+              >
+                <span className="material-symbols-outlined text-[20px]">edit</span>
+              </button>
+              <button 
+                onClick={(e) => { e.stopPropagation(); onDeleteCollection(col.id); }}
+                className="p-2 bg-white/90 dark:bg-zinc-800/90 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition-colors shadow-md"
+                title="Delete Collection"
+              >
+                <span className="material-symbols-outlined text-[20px]">delete</span>
+              </button>
+            </div>
+          )}
+
+          <div className="p-6 cursor-pointer" onClick={() => onCollectionClick(col.id)}>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{col.name}</h3>
+            <p className="text-slate-500 dark:text-slate-400 text-sm line-clamp-2 mb-4">{col.description}</p>
+            <div className="flex items-center justify-between mt-auto">
+              <span className="text-xs font-black text-amber-600 dark:text-amber-500 uppercase tracking-widest">
+                {col.artworks?.length || 0} Pieces
+              </span>
+              <div className="flex -space-x-2 overflow-hidden">
+                {col.artworks?.slice(0, 3).map((art, i) => (
+                  <img key={i} src={art.image_url?.[0]} className="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-900 object-cover" alt="" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+      {collections.length === 0 && (
+        <div className="col-span-full text-center py-20 text-slate-500 dark:text-slate-400 font-medium">
+          {isOwner ? "You haven't created any collections yet." : "This artist hasn't curated any collections yet."}
+        </div>
+      )}
+    </div>
+  </div>
+);
+
 const AboutTab = ({ artist }) => (
   <div className="max-w-2xl">
     <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">About the Artist</h3>
@@ -269,7 +337,7 @@ const AboutTab = ({ artist }) => (
 );
 
 
-const TABS = ['portfolio', 'uploads', 'about'];
+
 
 const formatFollowerCount = (count) =>
   count >= 1000 ? (count / 1000).toFixed(1) + 'k' : count;
@@ -286,13 +354,14 @@ export const ArtistProfilePage = () => {
   const [artist, setArtist] = useState(null);
   const [artworks, setArtworks] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [collections, setCollections] = useState([]);
   const [isFollowing, setIsFollowing] = useState(false);
   const [isFollowLoading, setIsFollowLoading] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  
+
   useEffect(() => {
 
     const token = localStorage.getItem('token');
@@ -317,6 +386,11 @@ export const ArtistProfilePage = () => {
         setArtworks(Array.isArray(data.artworks) ? data.artworks : []);
         setPosts(Array.isArray(data.posts) ? data.posts : []);
 
+        // Fetch collections
+        collectionService.getCollectionsByArtist(data.artist.id)
+          .then(res => { if (!cancelled) setCollections(Array.isArray(res) ? res : []); })
+          .catch(err => console.error("Collections fetch error:", err));
+
         // Fetch follow status
         if (data.artist?.id) {
           artistProfileService.checkIsFollowing(data.artist.id)
@@ -332,7 +406,19 @@ export const ArtistProfilePage = () => {
         if (!cancelled) setLoading(false);
       });
 
-    return () => { cancelled = true; };
+    const handleFollowStateChange = (event) => {
+      const eventArtistId = event.detail?.artistId;
+      if (artistIdParam && eventArtistId === String(artistIdParam)) {
+        setIsFollowing(event.detail?.isFollowing);
+      }
+    };
+    
+    window.addEventListener('follow-state-changed', handleFollowStateChange);
+
+    return () => { 
+      cancelled = true; 
+      window.removeEventListener('follow-state-changed', handleFollowStateChange);
+    };
   }, [artistIdParam]);
 
   const handleFollowClick = async () => {
@@ -343,10 +429,16 @@ export const ArtistProfilePage = () => {
         await artistProfileService.unfollowArtist(artistId);
         setIsFollowing(false);
         setArtist(prev => ({ ...prev, followers: Math.max(0, (parseInt(prev.followers) || 0) - 1) }));
+        window.dispatchEvent(new CustomEvent('follow-state-changed', {
+          detail: { artistId: String(artistId), isFollowing: false }
+        }));
       } else {
         await artistProfileService.followArtist(artistId);
         setIsFollowing(true);
         setArtist(prev => ({ ...prev, followers: (parseInt(prev.followers) || 0) + 1 }));
+        window.dispatchEvent(new CustomEvent('follow-state-changed', {
+          detail: { artistId: String(artistId), isFollowing: true }
+        }));
       }
     } catch (err) {
       console.error('Follow toggle failed:', err);
@@ -371,6 +463,17 @@ export const ArtistProfilePage = () => {
   const handlePostCreated = useCallback((newPost) => {
     setPosts((prev) => [newPost, ...prev]);
   }, []);
+
+  const handleDeleteCollection = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this collection?")) return;
+    try {
+      await collectionService.deleteCollection(id);
+      setCollections(prev => prev.filter(c => c.id !== id));
+    } catch (err) {
+      console.error("Delete failed:", err);
+      alert("Failed to delete collection. Please try again.");
+    }
+  };
 
   // Loading & Error states
   if (loading) {
@@ -433,8 +536,8 @@ export const ArtistProfilePage = () => {
                 onClick={handleFollowClick}
                 disabled={isFollowLoading}
                 className={`font-bold text-sm px-6 py-2 rounded-full shadow-sm transition-colors disabled:opacity-50 ${isFollowing
-                    ? 'bg-slate-200 dark:bg-zinc-800 text-slate-800 dark:text-white'
-                    : 'bg-[#FFC247] text-slate-900 hover:bg-yellow-400'
+                  ? 'bg-slate-200 dark:bg-zinc-800 text-slate-800 dark:text-white'
+                  : 'bg-[#FFC247] text-slate-900 hover:bg-yellow-400'
                   }`}
               >
                 {isFollowLoading ? '...' : (isFollowing ? 'Unfollow' : 'Follow')}
@@ -506,8 +609,8 @@ export const ArtistProfilePage = () => {
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`pb-3 border-b-2 text-sm font-bold transition-colors capitalize ${activeTab === tab
-                      ? 'border-slate-900 dark:border-white text-slate-900 dark:text-white'
-                      : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                    ? 'border-slate-900 dark:border-white text-slate-900 dark:text-white'
+                    : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                     }`}
                 >
                   {tab}
@@ -522,6 +625,16 @@ export const ArtistProfilePage = () => {
               <PortfolioTab artworks={artworks} onArtworkClick={handleArtworkClick} artistName={artist?.display_name || artist?.name || ''} />
             )}
             {activeTab === 'uploads' && <UploadsTab posts={posts} onCreatePost={openCreatePost} isOwner={artist?.owner} />}
+            {activeTab === 'collections' && (
+              <CollectionsTab 
+                collections={collections} 
+                onCollectionClick={(id) => navigate(`/collections/${id}`)}
+                onCreateCollection={() => navigate('/dashboard/collections/create')}
+                onEditCollection={(id) => navigate(`/dashboard/collections/edit/${id}`)}
+                onDeleteCollection={handleDeleteCollection}
+                isOwner={artist?.owner}
+              />
+            )}
             {activeTab === 'about' && <AboutTab artist={artist} />}
           </div>
         </div>

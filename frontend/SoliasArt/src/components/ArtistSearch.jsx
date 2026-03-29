@@ -45,6 +45,11 @@ export const ArtistSearch = () => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full px-4 py-2 rounded-lg border"
                 />
+                
+                {/* Total Counts */}
+                <div className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400 font-medium">
+                    Found {filteredArtists.length} artists with a total of {filteredArtists.reduce((sum, artist) => sum + (artist.artworks_count || 0), 0)} artworks
+                </div>
             </div>
 
             {/* Artists */}

@@ -23,9 +23,6 @@ const ArtworkDetailsPage = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
   useEffect(() => {
-    setIsSaved(false);
-    setIsLiked(false);
-
     const checkSaveStatus = async () => {
       const token = localStorage.getItem('token');
       if (!token) return;
@@ -63,7 +60,7 @@ const ArtworkDetailsPage = () => {
     if (id) checkSaveStatus();
   }, [id, BACKEND_URL]);
 
-  //  Function to handle the Save/Unsave btn
+  // NEW: Function to handle the Save/Unsave toggle
   const handleToggleSave = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -71,6 +68,7 @@ const ArtworkDetailsPage = () => {
       return;
     }
 
+    // Optimistic UI update
     const previousSaveStatus = isSaved;
     setIsSaved(!previousSaveStatus);
 
@@ -84,12 +82,19 @@ const ArtworkDetailsPage = () => {
   };
 
   const handleOpenArModal = async () => {
+    const mobileLink = `${window.location.origin}/preview?glb=${BACKEND_URL}/ar/generate-ar/${id}`;
+
+    // Check if user is on a mobile device
+    const isMobile = /Android|iPhone|iPad|visionOS|Quest/i.test(navigator.userAgent);
+    if (isMobile) {
+      window.location.href = mobileLink;
+      return;
+    }
+
     setArModalOpen(true);
     setIsArLoading(true);
     setArError("");
     setQrReady(false);
-
-    const mobileLink = `${window.location.origin}/preview?glb=${BACKEND_URL}/ar/generate-ar/${id}`;
     setGeneratedMobileUrl(mobileLink);
 
     try {

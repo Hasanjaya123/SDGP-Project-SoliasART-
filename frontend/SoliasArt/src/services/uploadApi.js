@@ -111,7 +111,7 @@ export const artworkService = {
 
   getArtWorks: async () => {
     try {
-      const response = await api.get("/explore")
+      const response = await api.get("/feed")
       return response.data
     } catch (error) {
       console.log("failed to load artworks", error.response?.data?.detail || error.message)
@@ -140,6 +140,29 @@ export const artworkService = {
       throw error
     }
   },
+
+  getExploreArtworks: async (page = 1, limit = 100) => {
+    try {
+      const response = await api.get("/explore", {
+        params: { page, limit }
+      })
+      return response.data.data || []
+    } catch (error) {
+      console.log("failed to load explore artworks", error.response?.data?.detail || error.message)
+      throw error
+    }
+  },
+
+  getArtworksByArtist: async (artistId) => {
+    try {
+      const response = await api.get(`/api/artworks/?artist_id=${artistId}`);
+      return response.data;
+    } catch (error) {
+      console.error("failed to load artworks by artist", error.response?.data?.detail || error.message);
+      throw error;
+    }
+  },
+
 
   uploadArtist: async (formDataState) => {
     const formData = new FormData();
@@ -192,6 +215,38 @@ export const artworkService = {
       throw error;
     }
   }
+};
+
+export const collectionService = {
+  createCollection: async (collectionData) => {
+    const response = await api.post("/api/collections/", collectionData);
+    return response.data;
+  },
+
+  getAllCollections: async () => {
+    const response = await api.get("/api/collections/");
+    return response.data;
+  },
+
+  getCollectionsByArtist: async (artistId) => {
+    const response = await api.get(`/api/collections/artist/${artistId}`);
+    return response.data;
+  },
+
+  getCollectionById: async (collectionId) => {
+    const response = await api.get(`/api/collections/${collectionId}`);
+    return response.data;
+  },
+
+  deleteCollection: async (collectionId) => {
+    const response = await api.delete(`/api/collections/${collectionId}`);
+    return response.data;
+  },
+
+  updateCollection: async (collectionId, collectionData) => {
+    const response = await api.patch(`/api/collections/${collectionId}`, collectionData);
+    return response.data;
+  },
 };
 
 export const paymentService = {

@@ -34,7 +34,7 @@ async def convert_to_artist_profile(
             raise HTTPException(status_code=409, detail="User is already an artist")
         
         if (len(profile_response.data) == 0):
-            raise HTTPException(statis_code=404, details="Artist not found")
+            raise HTTPException(status_code=404, detail="Artist not found")
         
         response = (
             supabase.table("users")

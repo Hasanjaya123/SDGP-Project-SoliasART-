@@ -21,7 +21,7 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
       const token = localStorage.getItem('token');
       if (!token) {
         navigate('/login');
-        return; 
+        return;
       }
 
       try {
@@ -75,12 +75,12 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
   const handleLogout = () => {
     localStorage.removeItem('token'); // Clear the session
     navigate('/login'); // Send back to login page
-  };  
- 
+  };
+
   const mainLinks = [
-    { icon: <BiCompass size={24} />, label: "Explore", path: "/search" }, 
-    { icon: <HiOutlineNewspaper size={24} />, label: "Feed", path: "/feed" }, 
-    { icon: <BiCollection size={24} />, label: "Collections", path: "/collections" },  
+    { icon: <BiCompass size={24} />, label: "Explore", path: "/search" },
+    { icon: <HiOutlineNewspaper size={24} />, label: "Feed", path: "/feed" },
+    { icon: <BiCollection size={24} />, label: "Collections", path: "/collections" },
     { icon: <BiMap size={24} />, label: "ArtMaps", path: "/map" },
     { icon: <BiUser size={24} />, label: "Artists", path: "/artist-search" }
   ];
@@ -103,11 +103,10 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
     // Check if the current URL matches the link's path
     const isActive = location.pathname === path;
 
-    return `flex items-center gap-4 px-4 py-3 rounded-lg transition-colors cursor-pointer ${
-      isActive 
-        ? '!text-[#1D4A73] dark:!text-[#3A8AD9] font-bold' 
+    return `flex items-center gap-4 px-4 py-3 rounded-lg transition-colors cursor-pointer ${isActive
+        ? '!text-[#1D4A73] dark:!text-[#3A8AD9] font-bold'
         : 'text-gray-500 hover:text-[#C58940] hover:bg-yellow-50 dark:hover:bg-gray-800 font-medium'
-    }`;
+      }`;
   };
 
   // extract user details or fallback to default values
@@ -207,7 +206,6 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
 
         {/* User Profile  */}
         <div className="mt-auto border-t border-gray-200 dark:border-gray-800 pt-6 flex flex-col gap-2">
-          
           {/* Profile Link  */}
           {userData ? (
             <Link to={profileLink} onClick={() => handleLinkClick()} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">

@@ -17,6 +17,7 @@ import ArtSearch from './pages/ArtSearch.jsx';
 import React, { useState, useEffect } from 'react';
 import ArtistDashboard from './pages/Dashboard.jsx';
 import CommissionRequestsPage from './pages/CommissionRequestsPage.jsx';
+import FeedPage from './pages/FeedPage.jsx';
 
 import ArtworkDetailsPage from './pages/ArtworkDetailsPage';
 import { ArtistProfilePage } from "./pages/ArtistProfile.jsx"
@@ -26,7 +27,9 @@ import ArtMapPage from './pages/ArtMapPage.jsx';
 import SaveWork from './pages/saveWork.jsx';
 import { ArtistSearch } from './components/ArtistSearch';
 import CollectionsPage from './pages/CollectionsPage';
-
+import CreateCollection from './pages/CreateCollection.jsx';
+import EditCollection from './pages/EditCollection.jsx';
+import CollectionDetailPage from './pages/CollectionDetailPage.jsx';
 
 // Verifies role against backend, not just the JWT
 function NotArtistGuard({ children }) {
@@ -71,6 +74,7 @@ function ArtistGuard({ children }) {
   return children;
 }
 
+
 function App() {
 
   return (
@@ -86,10 +90,10 @@ function App() {
         {/* Test route for ArtDisplayCard */}
         <Route path="/test" element={<Test />} />
 
-
+        
 
         <Route path="/search/:userId" element={<ArtSearch />} />
-
+        
         {/* AR Viewer - Desktop AR generation and QR code */}
         <Route path="/ar" element={<ARViewer />} />
 
@@ -110,6 +114,7 @@ function App() {
         <Route element={<Layout />}>
           {/* Artwork details page */}
           <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
+          <Route path="/feed" element={<FeedPage />} />
           <Route path="/search" element={<ArtSearch />} />
           <Route path="/artist-search" element={<ArtistSearch />} />
           <Route path="/artist/profile" element={<ArtistProfilePage />} />
@@ -118,6 +123,10 @@ function App() {
           <Route path="/map" element={<ArtMapPage />} />
           <Route path="/buyer/profile" element={<SaveWork />} />
           <Route path="/collections" element={<CollectionsPage />} />
+          <Route path="/collections/:id" element={<CollectionDetailPage />} />
+          <Route path="/create-collection" element={<NotArtistGuard><Navigate to="/search" replace /></NotArtistGuard>} /> { /* Fallback for accessibility */ }
+          <Route path="/dashboard/collections/create" element={<ArtistGuard><CreateCollection /></ArtistGuard>} />
+          <Route path="/dashboard/collections/edit/:id" element={<ArtistGuard><EditCollection /></ArtistGuard>} />
 
           <Route path="/dashboard" element={<ArtistGuard><ArtistDashboard /></ArtistGuard>} />
           <Route path="/dashboard/commissions" element={<ArtistGuard><CommissionRequestsPage /></ArtistGuard>} />
@@ -128,7 +137,6 @@ function App() {
 
 
     </>
-
   );
 }
 

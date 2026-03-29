@@ -1,6 +1,6 @@
 import React, { useState ,useEffect} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { api } from '../../services/uploadApi';
+import { api, paymentService } from '../../services/uploadApi';
 
 //import icons
 import { FiEye, FiHeart, FiBookmark } from 'react-icons/fi'; 
@@ -8,7 +8,13 @@ import { FaHeart, FaBookmark } from 'react-icons/fa';
 import { MdOutlineViewInAr } from 'react-icons/md';
 
 const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick, onSaveClick, isSaved }) => {
+
+  console.log("This is the artwork object data:", artwork);
+  const [likesCount, setLikesCount] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const isSold = artwork?.status?.toLowerCase() === 'sold';
 
   // Initialize the navigation hook
   const navigate = useNavigate(); 
@@ -42,10 +48,77 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick, onSaveC
     }
   };
 
-  const handleBuyNow = () => alert("Proceeding to checkout!");
+  const handleBuyNow = async () => {
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    alert("Please log in first!");
+    return;
+  }
+
+  setIsProcessing(true);
+
+  try {
+    // Call backend to get payment details for this artwork
+    const paymentData = await paymentService.initiatePayment([String(artwork.id)]);
+
+    // Log the received payment data for debugging
+    console.log("Payment Data Received:", paymentData);
+
+    // Map the backend response to PayHere's expected format
+    const payment = {
+      sandbox: true, // true for testing
+      merchant_id: paymentData.merchant_id,
+      return_url: paymentData.return_url,
+      cancel_url: paymentData.cancel_url,
+      notify_url: paymentData.notify_url,
+      order_id: paymentData.order_id,
+      items: paymentData.items,
+      amount: paymentData.amount,
+      currency: paymentData.currency,
+      hash: paymentData.hash,
+      first_name: paymentData.first_name,
+      last_name: paymentData.last_name,
+      email: paymentData.email,
+      phone: paymentData.phone,
+      address: paymentData.address,
+      city: paymentData.city,
+      country: paymentData.country,
+    };
+
+    // Verify merchant_id is actually there before starting
+    if (!payment.merchant_id) {
+      console.error("Data mapping error. Response keys:", Object.keys(paymentData));
+      throw new Error("Merchant ID is missing from server response.");
+    }
+
+    // Set up PayHere callbacks
+    window.payhere.onCompleted = async (orderId) => {
+      try {
+        await paymentService.confirmPayment(orderId);
+        alert('Purchase successful!');
+        navigate('/orders');
+      } catch (err) {
+        alert('Payment processed, but record update failed.');
+      }
+    };
+
+    window.payhere.onDismissed = () => console.log("Payment dismissed.");
+    window.payhere.onError = (err) => alert('Payment failed: ' + err);
+
+    // Start the process
+    window.payhere.startPayment(payment);
+
+  } catch (error) {
+    console.error("Checkout Error:", error);
+    alert(error.response?.data?.detail || error.message || "Checkout failed");
+  } finally {
+    setIsProcessing(false);
+  }
+};
 
   return (
-    <div className="flex flex-col h-full animate-fade-in-up">
+    <div className="flex flex-col h-full animate-fade-in-up dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
       
       {/* Category */}
       <div className="mb-3">
@@ -101,8 +174,8 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick, onSaveC
       </div>
 
       {/* Price */}
-      <div className="mb-8 flex flex-col gap-1">
-        <span className="text-xs text-gray-900 uppercase font-bold tracking-wide">Price</span>
+      <div className={`mb-8 flex flex-col gap-1 transition-all ${isSold ? 'opacity-50 blur-[2px] pointer-events-none' : ''}`}>
+        <span className="text-xs text-gray-900 dark:text-white uppercase font-bold tracking-wide">Price</span>
         <p className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
           LKR {artwork.price.toLocaleString()}
         </p>
@@ -110,23 +183,35 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick, onSaveC
 
       {/* Buttons */}
       <div className="space-y-3 mt-auto">
-        <div className="grid grid-cols-2 gap-3">
-            
-            {/*Add to Cart button */}
+        {!isSold ? (
+          <div className="grid grid-cols-2 gap-3">
+            {/* Add to Cart button */}
             <button 
               onClick={handleAddToCart} 
               disabled={isAddingToCart}
               className={`w-full py-3.5 text-white font-bold text-sm rounded-lg shadow-sm transition-all focus:!outline-none 
-                ${isAddingToCart ? 'bg-amber-500 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600 hover:!border-gray-200 dark:hover:!border-gray-800'}`}
+                ${isAddingToCart ? 'bg-amber-500 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600'}`}
             >
                 {isAddingToCart ? 'Adding...' : 'Add to Cart'}
             </button>
             
-            {/*Buy Now button */}
-            <button onClick={handleBuyNow} className="w-full py-3.5 bg-[#153654] text-white font-bold text-sm rounded-lg shadow-sm hover:bg-[#0F263B] transition-all hover:!border-gray-200 dark:hover:!border-gray-800 focus:!outline-none">
-                Buy Now
+            {/* Buy Now button */}
+            <button 
+              onClick={handleBuyNow} 
+              disabled={isProcessing}
+              className={`w-full py-3.5 text-white font-bold text-sm rounded-lg shadow-sm transition-all focus:!outline-none 
+                ${isProcessing ? 'bg-[#153654] cursor-not-allowed' : 'bg-[#153654] hover:bg-[#0F263B]'}`}
+            >
+                {isProcessing ? 'Processing...' : 'Buy Now'}
             </button>
-        </div>
+          </div>
+        ) : (
+          /* Placeholder when sold to keep layout consistent, or you can leave it empty */
+          <div className="w-full py-3.5 bg-gray-200 dark:bg-gray-600 text-red-600 dark:text-red-400 text-center font-bold text-lg rounded-lg cursor-not-allowed">
+            Artwork Sold
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-3">
             
             {/*Save button */}

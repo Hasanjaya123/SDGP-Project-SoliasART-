@@ -42,6 +42,7 @@ async def get_artwork_details(artwork_id: str, db: Session = Depends(get_db)):
         # Likes and default category
         "likes": artwork.likes if artwork.likes is not None else 0,
         "category": "New Release", 
+        "status": artwork.status if artwork.status is not None else "Available",
         
         #  Injecting the real artist data from 'artists' table
         "artist": {

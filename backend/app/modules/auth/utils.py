@@ -50,7 +50,7 @@ conf = ConnectionConfig(
 )
 
 async def send_verification_email(email: EmailStr, first_name: str, token: str):
-    base_url = os.getenv("VITE_BACKEND_URL", "http://localhost:8000")
+    base_url = os.getenv("BACKEND_URL", "http://localhost:8000")
     url = f"{base_url}/auth/verify/{token}"
 
     logo_url = "https://ik.imagekit.io/sjunnxn6x/Public/soliasartlogo.png"
