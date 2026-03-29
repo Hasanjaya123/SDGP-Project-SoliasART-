@@ -62,13 +62,12 @@ function CommentBox({ targetType, targetId, userId, onCommentCountChange }) {
             {comments.length > 0 && (
                 <div className="mb-2">
                     {comments.length > 2 && (
-                        <button
-                            type="button"
+                        <div
                             onClick={() => setShowAllComments((prev) => !prev)}
-                            className="mb-1 block w-full text-left text-[11px] leading-4 text-stone-500 dark:text-gray-400 hover:text-stone-600 dark:hover:text-gray-300"
+                            className="mb-1 block w-full text-left text-[13px] leading-4 text-stone-500 dark:text-gray-400 hover:text-stone-600 dark:hover:text-gray-300 cursor-pointer select-none"
                         >
                             {showAllComments ? "Hide comments" : `View all ${comments.length} comments`}
-                        </button>
+                        </div>
                     )}
 
                     <div className="space-y-1.5">
