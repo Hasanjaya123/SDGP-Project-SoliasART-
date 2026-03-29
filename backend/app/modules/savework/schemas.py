@@ -15,6 +15,8 @@ class ArtworkCard(BaseModel):
     year_created: Optional[int] = None
     description: Optional[str] = None
     is_framed: Optional[bool] = None
+    view_count: Optional[int] = None   
+    likes: Optional[int] = None        
 
     class Config:
         from_attributes = True

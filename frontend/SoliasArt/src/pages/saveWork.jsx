@@ -5,33 +5,7 @@ import UserProfile from '../comp/UserProfile';
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
-
- 
-function seededRandom(seed, min, max) {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) {
-    hash = (hash << 5) - hash + seed.charCodeAt(i);
-    hash |= 0;
-  }
-  const norm = (Math.abs(hash) % 1000) / 1000;
-  return Math.floor(norm * (max - min + 1)) + min;
-}
-
-
-//Icons
-const EyeIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3 h-3 shrink-0">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-    <circle cx="12" cy="12" r="3"/>
-  </svg>
-);
-
-const HeartIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3 h-3 shrink-0">
-    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-  </svg>
-);
-
+// Icons
 const PaletteIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 shrink-0">
     <circle cx="12" cy="12" r="10"/>
@@ -43,44 +17,26 @@ const PaletteIcon = () => (
   </svg>
 );
 
-
-//Card wrapper
+// Card wrapper — passes real data including view_count, likes, and artist_name
 function CardWithRealInfo({ artwork }) {
   const image = artwork.image_url?.[0] || '';
 
   const formData = {
-    title:    artwork.title    || 'UNTITLED ARTWORK',
-    category: artwork.medium   || 'New Release',
-    price:    artwork.price    || 0,
-    height:   artwork.height_in ? artwork.height_in * 25.4 : 400,
-    width:    artwork.width_in  ? artwork.width_in  * 25.4 : 300,
-    images:   artwork.image_url || [],
+    title:       artwork.title       || 'UNTITLED ARTWORK',
+    category:    artwork.medium      || 'New Release',
+    price:       artwork.price       || 0,
+    height:      artwork.height_in   ? artwork.height_in * 25.4 : 400,
+    width:       artwork.width_in    ? artwork.width_in  * 25.4 : 300,
+    images:      artwork.image_url   || [],
+    artist_name: artwork.artist_name || 'Unknown Artist',
+    views:       artwork.view_count  ?? 0,
+    likes:       artwork.likes       ?? 0,
   };
 
-  return (
-    <div className="relative">
-      <ArtDisplayCard image={image} formData={formData} />
-      <div
-        className="absolute left-0 right-0 flex flex-col items-center gap-1 pointer-events-none"
-        style={{ bottom: '68px' }}
-      >
-        <p className="text-[11px] font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-900 w-full text-center py-0.5 transition-colors">
-          {artwork.artist_name || 'Unknown Artist'}
-        </p>
-        <div className="flex items-center justify-center gap-3 text-gray-600 dark:text-gray-400 text-[11px] font-medium bg-white dark:bg-gray-900 w-full py-0.5 transition-colors">
-          <span className="flex items-center gap-1">
-            <EyeIcon />{seededRandom(artwork.id + 'v', 300, 5000).toLocaleString()}
-          </span>
-          <span className="flex items-center gap-1">
-            <HeartIcon />{seededRandom(artwork.id + 'l', 80, 1200).toLocaleString()}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
+  return <ArtDisplayCard image={image} formData={formData} />;
 }
 
-//Loading skeleton
+// Loading skeleton
 function SkeletonCard() {
   return (
     <div className="w-[220px] animate-pulse">
@@ -91,7 +47,7 @@ function SkeletonCard() {
   );
 }
 
-//Page
+// Page
 const SaveWork = () => {
   const navigate = useNavigate();
   const [artworks, setArtworks] = useState([]);
@@ -138,7 +94,6 @@ const SaveWork = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col p-4 md:p-8 transition-colors duration-200">
-
       <div className="max-w-7xl mx-auto w-full">
 
         {/* User Profile */}
@@ -199,6 +154,7 @@ const SaveWork = () => {
             )}
           </div>
         )}
+
       </div>
     </div>
   );

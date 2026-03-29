@@ -59,6 +59,8 @@ def _map_row(row: dict, artist_name: str = None) -> ArtworkCard:
         year_created=row.get("year_created"),
         description=row.get("description"),
         is_framed=row.get("is_framed"),
+        view_count=row.get("view_count"),
+        likes=row.get("likes"),
     )
 
 
@@ -89,14 +91,13 @@ async def get_artworks(
 ):
     """
     Fetch artworks from Supabase for the SaveWork page.
-    Returns title, medium, price, images, dimensions, and artist name.
-    No DB schema changes required.
+    Returns title, medium, price, images, dimensions, artist name, view count, and likes.
     """
     try:
         rows = await _supabase_get(
             "artwork",
             params={
-                "select": "id,title,medium,price,image_url,height_in,width_in,artist_id,year_created,description,is_framed",
+                "select": "id,title,medium,price,image_url,height_in,width_in,artist_id,year_created,description,is_framed,view_count,likes",
                 "order": "create_at.desc.nullslast",
                 "limit": str(limit),
                 "offset": str(offset),
@@ -117,7 +118,7 @@ async def get_single_artwork(artwork_id: str):
             "artwork",
             params={
                 "id": f"eq.{artwork_id}",
-                "select": "id,title,medium,price,image_url,height_in,width_in,artist_id,year_created,description,is_framed",
+                "select": "id,title,medium,price,image_url,height_in,width_in,artist_id,year_created,description,is_framed,view_count,likes",
                 "limit": "1",
             },
         )
@@ -130,13 +131,14 @@ async def get_single_artwork(artwork_id: str):
     artist_map = await _fetch_artist_names(rows)
     return _map_row(rows[0], artist_name=artist_map.get(str(rows[0].get("artist_id"))))
 
+
 @router.post("/save/{artwork_id}")
 async def save_artwork(artwork_id: str, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
 
     user_id_str = str(current_user.id)
     # Check if already saved to prevent duplicates
     existing_save = db.query(UserSave).filter(
-        UserSave.user_id == user_id_str, 
+        UserSave.user_id == user_id_str,
         UserSave.artwork_id == artwork_id
     ).first()
 
@@ -153,24 +155,24 @@ async def save_artwork(artwork_id: str, db: Session = Depends(get_db), current_u
 
 @router.get("/user/saved", response_model=List[ArtworkCard])
 async def get_my_saved_artworks(
-    db: Session = Depends(get_db), 
+    db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    # Get saved artworks IDs
+    # Get saved artwork IDs
     saved_records = db.query(UserSave).filter(UserSave.user_id == str(current_user.id)).all()
-    
+
     if not saved_records:
         return []
 
     artwork_ids = [str(record.artwork_id) for record in saved_records]
-      
+
     rows = await _supabase_get(
         "artwork",
         params={
             "id": "in.(" + ",".join(artwork_ids) + ")",
-            "select": "id,title,medium,price,image_url,height_in,width_in,artist_id"
+            "select": "id,title,medium,price,image_url,height_in,width_in,artist_id,year_created,description,is_framed,view_count,likes",
         }
     )
-    
+
     artist_map = await _fetch_artist_names(rows)
     return [_map_row(r, artist_name=artist_map.get(str(r.get("artist_id")))) for r in rows]
