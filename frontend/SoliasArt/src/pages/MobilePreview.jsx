@@ -32,7 +32,19 @@ function ModelViewer({ src }) {
             environment-image="neutral"
             style={{ width: "100%", height: "70vh" }}
         >
-            <button slot="ar-button">View in AR</button>
+            <button slot="ar-button" style={{
+                position: 'absolute',
+                bottom: '20px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                backgroundColor: '#d97706',
+                color: 'white',
+                fontWeight: '600',
+                padding: '8px 16px',
+                borderRadius: '4px',
+                border: 'none',
+                outline: 'none'
+            }}>View in AR</button>
         </model-viewer>
     )
 }
@@ -70,12 +82,9 @@ export default function MobilePreview() {
         const fetchGlb = async () => {
             try {
                 const res = await api.get(decodedUrl, {
-                    headers: {
-                        "ngrok-skip-browser-warning": "true" // needed when using ngrok
-                    },
                     responseType: 'blob'
                 });
-                
+
                 const blob = res.data;
                 setLocalUrl(URL.createObjectURL(blob));
 
@@ -111,11 +120,14 @@ export default function MobilePreview() {
 
     return (
         <div>
-            <p>AR Preview</p>
-            <h1>3D Preview</h1>
-            <p>Drag to rotate the model</p>
-
-            {modelUrl && <ModelViewer src={modelUrl} />}
+            <section className="mx-auto max-w-3xl bg-white/95 p-5 shadow-2xl md:p-8">
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-700">AR Preview</p>
+                <h1 className="mt-2 font-bold text-[#0F2C59] md:text-4xl">3D Artwork Preview</h1>
+                <p className="mt-2 text-sm text-slate-600">Drag to rotate the model. Tap View in AR to place it on your wall.</p>
+                <div className="mt-5">
+                    {modelUrl && <ModelViewer src={modelUrl} />}
+                </div>
+            </section>
         </div>
     )
 }

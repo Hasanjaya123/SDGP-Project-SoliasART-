@@ -26,6 +26,3 @@ dist/
 .DS_Store
 
 backend/.env
-backend/storage/
-
-frontend/SoliasArt/.env

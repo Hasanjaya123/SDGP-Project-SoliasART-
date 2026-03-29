@@ -11,15 +11,16 @@ import io
 
 from app.modules.ArtistProfile.router import router as artist_profile_router
 from app.modules.ArtistOnboarding.router import router as artist_router
-from app.modules.Artwork.router import router as artworks_router
-from app.modules.Purchase.router import router as cart_router
-from app.modules.ArtSearch.router import router as art_search_router
 from app.core.database import Base, engine
 from app.modules.savework.router import router as savework_router  
 from app.modules.PostUpload.router import router as post_upload_router
 from app.modules.ArtistDashbooard.router import router as dashboard_router
 from app.modules.PayHere.router import router as payhere_router
 from app.modules.Commission.router import router as commission_router
+from app.modules.Feed.router import router as feed_router
+from app.modules.ArtSearch.router import router as art_search_router
+from app.modules.Artwork.router import router as artwork_router
+from app.modules.Purchase.router import router as purchase_router
 
 
 
@@ -41,6 +42,7 @@ app.add_middleware(
     expose_headers=["Content-Disposition", "X-Cache"]  # Expose this header to the frontend for file downloads
 )
 
+@app.get("/")
 @app.post("/")
 def read_root():
     return {"status": "SoliasArt Backend is Active"}
@@ -56,13 +58,11 @@ app.include_router(ar_router, prefix="/ar", tags=["Augmented Reality"])
 app.include_router(artist_router)
 app.include_router(post_upload_router)
 app.include_router(artist_profile_router)
-app.include_router(artworks_router, prefix="/api/artworks", tags=["Artworks Gallery"])
-app.include_router(cart_router, prefix="/api", tags=["Cart"])
+app.include_router(feed_router)
 app.include_router(art_search_router)
+app.include_router(artwork_router, prefix="/api/artworks", tags=["Artwork"])
+app.include_router(purchase_router, prefix="/api", tags=["Purchase"])
 app.include_router(dashboard_router)
-app.include_router(payhere_router, prefix="/payhere", tags=["PayHere Payment"])
+app.include_router(payhere_router, prefix="/payhere", tags=["PayHere"])
 app.include_router(commission_router, prefix="/commissions", tags=["Commissions"])
-
-
-
 

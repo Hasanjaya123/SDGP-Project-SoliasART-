@@ -9,6 +9,16 @@ from app.modules.ArtistProfile.model import Follow
 
 router = APIRouter(prefix="/artists", tags=["ArtistProfile"])
 
+@router.get("/")
+async def get_all_artists():
+
+    try:
+        res = supabase.table("artists").select("*").execute()
+        return res.data
+    except Exception as e:
+        print(f"Error fetching all artists: {e}")
+        raise HTTPException(status_code=500, detail="Could not load artists")
+
 @router.get("/profile")
 async def get_full_artist_profile(
     current_user: str = Depends(get_current_artist)
@@ -80,7 +90,7 @@ async def get_full_artist_profile_by_id(
         raw_artist = profile_res.data[0]
         actual_artist_id = str(raw_artist["id"])
 
-        artworks_res = supabase.table("artwork").select("id, title, price, image_url, width_in, height_in, medium").eq("artist_id", actual_artist_id).execute()
+        artworks_res = supabase.table("artwork").select("id, title, price, image_url, width_in, height_in, medium, view_count, likes, artists(display_name)").eq("artist_id", actual_artist_id).execute()
         
         posts_res = supabase.table("post").select("*").eq("artist_id", actual_artist_id).order("created_at", desc=True).execute()
 
