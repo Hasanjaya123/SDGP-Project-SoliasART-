@@ -67,7 +67,7 @@ function FeedPage() {
     }
 
     return (
-        <div className='min-h-screen bg-stone-50 dark:bg-gray-950 md:flex transition-colors duration-200'>
+        <div className='min-h-screen bg-stone-50 dark:bg-gray-900 md:flex transition-colors duration-200'>
             <div className='flex-1 pt-6'>
                 <div className='mx-auto max-w-[470px]'>
                     {/*Error message*/}
