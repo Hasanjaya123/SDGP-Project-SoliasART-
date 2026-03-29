@@ -1,6 +1,6 @@
 import React, { useState ,useEffect} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { api } from '../../services/uploadApi';
+import { api, paymentService } from '../../services/uploadApi';
 
 //import icons
 import { FiEye, FiHeart, FiBookmark } from 'react-icons/fi'; 
@@ -9,6 +9,7 @@ import { MdOutlineViewInAr } from 'react-icons/md';
 
 const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick, onSaveClick, isSaved }) => {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Initialize the navigation hook
   const navigate = useNavigate(); 
@@ -42,7 +43,75 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick, onSaveC
     }
   };
 
-  const handleBuyNow = () => alert("Proceeding to checkout!");
+  const handleBuyNow = async () => {
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    alert("Please log in first!");
+    return;
+  }
+
+  setIsProcessing(true);
+
+  try {
+    // IMPORTANT: Backend expects a List[str] called 'artwork_ids'
+    // We wrap the single ID in an array to satisfy the backend model
+    const paymentData = await paymentService.initiatePayment([String(artwork.id)]);
+
+    // Log this to your console to verify the flat structure
+    console.log("Payment Data Received:", paymentData);
+
+    // Since the backend model you showed is FLAT, access properties directly
+    const payment = {
+      sandbox: true, // Keep true for testing
+      merchant_id: paymentData.merchant_id,
+      return_url: paymentData.return_url,
+      cancel_url: paymentData.cancel_url,
+      notify_url: paymentData.notify_url,
+      order_id: paymentData.order_id,
+      items: paymentData.items,
+      amount: paymentData.amount,
+      currency: paymentData.currency,
+      hash: paymentData.hash,
+      first_name: paymentData.first_name,
+      last_name: paymentData.last_name,
+      email: paymentData.email,
+      phone: paymentData.phone,
+      address: paymentData.address,
+      city: paymentData.city,
+      country: paymentData.country,
+    };
+
+    // Verify merchant_id is actually there before starting
+    if (!payment.merchant_id) {
+      console.error("Data mapping error. Response keys:", Object.keys(paymentData));
+      throw new Error("Merchant ID is missing from server response.");
+    }
+
+    // Set up PayHere callbacks
+    window.payhere.onCompleted = async (orderId) => {
+      try {
+        await paymentService.confirmPayment(orderId);
+        alert('Purchase successful!');
+        navigate('/orders');
+      } catch (err) {
+        alert('Payment processed, but record update failed.');
+      }
+    };
+
+    window.payhere.onDismissed = () => console.log("Payment dismissed.");
+    window.payhere.onError = (err) => alert('Payment failed: ' + err);
+
+    // Start the process
+    window.payhere.startPayment(payment);
+
+  } catch (error) {
+    console.error("Checkout Error:", error);
+    alert(error.response?.data?.detail || error.message || "Checkout failed");
+  } finally {
+    setIsProcessing(false);
+  }
+};
 
   return (
     <div className="flex flex-col h-full animate-fade-in-up">
@@ -123,8 +192,13 @@ const ArtworkDetailsCard = ({ artwork, artist,liveLikesCount, onArClick, onSaveC
             </button>
             
             {/*Buy Now button */}
-            <button onClick={handleBuyNow} className="w-full py-3.5 bg-[#153654] text-white font-bold text-sm rounded-lg shadow-sm hover:bg-[#0F263B] transition-all hover:!border-gray-200 dark:hover:!border-gray-800 focus:!outline-none">
-                Buy Now
+            <button 
+              onClick={handleBuyNow} 
+              disabled={isProcessing}
+              className={`w-full py-3.5 text-white font-bold text-sm rounded-lg shadow-sm transition-all focus:!outline-none 
+                ${isProcessing ? 'bg-[#153654] cursor-not-allowed' : 'bg-[#153654] hover:bg-[#0F263B] hover:!border-gray-200 dark:hover:!border-gray-800'}`}
+            >
+                {isProcessing ? 'Processing...' : 'Buy Now'}
             </button>
         </div>
         <div className="grid grid-cols-2 gap-3">
