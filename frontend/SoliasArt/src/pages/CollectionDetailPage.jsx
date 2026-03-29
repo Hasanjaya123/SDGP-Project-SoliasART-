@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { collectionService } from '../services/uploadApi';
-import { ArtworkCard } from '../components/ArtworkCard';
+import ArtworkCard from '../components/ArtworkCard';
 import { Heart, Eye, ShoppingCart, ArrowLeft } from 'lucide-react';
 
 export const CollectionDetailPage = ({
@@ -158,7 +158,7 @@ export const CollectionDetailPage = ({
               {artworks.map((artwork) => (
                 <ArtworkCard
                   key={artwork.id}
-                  artwork={artwork}
+                  card={artwork}
                   onView={() => navigate(`/artwork/${artwork.id}`)}
                   onToggleSave={onToggleSave}
                   isSaved={savedItemIds?.includes(artwork.id)}

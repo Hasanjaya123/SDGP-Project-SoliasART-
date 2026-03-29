@@ -141,25 +141,6 @@ export const artworkService = {
     }
   },
 
-<<<<<<< HEAD
-  getArtworksByArtist: async (artistId) => {
-    try {
-      const response = await api.get(`/api/artworks?artist_id=${artistId}`);
-      return response.data;
-    } catch (error) {
-      console.error("Failed to load artist artworks:", error.response?.data?.detail || error.message);
-      throw error;
-    }
-  },
-
-  addBatchToCart: async (artworkIds) => {
-    const response = await api.post('/api/cart/add-batch', {
-      artwork_ids: artworkIds
-    });
-    return response.data;
-  },
-
-=======
   getExploreArtworks: async (page = 1, limit = 20) => {
     try {
       const response = await api.get("/explore", {
@@ -172,7 +153,6 @@ export const artworkService = {
     }
   },
 
->>>>>>> 66d7e728c7c9fca9fc3e38fc6c2f43ed3b2312a7
   uploadArtist: async (formDataState) => {
     const formData = new FormData();
 
