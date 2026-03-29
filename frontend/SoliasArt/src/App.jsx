@@ -31,14 +31,65 @@ import CreateCollection from './pages/CreateCollection.jsx';
 import EditCollection from './pages/EditCollection.jsx';
 import CollectionDetailPage from './pages/CollectionDetailPage.jsx';
 
-// Verifies role against backend, not just the JWT
+const LANDING_URL = 'https://landing.soliasart.com';
+
+// Checks if the user has a valid token
+function isAuthenticated() {
+  const token = localStorage.getItem('token');
+  if (!token) return false;
+
+  try {
+    const decoded = jwtDecode(token);
+    // Check if token is expired
+    if (decoded.exp && decoded.exp * 1000 < Date.now()) {
+      localStorage.removeItem('token');
+      return false;
+    }
+    return true;
+  } catch {
+    localStorage.removeItem('token');
+    return false;
+  }
+}
+
+// Redirects unauthenticated users to the landing page 
+function AuthRedirectGuard({ children }) {
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      window.location.href = LANDING_URL;
+    } else {
+      setChecked(true);
+    }
+  }, []);
+
+  if (!checked) return null;
+  return children;
+}
+
+//authenticated request wil ridrect to /search
+function LandingRedirect() {
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      window.location.href = LANDING_URL;
+    }
+  }, []);
+
+  if (isAuthenticated()) {
+    return <Navigate to="/search" replace />;
+  }
+
+  return null;
+}
+
+// Verifieing the role of the user
 function NotArtistGuard({ children }) {
   const [verified, setVerified] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setVerified(false);
+    if (!isAuthenticated()) {
+      window.location.href = LANDING_URL;
       return;
     }
 
@@ -57,9 +108,8 @@ function ArtistGuard({ children }) {
   const [verified, setVerified] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setVerified(false);
+    if (!isAuthenticated()) {
+      window.location.href = LANDING_URL;
       return;
     }
 
@@ -80,28 +130,20 @@ function App() {
   return (
     <>
       <Routes>
+        {/* Default route - unauthenticated → landing page, authenticated → /search */}
+        <Route path="/" element={<LandingRedirect />} />
+
         <Route path="/home"></Route>
-        {/* Route to Signup page */}
+
+        {/* Public routes — accessible without login */}
         <Route path="/signup" element={<SignupPage />} />
-
-        {/* Route to Login page */}
         <Route path="/login" element={<LoginPage />} />
-
-        {/* Test route for ArtDisplayCard */}
-        <Route path="/test" element={<Test />} />
-
-        
-
-        <Route path="/search/:userId" element={<ArtSearch />} />
-        
-        {/* AR Viewer - Desktop AR generation and QR code */}
         <Route path="/ar" element={<ARViewer />} />
-
-        {/* Mobile AR preview - shows 3D model and AR button when accessed via QR code */}
         <Route path="/preview" element={<MobilePreview />} />
 
-        {/* Default route - redirect to signup */}
-        <Route path="/" element={<Navigate to="/signup" replace />} />
+        {/* Protected routes — require authentication */}
+        <Route path="/test" element={<AuthRedirectGuard><Test /></AuthRedirectGuard>} />
+        <Route path="/search/:userId" element={<AuthRedirectGuard><ArtSearch /></AuthRedirectGuard>} />
 
         {/* Route for Art Upload page (for artists) - can be accessed after login */}
         <Route path='/dashboard/upload' element={<ArtistGuard><UploadArtPage /></ArtistGuard>}></Route>
@@ -111,7 +153,7 @@ function App() {
 
 
         {/* Pages within the main layout (pages which have sidebar and footer) */}
-        <Route element={<Layout />}>
+        <Route element={<AuthRedirectGuard><Layout /></AuthRedirectGuard>}>
           {/* Artwork details page */}
           <Route path="/artwork/:id" element={<ArtworkDetailsPage />} />
           <Route path="/feed" element={<FeedPage />} />
@@ -124,7 +166,7 @@ function App() {
           <Route path="/buyer/profile" element={<SaveWork />} />
           <Route path="/collections" element={<CollectionsPage />} />
           <Route path="/collections/:id" element={<CollectionDetailPage />} />
-          <Route path="/create-collection" element={<NotArtistGuard><Navigate to="/search" replace /></NotArtistGuard>} /> { /* Fallback for accessibility */ }
+          <Route path="/create-collection" element={<NotArtistGuard><Navigate to="/search" replace /></NotArtistGuard>} /> { /* Fallback for accessibility */}
           <Route path="/dashboard/collections/create" element={<ArtistGuard><CreateCollection /></ArtistGuard>} />
           <Route path="/dashboard/collections/edit/:id" element={<ArtistGuard><EditCollection /></ArtistGuard>} />
 
