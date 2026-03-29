@@ -138,12 +138,21 @@ function ArtworkCard({ card, userId }) {
                 <span className="text-base font-bold text-stone-900 dark:text-gray-100">
                     LKR. {Number(card.price).toLocaleString()}
                 </span>
-                <button
-                    onClick={() => navigate(`/artwork/${card.id}`)}
-                    className="bg-amber-600 hover:bg-amber-700 dark:bg-amber-700 dark:hover:bg-amber-600 text-white text-sm font-semibold
-                                    px-6 py-2.5 rounded-full active:bg-amber-800 transition-colors">
-                    Buy
-                </button>
+                {card.status?.toLowerCase() === 'sold' ? (
+                    <button
+                        onClick={() => navigate(`/artwork/${card.id}`)}
+                        className="bg-stone-400 dark:bg-stone-600 text-white text-sm font-semibold
+                                        px-6 py-2.5 rounded-full cursor-not-allowed opacity-75">
+                        Sold
+                    </button>
+                ) : (
+                    <button
+                        onClick={() => navigate(`/artwork/${card.id}`)}
+                        className="bg-amber-600 hover:bg-amber-700 dark:bg-amber-700 dark:hover:bg-amber-600 text-white text-sm font-semibold
+                                        px-6 py-2.5 rounded-full active:bg-amber-800 transition-colors">
+                        Buy
+                    </button>
+                )}
             </div>
         </div>
     )

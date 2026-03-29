@@ -26,9 +26,13 @@ function FollowButton({ artistId }) {
             const changedArtistId = event.detail?.artistId
             // If this is for the same artist, refresh the status
             if (changedArtistId === String(artistId)) {
-                checkFollowStatus(artistId, token)
-                    .then(response => setIsFollowing(response.data.is_following))
-                    .catch(error => console.error('Failed to sync follow status:', error))
+                if (event.detail && typeof event.detail.isFollowing === 'boolean') {
+                    setIsFollowing(event.detail.isFollowing);
+                } else {
+                    checkFollowStatus(artistId, token)
+                        .then(response => setIsFollowing(response.data.is_following))
+                        .catch(error => console.error('Failed to sync follow status:', error));
+                }
             }
         }
 

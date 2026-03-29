@@ -42,6 +42,7 @@ app.add_middleware(
     expose_headers=["Content-Disposition", "X-Cache"]  # Expose this header to the frontend for file downloads
 )
 
+@app.get("/")
 @app.post("/")
 def read_root():
     return {"status": "SoliasArt Backend is Active"}
