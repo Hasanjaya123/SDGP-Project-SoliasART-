@@ -155,6 +155,7 @@ def get_unified_feed(user_id: str, db:Session, page: int = 1, page_size: int = 1
             "price": artwork.price,
             "medium": artwork.medium,
             "is_framed": artwork.is_framed,
+            "status": artwork.status,
         })
 
     #score posts using engagement, collaborative filtering, and embedding similarity

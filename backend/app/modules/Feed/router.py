@@ -87,6 +87,7 @@ def get_feed(
                 price=obj.price if is_artwork else None,
                 medium=obj.medium if is_artwork else None,
                 is_framed=obj.is_framed if is_artwork else None,
+                status=obj.status if is_artwork else None,
             ))
 
     return FeedResponse(
