@@ -161,7 +161,10 @@ export const CollectionDetailPage = ({
                       category: artwork.medium || 'Artwork',
                       height: artwork.height_in || '',
                       width: artwork.width_in || '',
-                      images: Array.isArray(artwork.image_url) ? artwork.image_url : [artwork.image_url]
+                      images: Array.isArray(artwork.image_url) ? artwork.image_url : [artwork.image_url],
+                      artist_name: artwork.artist?.display_name || 'Unknown Artist',
+                      views: artwork.view_count || 0,
+                      likes: artwork.likes || 0
                     }} 
                   />
                 </div>
