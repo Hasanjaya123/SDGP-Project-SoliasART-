@@ -116,7 +116,7 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
   const userRole = userData?.role || "User";
 
   // Route them to the correct profile page based on their role
-  const profileLink = userData?.role === 'artist'
+  const profileLink = userData?.role === 'artist' 
     ? `/artist/profile`
     : `/buyer/profile`;
 
