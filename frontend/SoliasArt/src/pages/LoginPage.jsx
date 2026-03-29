@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { FcGoogle } from 'react-icons/fc'; // Icon for the Google button
+import { FiEye, FiEyeOff } from 'react-icons/fi'; // Icon for password visibility
 import { useNavigate } from 'react-router-dom'; // for navigation
-
+import { api } from '../services/uploadApi';
 
 
 const LoginPage = () => {
@@ -18,6 +19,9 @@ const LoginPage = () => {
 
   // State for tracking API request loading status
   const [loading, setLoading] = useState(false);
+
+  // State for toggling password visibility
+  const [showPassword, setShowPassword] = useState(false);
 
   // State for storing and displaying error messages
   const [error, setError] = useState(null);
@@ -47,21 +51,9 @@ const LoginPage = () => {
     try {
       // Send login request to backend API
       // Assuming your backend has a corresponding '/auth/login' endpoint
-      const response = await fetch('http://localhost:8000/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        // Send email, password, and rememberMe state
-        body: JSON.stringify(formData),
-      });
+      const response = await api.post('/auth/login', formData);
 
-      const data = await response.json();
-
-      // Check if request was successful
-      if (!response.ok) {
-        throw new Error(data.detail || "Failed to login");
-      }
+      const data = response.data;
 
       console.log("Login Successfull:", data);
       //save the token in local storage
@@ -71,7 +63,7 @@ const LoginPage = () => {
 
     } catch (err) {
       // Catch and display any errors that occurred during login
-      setError(err.message || "An unexpected error occurred");
+      setError(err.response?.data?.detail || err.message || "An unexpected error occurred");
     } finally {
       // Re-enable the form after request completes
       setLoading(false);
@@ -122,16 +114,26 @@ const LoginPage = () => {
                         Forgot Password?
                         </a>
                     </div>
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        className={inputClass}
-                        value={formData.password}
-                        onChange={handleChange}
-                        autoComplete="current-password"
-                        required
-                    />
+                    <div className="relative">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            name="password"
+                            placeholder="Password"
+                            className={`${inputClass} pr-12`}
+                            value={formData.password}
+                            onChange={handleChange}
+                            autoComplete="current-password"
+                            required
+                        />
+                        <div
+                            role="button"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
+                            onClick={() => setShowPassword(!showPassword)}
+                            tabIndex="-1"
+                        >
+                            {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                        </div>
+                    </div>
                     </div>
 
                     {/* "Remember for 30 days" Checkbox */}
@@ -188,7 +190,7 @@ const LoginPage = () => {
             {/* RIGHT SIDE: The Image (Width 50%) */}
                 <div className="hidden w-1/2 md:flex md:fixed md:right-0 md:top-0 md:h-screen md:items-center md:justify-center">
                     <img 
-                    src="./src/assets/Sign In.jpg" 
+                    src="/SignIn.jpg" 
                     alt="Decoration" 
                     className="h-full w-full object-cover rounded-bl-[20px] rounded-tl-[20px]"
                     />

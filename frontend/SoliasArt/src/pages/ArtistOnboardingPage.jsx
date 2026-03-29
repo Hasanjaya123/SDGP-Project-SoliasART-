@@ -25,7 +25,7 @@ const INITIAL_DATA = {
 };
 
 const ArtistOnboardingPage = () => {
-  
+
   const { userId } = useParams()
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
@@ -35,20 +35,20 @@ const ArtistOnboardingPage = () => {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isDraggingId, setIsDraggingId] = useState(false);
 
-  // --- Handlers ---
+
 
 
   const handlePublish = async () => {
     try {
-        
-        setIsPublishing(true)
-        if (isPublishing) alert("Converting...")
-        await artworkService.uploadArtist(formData, userId);
-        alert("You have created Artist Acount successfully!");
-        navigate("/user/artist/profile")
-        // Redirect or reset form
+
+      setIsPublishing(true)
+      if (isPublishing) alert("Converting...")
+      await artworkService.uploadArtist(formData, userId);
+      alert("You have created Artist Acount successfully!");
+      navigate("/artist/profile")
+
     } catch (error) {
-        alert("Failed to convert to an Artist. Please try again.");
+      alert("Failed to convert to an Artist. Please try again.");
     }
   };
 
@@ -120,7 +120,6 @@ const ArtistOnboardingPage = () => {
     if (step > 1) setStep(prev => prev - 1);
   };
 
-  // --- Render Helpers ---
 
   const renderProgressBar = () => {
     const steps = [
@@ -140,8 +139,8 @@ const ArtistOnboardingPage = () => {
           <span className="text-[#FFC247] font-bold text-sm">{Math.round(progress)}% Completed</span>
         </div>
         <div className="h-2 w-full bg-slate-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-[#FFC247] transition-all duration-500 ease-out rounded-full" 
+          <div
+            className="h-full bg-[#FFC247] transition-all duration-500 ease-out rounded-full"
             style={{ width: `${progress}%` }}
           ></div>
         </div>
@@ -177,7 +176,6 @@ const ArtistOnboardingPage = () => {
     );
   };
 
-  // --- Step Components ---
 
   const renderStepIdentity = () => (
     <div className="flex flex-col gap-8 animate-fade-in-up">
@@ -188,7 +186,7 @@ const ArtistOnboardingPage = () => {
         </p>
       </div>
       <div className="flex flex-col sm:flex-row gap-4 items-start">
-        <div 
+        <div
           className="relative group cursor-pointer"
           onClick={() => fileInputRef.current?.click()}
         >
@@ -201,10 +199,10 @@ const ArtistOnboardingPage = () => {
           <div className="absolute bottom-0 right-0 bg-white dark:bg-zinc-700 rounded-full p-1.5 shadow-md border border-slate-200 dark:border-zinc-600">
             <span className="material-symbols-outlined text-slate-600 dark:text-slate-300 text-sm">edit</span>
           </div>
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            className="hidden" 
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
             accept="image/*"
             onChange={handleImageUpload}
           />
@@ -217,20 +215,20 @@ const ArtistOnboardingPage = () => {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <label className="text-sm font-bold text-slate-900 dark:text-white">Studio / Display Name <span className="text-red-500">*</span></label>
-          <input 
-            className="w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500" 
-            placeholder="e.g. Samantha Perera Art" 
-            type="text" 
+          <input
+            className="w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+            placeholder="e.g. Samantha Perera Art"
+            type="text"
             value={formData.displayName}
             onChange={(e) => updateField('displayName', e.target.value)}
           />
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-sm font-bold text-slate-900 dark:text-white">Artist Bio / The Story <span className="text-red-500">*</span></label>
-          <textarea 
-            className="w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 resize-none" 
-            placeholder="Tell buyers about your inspiration, your background, and what drives your creativity..." 
-            rows={4} 
+          <textarea
+            className="w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 resize-none"
+            placeholder="Tell buyers about your inspiration, your background, and what drives your creativity..."
+            rows={4}
             value={formData.bio}
             onChange={(e) => updateField('bio', e.target.value)}
           />
@@ -245,10 +243,10 @@ const ArtistOnboardingPage = () => {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span className="text-slate-400 dark:text-slate-500 font-bold text-xs">IG</span>
               </div>
-              <input 
-                className="pl-10 w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500" 
-                placeholder="@username" 
-                type="text" 
+              <input
+                className="pl-10 w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                placeholder="@username"
+                type="text"
                 value={formData.ig}
                 onChange={(e) => updateField('ig', e.target.value)}
               />
@@ -257,10 +255,10 @@ const ArtistOnboardingPage = () => {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 text-[18px]">language</span>
               </div>
-              <input 
-                className="pl-10 w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500" 
-                placeholder="https://yourportfolio.com" 
-                type="text" 
+              <input
+                className="pl-10 w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                placeholder="https://yourportfolio.com"
+                type="text"
                 value={formData.website}
                 onChange={(e) => updateField('website', e.target.value)}
               />
@@ -286,7 +284,7 @@ const ArtistOnboardingPage = () => {
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 text-[18px]">search</span>
             </div>
-            <select 
+            <select
               className="pl-10 w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white appearance-none"
               value={formData.primaryMedium}
               onChange={(e) => updateField('primaryMedium', e.target.value)}
@@ -310,7 +308,7 @@ const ArtistOnboardingPage = () => {
             {formData.artisticStyles.map(style => (
               <div key={style} className="flex items-center gap-1 bg-slate-100 dark:bg-zinc-700 text-slate-700 dark:text-slate-200 px-3 py-1 rounded-full text-sm">
                 {style}
-                <button 
+                <button
                   className="hover:text-slate-900 dark:hover:text-white"
                   onClick={() => updateField('artisticStyles', formData.artisticStyles.filter(s => s !== style))}
                 >
@@ -318,9 +316,9 @@ const ArtistOnboardingPage = () => {
                 </button>
               </div>
             ))}
-            <input 
-              type="text" 
-              placeholder="Type to add style..." 
+            <input
+              type="text"
+              placeholder="Type to add style..."
               className="flex-1 min-w-[120px] border-none focus:ring-0 p-1 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 bg-transparent"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && e.currentTarget.value) {
@@ -336,7 +334,7 @@ const ArtistOnboardingPage = () => {
           <div className="flex items-center gap-2 mt-2 flex-wrap">
             <span className="text-xs text-slate-400 dark:text-slate-500">Popular:</span>
             {['Realism', 'Impressionism', 'Surrealism', 'Minimalism'].map(style => (
-              <button 
+              <button
                 key={style}
                 className="text-xs px-3 py-1 rounded-full border border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-zinc-600 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors"
                 onClick={() => {
@@ -354,7 +352,7 @@ const ArtistOnboardingPage = () => {
         <div className="flex flex-col gap-2">
           <label className="text-sm font-bold text-slate-900 dark:text-white">Years of Experience <span className="text-red-500">*</span></label>
           <div className="relative">
-            <select 
+            <select
               className="w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white appearance-none"
               value={formData.yearsExperience}
               onChange={(e) => updateField('yearsExperience', e.target.value)}
@@ -373,10 +371,10 @@ const ArtistOnboardingPage = () => {
 
         <div className="flex flex-col gap-2">
           <label className="text-sm font-bold text-slate-900 dark:text-white">Additional Keywords</label>
-          <input 
-            className="w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500" 
-            placeholder="e.g. landscape, portrait, texture, nature" 
-            type="text" 
+          <input
+            className="w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+            placeholder="e.g. landscape, portrait, texture, nature"
+            type="text"
             value={formData.keywords}
             onChange={(e) => updateField('keywords', e.target.value)}
           />
@@ -397,10 +395,10 @@ const ArtistOnboardingPage = () => {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
           <label className="text-sm font-bold text-slate-900 dark:text-white">Legal Full Name <span className="text-red-500">*</span></label>
-          <input 
-            className="w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500" 
-            placeholder="As it appears on your bank account" 
-            type="text" 
+          <input
+            className="w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+            placeholder="As it appears on your bank account"
+            type="text"
             value={formData.legalName}
             onChange={(e) => updateField('legalName', e.target.value)}
           />
@@ -418,7 +416,7 @@ const ArtistOnboardingPage = () => {
             <div className="flex flex-col gap-2">
               <label className="text-sm font-bold text-slate-900 dark:text-white">Bank Name <span className="text-red-500">*</span></label>
               <div className="relative">
-                <select 
+                <select
                   className="w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white appearance-none"
                   value={formData.bankName}
                   onChange={(e) => updateField('bankName', e.target.value)}
@@ -436,10 +434,10 @@ const ArtistOnboardingPage = () => {
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-bold text-slate-900 dark:text-white">Branch Name</label>
-              <input 
-                className="w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500" 
-                placeholder="e.g. Downtown Branch" 
-                type="text" 
+              <input
+                className="w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                placeholder="e.g. Downtown Branch"
+                type="text"
                 value={formData.branchName}
                 onChange={(e) => updateField('branchName', e.target.value)}
               />
@@ -448,10 +446,10 @@ const ArtistOnboardingPage = () => {
           <div className="flex flex-col gap-2">
             <label className="text-sm font-bold text-slate-900 dark:text-white">Account Number <span className="text-red-500">*</span></label>
             <div className="relative">
-              <input 
-                className="w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500" 
-                placeholder="0000 0000 0000" 
-                type="text" 
+              <input
+                className="w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                placeholder="0000 0000 0000"
+                type="text"
                 value={formData.accountNumber}
                 onChange={(e) => updateField('accountNumber', e.target.value)}
               />
@@ -468,10 +466,10 @@ const ArtistOnboardingPage = () => {
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 text-[18px]">location_on</span>
             </div>
-            <input 
-              className="pl-10 pr-16 w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500" 
-              placeholder="Start typing your address..." 
-              type="text" 
+            <input
+              className="pl-10 pr-16 w-full rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+              placeholder="Start typing your address..."
+              type="text"
               value={formData.dispatchAddress}
               onChange={(e) => updateField('dispatchAddress', e.target.value)}
             />
@@ -495,10 +493,10 @@ const ArtistOnboardingPage = () => {
                 <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 text-[18px]">expand_more</span>
               </div>
             </div>
-            <input 
-              className="flex-1 rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500" 
-              placeholder="(555) 000-0000" 
-              type="tel" 
+            <input
+              className="flex-1 rounded-lg border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:border-[#FFC247] focus:ring-[#FFC247] shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+              placeholder="(555) 000-0000"
+              type="tel"
               value={formData.phone}
               onChange={(e) => updateField('phone', e.target.value)}
             />
@@ -523,7 +521,7 @@ const ArtistOnboardingPage = () => {
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">Identity Document</h3>
             <span className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-zinc-800 px-2 py-1 rounded">Required</span>
           </div>
-          
+
           {formData.identityDocument ? (
             <div className="border-2 border-solid border-emerald-300 dark:border-emerald-700 rounded-xl p-5 flex items-center gap-4 bg-emerald-50/50 dark:bg-emerald-900/10">
               <div className="size-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0">
@@ -547,11 +545,10 @@ const ArtistOnboardingPage = () => {
               onDragOver={handleIdDragOver}
               onDragLeave={handleIdDragLeave}
               onDrop={handleIdDrop}
-              className={`border-2 border-dashed rounded-xl p-5 flex flex-col items-center justify-center transition-colors cursor-pointer group ${
-                isDraggingId
-                  ? 'border-[#FFC247] bg-yellow-50/50 dark:bg-yellow-900/10'
-                  : 'border-slate-300 dark:border-zinc-700 bg-slate-50/50 dark:bg-zinc-800/30 hover:bg-slate-50 dark:hover:bg-zinc-800 hover:border-[#FFC247]'
-              }`}
+              className={`border-2 border-dashed rounded-xl p-5 flex flex-col items-center justify-center transition-colors cursor-pointer group ${isDraggingId
+                ? 'border-[#FFC247] bg-yellow-50/50 dark:bg-yellow-900/10'
+                : 'border-slate-300 dark:border-zinc-700 bg-slate-50/50 dark:bg-zinc-800/30 hover:bg-slate-50 dark:hover:bg-zinc-800 hover:border-[#FFC247]'
+                }`}
             >
               <div className="size-10 rounded-full bg-white dark:bg-zinc-700 shadow-sm flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                 <span className="material-symbols-outlined text-slate-400 dark:text-slate-500 group-hover:text-[#FFC247]">cloud_upload</span>
@@ -586,8 +583,8 @@ const ArtistOnboardingPage = () => {
           <h3 className="text-base font-bold text-slate-900 dark:text-white mb-3">Terms & Conditions</h3>
           <label className="flex items-start gap-3 cursor-pointer group">
             <div className="relative flex items-center justify-center mt-0.5">
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 className="peer appearance-none size-5 border border-slate-300 dark:border-zinc-600 rounded bg-white dark:bg-zinc-800 checked:bg-[#FFC247] checked:border-[#FFC247] focus:ring-2 focus:ring-[#FFC247] focus:ring-offset-1 transition-colors"
                 checked={formData.agreedToTerms}
                 onChange={(e) => updateField('agreedToTerms', e.target.checked)}
@@ -602,10 +599,10 @@ const ArtistOnboardingPage = () => {
       </div>
     </div>
   );
-  
+
   return (
     <div className="fixed inset-0 w-screen h-screen flex flex-col bg-[#f8f8f6] dark:bg-black font-sans text-slate-900 dark:text-white z-50 overflow-hidden transition-colors duration-300">
-      
+
       {/* Header */}
       <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-6 py-2 z-20 relative shadow-sm transition-colors duration-300">
         <div className="flex items-center gap-4 text-slate-900 dark:text-white">
@@ -622,14 +619,14 @@ const ArtistOnboardingPage = () => {
           </div>
         </div>
         <div className="flex items-center gap-3">
-            
-            <button 
-                onClick={() => exit()}
-                className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-4 bg-slate-100 dark:bg-zinc-800 text-slate-900 dark:text-white text-sm font-bold hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors"
-            >
-              <span className="truncate">Exit</span>
-            </button>
-            <div className="bg-center bg-no-repeat bg-cover rounded-full size-9 border border-gray-200 dark:border-zinc-700" data-alt="User profile avatar placeholder" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuA7-ZJJFCCvTZsCGJ_0taTKw6GTcQsOkKTWcsceeHvkwjDLUIMTNjsfTlGWTLvFKOGxEiG7FVuXC9RcEL9lt7TdsBeaEpmeKTM-GdPcavgTnQyIllRETJKCwWl1zwG3cuJI2M9jXc4_BM_T8QEtX6r14jxOYnT5tDTKzR_e_O4BFqSgwcpWjdHnVqh1c0pQC6XukgqsWksuV7vnqDK5e-Tf88mT3P27QhLUpnPwMJoM70xuatixWeVY3N962m2OJATTVgM9OOCuVZk")' }}></div>
+
+          <button
+            onClick={() => exit()}
+            className="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-4 bg-slate-100 dark:bg-zinc-800 text-slate-900 dark:text-white text-sm font-bold hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors"
+          >
+            <span className="truncate">Exit</span>
+          </button>
+          <div className="bg-center bg-no-repeat bg-cover rounded-full size-9 border border-gray-200 dark:border-zinc-700" data-alt="User profile avatar placeholder" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuA7-ZJJFCCvTZsCGJ_0taTKw6GTcQsOkKTWcsceeHvkwjDLUIMTNjsfTlGWTLvFKOGxEiG7FVuXC9RcEL9lt7TdsBeaEpmeKTM-GdPcavgTnQyIllRETJKCwWl1zwG3cuJI2M9jXc4_BM_T8QEtX6r14jxOYnT5tDTKzR_e_O4BFqSgwcpWjdHnVqh1c0pQC6XukgqsWksuV7vnqDK5e-Tf88mT3P27QhLUpnPwMJoM70xuatixWeVY3N962m2OJATTVgM9OOCuVZk")' }}></div>
 
         </div>
       </header>
@@ -637,43 +634,43 @@ const ArtistOnboardingPage = () => {
       <div className="flex flex-1 overflow-hidden lg:flex-row flex-col">
         {/* Main Content Area */}
         <div className="w-full lg:w-[50%] xl:w-[50%] h-full flex flex-col relative z-10 overflow-y-auto bg-white dark:bg-zinc-900 transition-colors duration-300">
-            <div className="px-6 pt-4 pb-2">
-              {renderProgressBar()}
-            </div>
+          <div className="px-6 pt-4 pb-2">
+            {renderProgressBar()}
+          </div>
 
-            <div className="flex-1 px-6 py-3 max-w-3xl mx-auto w-full flex flex-col gap-5">
-              {step === 1 && renderStepIdentity()}
-              {step === 2 && renderStepArtStyle()}
-              {step === 3 && renderStepCommerce()}
-              {step === 4 && renderStepVerification()}
-            </div>
+          <div className="flex-1 px-6 py-3 max-w-3xl mx-auto w-full flex flex-col gap-5">
+            {step === 1 && renderStepIdentity()}
+            {step === 2 && renderStepArtStyle()}
+            {step === 3 && renderStepCommerce()}
+            {step === 4 && renderStepVerification()}
+          </div>
 
-            {/* Footer Navigation */}
-            <div className="sticky bottom-0 w-full bg-white dark:bg-zinc-900 border-t border-slate-200 dark:border-zinc-800 px-6 py-3 flex justify-between items-center z-20 transition-colors duration-300">
-              <button 
-                  onClick={handleBack}
-                  className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-bold text-sm px-4 py-2 rounded-lg transition-colors"
-              >
-                <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-                  Back
+          {/* Footer Navigation */}
+          <div className="sticky bottom-0 w-full bg-white dark:bg-zinc-900 border-t border-slate-200 dark:border-zinc-800 px-6 py-3 flex justify-between items-center z-20 transition-colors duration-300">
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-bold text-sm px-4 py-2 rounded-lg transition-colors"
+            >
+              <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+              Back
+            </button>
+            <div className="flex gap-4">
+              <button className="px-6 py-2.5 rounded-lg border border-slate-300 dark:border-zinc-700 text-slate-700 dark:text-slate-300 font-bold text-sm hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors">
+                Save Draft
               </button>
-              <div className="flex gap-4">
-                <button className="px-6 py-2.5 rounded-lg border border-slate-300 dark:border-zinc-700 text-slate-700 dark:text-slate-300 font-bold text-sm hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors">
-                  Save Draft
-                </button>
-                <button 
-                    onClick={step === 4 ? handlePublish : handleNext}
-                    className="px-6 py-2.5 rounded-lg bg-[#FFC247] text-slate-900 font-bold text-sm hover:bg-yellow-400 shadow-md shadow-yellow-500/20 transition-all flex items-center gap-2"
-                >
-                    {step === 1 ? 'Next: Art Style' : step === 2 ? 'Next: Commerce' : step === 3 ? 'Next: Verification' : 'Submit Application'}
-                    {step === 4 ? (
-                      <span className="material-symbols-outlined text-[18px]">check_circle</span>
-                    ) : (
-                      <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                    )}
-                </button>
-              </div>
+              <button
+                onClick={step === 4 ? handlePublish : handleNext}
+                className="px-6 py-2.5 rounded-lg bg-[#FFC247] text-slate-900 font-bold text-sm hover:bg-yellow-400 shadow-md shadow-yellow-500/20 transition-all flex items-center gap-2"
+              >
+                {step === 1 ? 'Next: Art Style' : step === 2 ? 'Next: Commerce' : step === 3 ? 'Next: Verification' : 'Submit Application'}
+                {step === 4 ? (
+                  <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                ) : (
+                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                )}
+              </button>
             </div>
+          </div>
         </div>
 
         {/* Live Preview Side Panel */}
@@ -702,7 +699,7 @@ const ArtistOnboardingPage = () => {
                   </button>
                 </div>
               </div>
-              
+
               <div className={`mt-4 ${step === 3 || step === 4 ? 'opacity-30 blur-sm' : ''} transition-all duration-500`}>
                 <div className="flex items-center gap-3">
                   <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">{formData.displayName || 'Your Name'}</h1>
@@ -726,7 +723,7 @@ const ArtistOnboardingPage = () => {
                     </div>
                   )}
                 </div>
-                
+
                 {step >= 2 && formData.artisticStyles.length > 0 && (
                   <div className="flex gap-2 mt-4">
                     {formData.artisticStyles.map(style => (
@@ -771,7 +768,7 @@ const ArtistOnboardingPage = () => {
                     </div>
                     <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Internal Data Only</h3>
                     <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
-                      {step === 3 
+                      {step === 3
                         ? "The information entered in this step is private and will not be displayed on your public profile."
                         : "The verification documents and agreements in this step are strictly confidential."}
                     </p>
@@ -783,7 +780,7 @@ const ArtistOnboardingPage = () => {
                 <div className="mt-8 p-4 bg-slate-50 dark:bg-zinc-800/50 rounded-lg border border-slate-100 dark:border-zinc-800 flex gap-3 items-start">
                   <span className="material-symbols-outlined text-slate-400 mt-0.5">info</span>
                   <p className="text-sm text-slate-500 dark:text-slate-400">
-                    {step === 1 
+                    {step === 1
                       ? "This is a preview of your studio page. As you update your identity details on the left, this preview will update to show you exactly what collectors will see."
                       : "Your profile now reflects your chosen art styles. Collectors often search by medium, so make sure your Primary Medium is accurate."}
                   </p>

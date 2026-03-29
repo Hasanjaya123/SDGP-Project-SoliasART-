@@ -1,8 +1,8 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.modules.ArtUpload.model import ArtWork
-from app.modules.ArtistOnboarding.model import Artist 
+from app.modules.ArtistProfile.model import Artist 
 from app.modules.Artwork.model import UserLike
 from app.modules.Artwork.schemas import LikeRequest
 from app.modules.auth.dependencies import get_current_user
@@ -53,7 +53,7 @@ async def get_artwork_details(artwork_id: str, db: Session = Depends(get_db)):
     }
 
 @router.post("/{artwork_id}/like")
-async def toggle_artwork_like(artwork_id: str, payload: LikeRequest, db: Session = Depends(get_db)):
+async def toggle_artwork_like(artwork_id: str, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
     
     # Check if the artwork exists in the database
     artwork = db.query(ArtWork).filter(ArtWork.id == artwork_id).first()
@@ -62,7 +62,7 @@ async def toggle_artwork_like(artwork_id: str, payload: LikeRequest, db: Session
     
     # Check if this specific user has already liked this specific artwork
     existing_like = db.query(UserLike).filter(
-        UserLike.user_id == payload.user_id, 
+        UserLike.user_id == str(current_user.id), 
         UserLike.artwork_id == artwork_id
     ).first()
 
@@ -83,7 +83,7 @@ async def toggle_artwork_like(artwork_id: str, payload: LikeRequest, db: Session
         # LIKE 
         # If no record exists, create a new row in the user_likes table
         new_like = UserLike(
-            user_id=payload.user_id, 
+            user_id=str(current_user.id), 
             artwork_id=artwork_id
         )
         db.add(new_like)
@@ -102,3 +102,47 @@ async def toggle_artwork_like(artwork_id: str, payload: LikeRequest, db: Session
         "message": message,
         "new_likes": new_total
     }
+
+@router.get("/{artwork_id}/check-like")
+async def check_artwork_like(
+    artwork_id: str, 
+    current_user = Depends(get_current_user), 
+    db: Session = Depends(get_db)
+):
+    # Search the database to check whether the user has liked the artwork
+    existing_like = db.query(UserLike).filter(
+        UserLike.user_id == str(current_user.id), 
+        UserLike.artwork_id == artwork_id
+    ).first()
+
+    # If it finds a record, it returns true. If not, it returns false.
+    return {"is_liked": existing_like is not None}
+
+@router.get("/")
+def get_all_artworks(
+    artist_id: str = Query(None), 
+    db: Session = Depends(get_db)
+):
+    query = db.query(ArtWork)
+    if artist_id is not None:
+        query = query.filter(ArtWork.artist_id == artist_id)
+    
+    artworks = query.all()
+    
+    return [
+        {
+            "id": str(art.id),
+            "title": art.title,
+            "price": art.price,
+            "imageUrls": art.image_url,
+            "medium": art.medium,
+            "height_in": art.height_in,
+            "width_in": art.width_in,
+            "artist_id": art.artist_id,
+            "views": art.view_count if art.view_count is not None else 0,
+            "likes": art.likes if art.likes is not None else 0,
+            "artist_name": art.artist.display_name if art.artist else art.artist_name if art.artist_name else "Unknown Artist"
+
+        }
+        for art in artworks
+    ]

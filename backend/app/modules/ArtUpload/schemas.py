@@ -1,29 +1,28 @@
 from pydantic import BaseModel, Field, field_validator
-from decimal import Decimal
-from typing import Optional
+from typing import List, Optional
 from uuid import UUID
 from app.modules.ArtUpload.form import as_form
 
+
 # --- INPUT SCHEMA (Request) ---
-@as_form 
+@as_form
 class ArtUploadRequest(BaseModel):
     title: str
     description: str
     medium: str
-    year: str      # Frontend sends "2024", "2023", "older"
-    framing: str   # Frontend sends "framed", "unframed"
-    
-    # Dimensions & Price come as strings from FormData
+    year: str
+    framing: str
+
     price: str
     weight: str
     height: str
     width: str
     depth: str
-    
+
     origin: str = "Colombo, Sri Lanka"
     shippingRate: str = "standard"
 
-    #VALIDATORS (Cleans the data automatically)
+    # -------- VALIDATORS -------- #
 
     @field_validator('year')
     @classmethod
@@ -37,27 +36,30 @@ class ArtUploadRequest(BaseModel):
     @field_validator('framing')
     @classmethod
     def parse_framing(cls, v: str) -> bool:
-        # DB expects Boolean (is_framed)
         return v.lower() == 'framed'
 
     @field_validator('price', 'weight', 'height', 'width', 'depth')
     @classmethod
     def parse_numbers(cls, v: str) -> float:
         try:
-            # Remove currency symbols or commas if present
             clean_v = v.replace(',', '').replace('LKR', '').strip()
             return float(clean_v) if clean_v else 0.0
         except ValueError:
             return 0.0
 
-# OUTPUT SCHEMA (Response)
+
+# --- OUTPUT SCHEMA (Response) ---
 class ArtWorkResponse(BaseModel):
     id: UUID
     title: str
     description: str
-    image_url: list[str]
+    image_url: List[str]
     price: float
     is_framed: bool
-    
-    class Config:
-        from_attributes = True # Allows Pydantic to read SQLAlchemy objects
+    views: Optional[int] = 0
+    likes_count: Optional[int] = 0
+    artist_name: Optional[str] = None
+
+    model_config = {
+        "from_attributes": True
+    }

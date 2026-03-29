@@ -6,7 +6,7 @@ from typing import List
 from app.core.database import get_db
 from fastapi.concurrency import run_in_threadpool
 from app.modules.ArtistOnboarding.schemas import ArtistUploadRequest
-from app.modules.ArtistOnboarding.model import Artist
+from app.modules.ArtistProfile.model import Artist
 from app.core.image_kit import imagekit
 from app.core.supabase import supabase
 from app.modules.auth.dependencies import get_current_user

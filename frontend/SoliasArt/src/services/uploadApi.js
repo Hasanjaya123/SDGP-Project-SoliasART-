@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -40,6 +40,21 @@ export const artistProfileService = {
 
   getProfileById: async (artistId) => {
     const response = await api.get(`/artists/profile/${artistId}`);
+    return response.data;
+  },
+
+  checkIsFollowing: async (artistId) => {
+    const response = await api.get(`/artists/profile/${artistId}/is-following`);
+    return response.data;
+  },
+  
+  followArtist: async (artistId) => {
+    const response = await api.post(`/artists/profile/${artistId}/follow`);
+    return response.data;
+  },
+
+  unfollowArtist: async (artistId) => {
+    const response = await api.post(`/artists/profile/${artistId}/unfollow`);
     return response.data;
   },
 
@@ -96,7 +111,7 @@ export const artworkService = {
 
   getArtWorks: async () => {
     try {
-      const response = await api.get("/explore")
+      const response = await api.get("/feed")
       return response.data
     } catch (error) {
       console.log("failed to load artworks", error.response?.data?.detail || error.message)
@@ -122,6 +137,18 @@ export const artworkService = {
       return response.data.results
     } catch (error) {
       console.log("failed to load artworks", error.response?.data?.detail || error.message)
+      throw error
+    }
+  },
+
+  getExploreArtworks: async (page = 1, limit = 20) => {
+    try {
+      const response = await api.get("/explore", {
+        params: { page, limit }
+      })
+      return response.data.data || []
+    } catch (error) {
+      console.log("failed to load explore artworks", error.response?.data?.detail || error.message)
       throw error
     }
   },
@@ -178,3 +205,68 @@ export const artworkService = {
     }
   }
 };
+
+export const paymentService = {
+  initiatePayment: async (artworkIds) => {
+    try {
+      const response = await api.post('/payhere/initiate', {
+        artwork_ids: artworkIds,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Payment initiation failed:", error.response?.data?.detail || error.message);
+      throw error;
+    }
+  },
+
+  confirmPayment: async (orderId) => {
+    try {
+      const response = await api.post('/payhere/confirm', {
+        order_id: orderId,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Payment confirmation failed:", error.response?.data?.detail || error.message);
+      throw error;
+    }
+  },
+};
+
+
+export const commissionService = {
+  /**
+   * 
+   * @param {FormData} formData 
+   */
+  submitCommission: async (formData) => {
+    try {
+      const response = await api.post('/commissions/', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Commission submission failed:", error.response?.data?.detail || error.message);
+      throw error;
+    }
+  },
+
+ 
+  getArtistCommissions: async () => {
+    const response = await api.get('/commissions/artist');
+    return response.data;
+  },
+
+
+  acceptCommission: async (commissionId) => {
+    const response = await api.patch(`/commissions/${commissionId}/accept`);
+    return response.data;
+  },
+
+
+  rejectCommission: async (commissionId) => {
+    const response = await api.patch(`/commissions/${commissionId}/reject`);
+    return response.data;
+  },
+};
+
+export { api };
