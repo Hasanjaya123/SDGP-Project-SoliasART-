@@ -1,37 +1,61 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import ArtDisplayCard from "../components/Art-card";
 import SearchBar from "../components/SearchBar";
 import UploadButton from "../components/UploadButton";
 import CartButton from "../components/CartButton";
-import Sidebar from "../components/Nav-bar";
-import Footer from "../components/Footer";
+
 import soliasartlogo from "../assets/soliasartlogo.png"
 import {artworkService} from "../services/uploadApi";
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 
 
 const ArtSearch = () => {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [isDark, setIsDark] = useState(true);
-  const [previewImage, setPreviewImage] = useState(null); 
-  const { userId } = useParams()
+  const [previewImage, setPreviewImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  // const { userId } = useParams()
 
   const [ARTWORKS, setArtworks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!userId) return;
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login', { replace: true });
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     artworkService
-      .getArtWorks(userId)
+      .getArtWorks()
       .then((data) => setArtworks(data))
       .catch((err) => setError(err.response?.data?.detail || "Failed to load artworks."))
       .finally(() => setLoading(false));
 
-  }, [userId]);
+  }, [navigate]);
+
+  const handleSearch = async (searchQuery, file) => {
+    const searchFile = file || imageFile;
+    if (!searchQuery && !searchFile) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const results = await artworkService.SearchArtWork(
+        searchQuery || null,
+        searchFile || null
+      );
+      setArtworks(results || []);
+    } catch (err) {
+      setError(err.response?.data?.detail || "Search failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ── Apply / remove the "dark" class on <html> so ALL dark: variants work ──
   useEffect(() => {
@@ -42,48 +66,19 @@ const ArtSearch = () => {
     }
   }, [isDark]);
 
-  const filtered = useMemo(() => {
-    if (!query.trim()) return ARTWORKS;
-    const q = query.toLowerCase();
-    return ARTWORKS.filter(
-      (art) =>
-        art.title?.toLowerCase().includes(q) ||
-        art.medium?.toLowerCase().includes(q)
-    );
-  }, [query, ARTWORKS]);
+  const handleArtworkClick = useCallback(
+    (id) => {
+      navigate(`/artwork/${id}`);
+    },
+    [navigate]
+  );
 
   return (
-    /*
-      Root wrapper:
-      - `dark` class is toggled on <html> via useEffect above, so dark: variants
-        fire globally — including inside Nav-bar.jsx without editing it.
-      - We use a flex-col wrapper so the footer can span full width at the bottom.
-    */
+    
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-950 font-sans transition-colors duration-300">
 
-      {/* ── Top section: sidebar + main side by side ── */}
-      <div className="flex flex-1 min-h-0">
-
-        <div
-          className="
-            fixed top-0 left-0 h-screen z-50
-            flex-shrink-0
-            [&>div]:dark:bg-gray-900
-            [&>div]:dark:border-gray-800
-            [&_nav_div]:dark:text-gray-400
-            [&_nav_div:hover]:dark:text-amber-500
-            [&_nav_div:hover]:dark:bg-gray-800
-            [&_.border-t]:dark:border-gray-700
-            [&_h4]:dark:text-white
-            [&_p]:dark:text-gray-400
-            [&_.text-\[\#0F2C59\]]:dark:text-white
-          "
-        >
-          <Sidebar />
-        </div>
-
-        {/* ── Right column: header + main content ── */}
-        <div className="flex flex-col flex-1 min-w-0 ml-64">
+        {/* ── Main content ── */}
+        <div className="flex flex-col flex-1 min-w-0">
 
           {/* Sticky top bar */}
           <header className="sticky top-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm transition-colors duration-300">
@@ -101,16 +96,24 @@ const ArtSearch = () => {
               <div className="flex-1 flex justify-center">
                 <SearchBar
                   onSearch={setQuery}
+                  onSearchSubmit={handleSearch}
                   previewImage={previewImage}
                   onClearImage={() => {
                     if (previewImage) URL.revokeObjectURL(previewImage);
                     setPreviewImage(null);
+                    setImageFile(null);
                   }}
                 />
               </div>
 
               <div className="flex items-center gap-2 flex-shrink-0">
-                <UploadButton onImageUpload={(url) => setPreviewImage(url)} />
+                <UploadButton onImageUpload={(url, file) => {
+                  if (previewImage) URL.revokeObjectURL(previewImage);
+                  const ownUrl = URL.createObjectURL(file);
+                  setPreviewImage(ownUrl);
+                  setImageFile(file);
+                  handleSearch(null, file);
+                }} />
                 <CartButton count={0} />
               </div>
             </div>
@@ -133,26 +136,31 @@ const ArtSearch = () => {
                 {query ? `Results for "${query}"` : "All Masterpieces"}
               </h1>
               <p className="text-xs text-gray-400 mt-0.5">
-                {filtered.length} artwork{filtered.length !== 1 ? "s" : ""} found
+                {ARTWORKS.length} artwork{ARTWORKS.length !== 1 ? "s" : ""} found
               </p>
             </div>
 
-            {filtered.length > 0 ? (
+            {ARTWORKS.length > 0 ? (
               <div className="flex flex-wrap gap-4 items-start justify-center">
-                {filtered.map((art) => (
+                {ARTWORKS.map((art) => {
+                  const imgUrl = Array.isArray(art.image_url) ? art.image_url[0] : art.image_url;
+                  return (
                   <div
                     key={art.id}
+                    onClick={() => handleArtworkClick(art.id)}
+                    style={{ cursor: 'pointer' }}
                   >
-                    <ArtDisplayCard image={art.image_url?.[0]} formData={{
+                    <ArtDisplayCard image={imgUrl} formData={{
                       title: art.title,
                       price: art.price,
                       category: art.medium || '',
                       height: art.height_in || '',
                       width: art.width_in || '',
-                      images: art.image_url ? [art.image_url] : [],
+                      images: imgUrl ? [imgUrl] : [],
                     }} />
                   </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-24 text-center">
@@ -170,13 +178,6 @@ const ArtSearch = () => {
           </main>
 
         </div>
-      </div>
-
-      {/*
-        Footer is OUTSIDE the flex row — sits below both sidebar and main content.
-        This guarantees it stretches the full page width (sidebar + content combined).
-      */}
-      <Footer />
 
     </div>
   );

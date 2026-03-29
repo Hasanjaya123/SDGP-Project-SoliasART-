@@ -14,7 +14,7 @@ const XIcon = () => (
 
 // previewImage — object URL string passed down from ArtSearch
 // onClearImage — clears the preview from ArtSearch state
-const SearchBar = ({ onSearch, previewImage, onClearImage }) => {
+const SearchBar = ({ onSearch, onSearchSubmit, previewImage, onClearImage }) => {
   const [query, setQuery] = useState("");
 
   const handleChange = (e) => {
@@ -23,7 +23,10 @@ const SearchBar = ({ onSearch, previewImage, onClearImage }) => {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") onSearch(query);
+    if (e.key === "Enter") {
+      onSearch(query);
+      if (onSearchSubmit) onSearchSubmit(query);
+    }
   };
 
   
@@ -62,7 +65,7 @@ const SearchBar = ({ onSearch, previewImage, onClearImage }) => {
 
       {/* Search icon only — camera icon removed */}
       <button
-        onClick={() => onSearch(query)}
+        onClick={() => { onSearch(query); if (onSearchSubmit) onSearchSubmit(query); }}
         className="absolute right-3 text-gray-400 hover:text-amber-500 transition-colors"
         title="Search"
       >

@@ -24,7 +24,7 @@ const INITIAL_DATA = {
 const UploadArtPage = () => {
   
   const navigate = useNavigate()
-  const { artistId } = useParams()
+  //const { artistId } = useParams()
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(INITIAL_DATA);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -34,13 +34,13 @@ const UploadArtPage = () => {
 
   const handlePublish = async () => {
     try {
-        // Optional: Add loading state here
+        
         setIsPublishing(true)
         if (isPublishing) alert("Publishing...")
-        await artworkService.uploadArtwork(formData, artistId);
+        await artworkService.uploadArtwork(formData);
         alert("Artwork published successfully!");
-        navigate("/home")
-        // Redirect or reset form
+        navigate("/artist/profile")
+        
     } catch (error) {
         alert("Failed to publish artwork. Please try again.");
     }
@@ -48,7 +48,7 @@ const UploadArtPage = () => {
 
   const exit = () => {
     const result = window.confirm("Do you really want to exit (Entered data will be deleted)")
-    if (result)  navigate("/home")
+    if (result)  navigate("/artist/profile")
     else return
   }
 
