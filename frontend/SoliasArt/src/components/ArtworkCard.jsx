@@ -9,7 +9,10 @@ import { trackView } from '../api/feedApi'
 function ArtworkCard({ card, userId }) {
     const navigate = useNavigate()
     const [commentCount, setCommentCount] = useState(card.comment_count ?? 0)
+    const [showFullCaption, setShowFullCaption] = useState(false)
     const artistName = card.artist_name || 'Unknown Artist'
+    const description = card.description || ''
+    const isLongCaption = description.length > 100
     const imageSrc = Array.isArray(card.image_url) ? card.image_url[0] : card.image_url
     const profileImage = card.artist_profile_image
     const cardRef = useRef(null)
@@ -43,15 +46,22 @@ function ArtworkCard({ card, userId }) {
                     <img
                         src={profileImage}
                         alt={artistName}
-                        className='w-9 h-9 rounded-full object-cover flex-shrink-0 bg-stone-200 dark:bg-gray-700'
+                        onClick={() => navigate(`/artist/profile/${card.artist_id}`)}
+                        className='w-9 h-9 rounded-full object-cover flex-shrink-0 bg-stone-200 dark:bg-gray-700 cursor-pointer hover:opacity-80 transition-opacity'
                         onError={(e) => e.target.style.display = 'none'}
                     />
                 ) : null}
-                <div className={`w-9 h-9 rounded-full bg-stone-200 dark:bg-gray-700 flex items-center justify-center text-stone-700 dark:text-gray-200 font-semibold text-sm flex-shrink-0 ${profileImage ? 'hidden' : ''}`}>
+                <div 
+                    onClick={() => navigate(`/artist/profile/${card.artist_id}`)}
+                    className={`w-9 h-9 rounded-full bg-stone-200 dark:bg-gray-700 flex items-center justify-center text-stone-700 dark:text-gray-200 font-semibold text-sm flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity ${profileImage ? 'hidden' : ''}`}
+                >
                     {artistName.split(' ').map(word => word[0]).join('').slice(0, 2).toUpperCase()}
                 </div>
                 <div className='flex-1'>
-                    <p className='text-sm font-semibold text-stone-800 dark:text-gray-100'>
+                    <p 
+                        onClick={() => navigate(`/artist/profile/${card.artist_id}`)}
+                        className='text-sm font-semibold text-stone-800 dark:text-gray-100 cursor-pointer hover:underline'
+                    >
                         {artistName}
                     </p>
                     <p className='text-xs text-stone-400 dark:text-gray-500'>
@@ -102,7 +112,17 @@ function ArtworkCard({ card, userId }) {
                     </p>
                 )}
                 <p className="text-sm text-stone-700 dark:text-gray-300 mt-0.5 leading-snug">
-                    {card.description}
+                    {showFullCaption || !isLongCaption 
+                        ? description 
+                        : `${description.slice(0, 100)}...`}
+                    {isLongCaption && (
+                        <span 
+                            onClick={() => setShowFullCaption(!showFullCaption)}
+                            className="text-stone-500 font-medium hover:text-stone-700 dark:hover:text-stone-300 ml-1 cursor-pointer select-none"
+                        >
+                            {showFullCaption ? 'less' : 'more'}
+                        </span>
+                    )}
                 </p>
             </div>
             {/*Comment Box - only show when click the comment button, for simplicity we always show it here*/}
