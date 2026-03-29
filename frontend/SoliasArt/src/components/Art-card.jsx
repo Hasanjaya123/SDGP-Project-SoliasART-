@@ -88,7 +88,7 @@ const ArtDisplayCard = ({ image, formData }) => {
                 <span className="inline-block px-2.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 text-[9px] font-bold uppercase tracking-wider mb-1.5 rounded-sm">
                     {formData.category || 'New Release'}
                 </span>
-                <p className="text-[11px] font-medium text-gray-800 dark:text-gray-400 mb-0.5">No name</p>
+                <p className="text-[11px] font-medium text-gray-800 dark:text-gray-400 mb-0.5">{formData.artist_name || 'Unknown Artist'}</p>
                 <h4 className="text-lg font-black text-black dark:text-white uppercase tracking-tight mb-1.5">
                     {formData.title || 'UNTITLED ARTWORK'}
                 </h4>
@@ -96,11 +96,11 @@ const ArtDisplayCard = ({ image, formData }) => {
                 <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400 text-[11px] font-medium mb-2">
                     <div className="flex items-center gap-1">
                         <EyeIcon className="w-3.5 h-3.5" />
-                        <span>--</span>
+                        <span>{formData.views ?? '--'}</span>
                     </div>
                     <div className="flex items-center gap-1">
                         <HeartIcon className="w-3.5 h-3.5" />
-                        <span>--</span>
+                        <span>{formData.likes ?? '--'}</span>
                     </div>
 
                 </div>
