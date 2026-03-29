@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     # Token active time
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 300
+    
 
     # PayHere Payment Gateway
     PAYHERE_MERCHANT_ID: str = ""
@@ -24,6 +25,6 @@ class Settings(BaseSettings):
         env_file=".env",
         extra="ignore"
     )
-
+    
 #create object
 settings = Settings()
