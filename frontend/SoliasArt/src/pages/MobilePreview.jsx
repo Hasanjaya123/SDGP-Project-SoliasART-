@@ -24,7 +24,7 @@ function ModelViewer({ src }) {
         <model-viewer
             src={src}
             ar
-            ar-modes="webxr scene-viewer quick-look"
+            ar-modes="scene-viewer quick-look webxr"
             ar-placement="wall"
             auto-rotate
             camera-controls
