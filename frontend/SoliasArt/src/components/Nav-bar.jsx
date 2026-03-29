@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import { BiSearch, BiCompass, BiCollection, BiUser, BiMap, BiX, BiMoon, BiSun, BiLogOut, BiMenu } from 'react-icons/bi';
 import { BsGrid } from 'react-icons/bs';
 import { HiOutlineNewspaper } from 'react-icons/hi';
@@ -28,28 +28,28 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
         const response = await fetch(`${API_BASE}/auth/me`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
-
+        
         if (response.ok) {
           const data = await response.json();
 
           // Get artist details if the user is an artist
           if (data.role === 'artist') {
             try {
-
+        
               const artistRes = await fetch(`${API_BASE}/artists/profile`, {
                 headers: { 'Authorization': `Bearer ${token}` }
               });
-
+              
               if (artistRes.ok) {
                 const artistData = await artistRes.json();
-
+                
                 // Override the empty user picture with the real Artist picture
                 if (artistData.artist?.profileImageUrl) {
                   data.profile_image = artistData.artist.profileImageUrl;
                 }
-
+                
                 if (artistData.artist?.id) {
-                  data.artist_id = artistData.artist.id;
+                  data.artist_id = artistData.artist.id; 
                 }
               }
             } catch (artistErr) {
@@ -86,13 +86,13 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
   ];
 
   const bottomLinks = [
-    // Show dashboard only for artists
+      // Show dashboard only for artists
     ...(userData?.role === 'artist' ? [
       { icon: <BsGrid size={24} />, label: "Dashboard", path: "/dashboard" }
     ] : []),
 
-    {
-      icon: isDarkMode ? <BiSun size={24} /> : <BiMoon size={24} />,
+    { 
+      icon: isDarkMode ? <BiSun size={24} /> : <BiMoon size={24} />, 
       label: isDarkMode ? "Light Mode" : "Dark Mode",
       action: toggleTheme
     },
@@ -127,14 +127,14 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
   };
 
   return (
-
+    
     <>
       {/* Mobile Hamburger menu  */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-40 flex items-center justify-between px-4 shadow-sm">
 
         <img src={logoImage} alt="SoliasArt" className="h-8 object-contain" />
 
-        <button
+        <button 
           onClick={() => setIsOpen(true)}
           className="p-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:!outline-none focus:!ring-0 focus:!border-gray-200 dark:focus:!border-gray-700"
         >
@@ -145,20 +145,20 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
 
       {/* Darkens background when sidebar is open */}
       {isOpen && (
-        <div
+        <div 
           className="md:hidden fixed inset-0 bg-black/60 z-40 transition-opacity"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Sidebar Container */}
-      <div
+      <div 
         className={`fixed md:static inset-y-0 left-0 z-50 flex h-screen w-64 flex-col border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-6 py-8 transition-transform duration-300 ease-in-out 
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
       >
-
+        
         {/* Mobile Close Button (Inside sidebar) */}
-        <button
+        <button 
           onClick={() => setIsOpen(false)}
           className="md:hidden absolute top-6 right-4 p-1 text-gray-500 hover:text-gray-800 dark:hover:text-white focus:outline-none"
         >
@@ -167,10 +167,10 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
 
         {/* LOGO AREA */}
         <div className="mb-10 mt-2 md:mt-0 flex items-center gap-2">
-          <img
-            src={logoImage}
-            alt="SoliasArt Logo"
-            className="h-10 w-auto object-contain"
+          <img 
+            src={logoImage} 
+            alt="SoliasArt Logo" 
+            className="h-10 w-auto object-contain" 
           />
         </div>
 
@@ -206,7 +206,6 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
 
         {/* User Profile  */}
         <div className="mt-auto border-t border-gray-200 dark:border-gray-800 pt-6 flex flex-col gap-2">
-
           {/* Profile Link  */}
           {userData ? (
             <Link to={profileLink} onClick={() => handleLinkClick()} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
@@ -231,7 +230,7 @@ const Sidebar = ({ isDarkMode, toggleTheme }) => {
           )}
 
           {/* Logout Button */}
-          <button
+          <button 
             onClick={handleLogout}
             className="flex items-center gap-3 p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-red-500 hover:!border-transparent  dark:hover:text-red-400 transition-colors w-full focus:outline-none group"
           >
