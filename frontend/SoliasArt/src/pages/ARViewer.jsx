@@ -54,7 +54,7 @@ export default function ARViewer() {
     setQrReady(false); // hide QR code until we confirm backend has cached the GLB
 
     try {
-      await api.get(`/ar/generate-ar/${id}`, {
+      await api.get(`/ar/generate-ar/${id}/`, {
         responseType: "blob"
       });
 
