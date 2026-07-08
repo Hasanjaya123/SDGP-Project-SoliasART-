@@ -143,7 +143,7 @@ export const artworkService = {
 
   getExploreArtworks: async (page = 1, limit = 100) => {
     try {
-      const response = await api.get("/explore", {
+      const response = await api.get("/explore/", {
         params: { page, limit }
       })
       return response.data.data || []
