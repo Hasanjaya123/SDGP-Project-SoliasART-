@@ -55,7 +55,10 @@ export default function ARViewer() {
 
     try {
       await api.get(`/ar/generate-ar/${id}`, {
-        responseType: "blob"
+        responseType: "blob",
+        headers: {
+          "Accept": "application/octet-stream" 
+        }
       });
 
       setQrReady(true); // show QR code once backend has cached the GLB
