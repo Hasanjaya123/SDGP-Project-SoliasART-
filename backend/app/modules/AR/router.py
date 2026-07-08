@@ -108,7 +108,7 @@ async def generate_ar_from_db(artwork_id: str, db: Session = Depends(get_db)):
             headers={
                 "Content-Disposition": f"attachment; filename=artwork_{artwork_id}.glb",
                 "Access-Control-Expose-Headers": "Content-Disposition",
-                "X-Cache": "MISS"
+                "X-Cache": "HIT"
             }
         )
 
