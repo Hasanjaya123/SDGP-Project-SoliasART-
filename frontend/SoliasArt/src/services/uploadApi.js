@@ -60,7 +60,7 @@ export const artistProfileService = {
 
   getdashboardData: async () => {
     // Calling the dashboard without an ID because the backend uses the token
-    const response = await api.get(`/dashboard/`);
+    const response = await api.get(`/dashboard`);
     return response.data;
   },
 
@@ -143,7 +143,7 @@ export const artworkService = {
 
   getExploreArtworks: async (page = 1, limit = 100) => {
     try {
-      const response = await api.get("/explore/", {
+      const response = await api.get("/explore", {
         params: { page, limit }
       })
       return response.data.data || []

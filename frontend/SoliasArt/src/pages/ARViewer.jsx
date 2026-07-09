@@ -55,24 +55,14 @@ export default function ARViewer() {
 
     try {
       await api.get(`/ar/generate-ar/${id}`, {
-        responseType: "blob",
-        headers: {
-          "Accept": "application/octet-stream" 
-        }
+        responseType: "blob"
       });
 
       setQrReady(true); // show QR code once backend has cached the GLB
 
     } catch (e) {
-      if (e.response && e.response.data instanceof Blob) {
-      
-        const errorText = await e.response.data.text();
-        const errorJson = JSON.parse(errorText);
-        setErrorMsg(errorJson.detail || "AR Generation failed");
-      } else {
-      
-        setErrorMsg(e.response?.data?.detail || e.message);
-      }
+      // if any error occurs (network, server, parsing), show it to the user
+      setErrorMsg(e.response?.data?.detail || e.message);
 
     } finally {
       setIsLoading(false);
