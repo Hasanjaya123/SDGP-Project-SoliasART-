@@ -49,7 +49,7 @@ async def generate_ar_from_db(artwork_id: str, db: Session = Depends(get_db)):
         
         return Response(
             content=glb_data, 
-            media_type="application/octet-stream",
+            media_type="model/gltf-binary",
             headers={
                 "Content-Disposition": f"attachment; filename=artwork_{artwork_id}.glb",
                 "Access-Control-Expose-Headers": "Content-Disposition",
@@ -105,7 +105,7 @@ async def generate_ar_from_db(artwork_id: str, db: Session = Depends(get_db)):
          #Adding the Content-Disposition header triggers the download button in Swagger
         return Response(
              content=glb_data, 
-             media_type="application/octet-stream",
+             media_type="model/gltf-binary",
              headers={
                  "Content-Disposition": f"attachment; filename=artwork_{artwork_id}.glb",
                  "Access-Control-Expose-Headers": "Content-Disposition",
