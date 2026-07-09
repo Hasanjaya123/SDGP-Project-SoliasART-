@@ -77,7 +77,7 @@ export const artistProfileService = {
 };
 
 export const artworkService = {
-  uploadArtwork: async (formDataState) => {
+  uploadArtwork: async (formDataState) => { 
     const formData = new FormData();
 
     const textFields = [
@@ -92,7 +92,7 @@ export const artworkService = {
 
     if (formDataState.images && formDataState.images.length > 0) {
       formDataState.images.forEach((imgObj) => {
-        formData.append('images', imgObj.file);
+        formData.append('file', imgObj.file);
       });
     }
 
