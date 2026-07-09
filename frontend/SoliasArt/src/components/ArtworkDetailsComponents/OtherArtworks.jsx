@@ -28,7 +28,7 @@ const ArtistOtherArtworks = ({ artistId, currentArtworkId }) => {
   useEffect(() => {
     const fetchArt = async () => {
       try {
-        const res = await api.get(`/api/artworks?artist_id=${artistId}`);
+        const res = await api.get(`/api/artworks/?artist_id=${artistId}`);
         const data = res.data;
 
         const unsoldArt = (Array.isArray(data) ? data : []).filter(

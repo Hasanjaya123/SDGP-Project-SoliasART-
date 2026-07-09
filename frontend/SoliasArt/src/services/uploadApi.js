@@ -60,7 +60,7 @@ export const artistProfileService = {
 
   getdashboardData: async () => {
     // Calling the dashboard without an ID because the backend uses the token
-    const response = await api.get(`/dashboard`);
+    const response = await api.get(`/dashboard/`);
     return response.data;
   },
 
