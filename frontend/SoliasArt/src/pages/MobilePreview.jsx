@@ -82,7 +82,11 @@ export default function MobilePreview() {
         const fetchGlb = async () => {
             try {
                 const res = await api.get(decodedUrl, {
-                    responseType: 'blob'
+                    responseType: 'blob',
+                    headers: {
+                        "Accept": "application/octet-stream",
+                        "ngrok-skip-browser-warning": "true"
+                    }
                 });
 
                 const blob = res.data;
