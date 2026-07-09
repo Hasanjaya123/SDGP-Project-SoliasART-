@@ -30,7 +30,7 @@ async def upload(
         
         
         if (len(profile_response.data) == 0):
-            raise HTTPException(statis_code=404, details="Artist not found")
+            raise HTTPException(status_code=404, details="Artist not found")
         
         artist_data = profile_response.data[0]
         
