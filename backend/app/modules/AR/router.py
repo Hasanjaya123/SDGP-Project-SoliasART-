@@ -49,7 +49,7 @@ async def generate_ar_from_db(artwork_id: str, db: Session = Depends(get_db)):
         
         return Response(
             content=glb_data, 
-            media_type="application/octet-stream",
+            media_type="model/gltf-binary",
             headers={
                 "Content-Disposition": f"attachment; filename=artwork_{artwork_id}.glb",
                 "Access-Control-Expose-Headers": "Content-Disposition",
@@ -102,26 +102,18 @@ async def generate_ar_from_db(artwork_id: str, db: Session = Depends(get_db)):
         with open(cached_glb_path, "rb") as f:
             glb_data = f.read()
 
-        # Adding the Content-Disposition header triggers the download button in Swagger
-        # return Response(
-        #     content=glb_data, 
-        #     media_type="model/gltf-binary",
-        #     headers={
-        #         "Content-Disposition": f"attachment; filename=artwork_{artwork_id}.glb",
-        #         "Access-Control-Expose-Headers": "Content-Disposition",
-        #         "X-Cache": "MISS"
-        #     }
-        # )
-        
-        return FileResponse(
-        path=cached_glb_path,
-        media_type="application/octet-stream",
-        filename=f"artwork_{artwork_id}.glb",
-        headers={
-            "Access-Control-Expose-Headers": "Content-Disposition",
-            "X-Cache": "MISS" 
-            }
+         #Adding the Content-Disposition header triggers the download button in Swagger
+        return Response(
+             content=glb_data, 
+             media_type="model/gltf-binary",
+             headers={
+                 "Content-Disposition": f"attachment; filename=artwork_{artwork_id}.glb",
+                 "Access-Control-Expose-Headers": "Content-Disposition",
+                 "X-Cache": "MISS"
+             }
         )
+        
+        
 
     except Exception as e:
         print(f"ERROR during AR generation: {str(e)}")
