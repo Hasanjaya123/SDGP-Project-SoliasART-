@@ -92,17 +92,14 @@ export const artworkService = {
 
     if (formDataState.images && formDataState.images.length > 0) {
       formDataState.images.forEach((imgObj) => {
-        formData.append('file', imgObj.file);
+        formData.append('images', imgObj.file);
       });
     }
 
     try {
-      const response = await api.post(`/user/dashboard/upload`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await api.post(`/user/dashboard/upload`, formData);
       return response.data;
+      
     } catch (error) {
       console.error("Upload failed:", error.response?.data?.detail || error.message);
       throw error;
