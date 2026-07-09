@@ -92,16 +92,10 @@ const ArtworkDetailsPage = () => {
     }
 
     setArModalOpen(true);
+    setIsArLoading(true);
     setArError("");
+    setQrReady(false);
     setGeneratedMobileUrl(mobileLink);
-    setIsArLoading(false); 
-    setQrReady(true);
-
-    // setArModalOpen(true);
-    // setIsArLoading(true);
-    // setArError("");
-    // setQrReady(false);
-    // setGeneratedMobileUrl(mobileLink);
 
     try {
       // Trigger backend to process/cache the GLB file
