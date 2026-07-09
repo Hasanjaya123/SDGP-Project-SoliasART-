@@ -100,10 +100,7 @@ const ArtworkDetailsPage = () => {
     try {
       // Trigger backend to process/cache the GLB file
 
-      await api.get(`/ar/generate-ar/${id}`, {
-        headers: { "ngrok-skip-browser-warning": "true" },
-        responseType: "blob"
-      });
+      await api.get(`/ar/generate-ar/${id}`);
 
       setQrReady(true);
     } catch (err) {
