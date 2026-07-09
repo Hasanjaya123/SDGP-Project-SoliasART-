@@ -20,7 +20,7 @@ const ArtworkDetailsPage = () => {
   const [qrReady, setQrReady] = useState(false);
   const [generatedMobileUrl, setGeneratedMobileUrl] = useState("");
 
-  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+  const BACKEND_URL = import.meta.env.AR_BACKEND_URL || "http://localhost:8000";
 
   useEffect(() => {
     const checkSaveStatus = async () => {
