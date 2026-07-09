@@ -82,8 +82,7 @@ const ArtworkDetailsPage = () => {
   };
 
   const handleOpenArModal = async () => {
-    const glbUrl = `${BACKEND_URL}/ar/generate-ar/${id}`;
-    const mobileLink = `${window.location.origin}/preview?glb=${encodeURIComponent(glbUrl)}`;
+    const mobileLink = `${window.location.origin}/preview?glb=${BACKEND_URL}/ar/generate-ar/${id}`;
 
     // Check if user is on a mobile device
     const isMobile = /Android|iPhone|iPad|visionOS|Quest/i.test(navigator.userAgent);
@@ -102,10 +101,7 @@ const ArtworkDetailsPage = () => {
       // Trigger backend to process/cache the GLB file
 
       await api.get(`/ar/generate-ar/${id}`, {
-        headers: {
-          "Accept": "application/octet-stream",
-          "ngrok-skip-browser-warning": "true"
-        },
+        headers: { "ngrok-skip-browser-warning": "true" },
         responseType: "blob"
       });
 
