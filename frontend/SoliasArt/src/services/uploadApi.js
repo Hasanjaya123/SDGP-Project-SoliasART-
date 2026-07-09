@@ -77,7 +77,7 @@ export const artistProfileService = {
 };
 
 export const artworkService = {
-  uploadArtwork: async (formDataState) => {
+  uploadArtwork: async (formDataState) => { 
     const formData = new FormData();
 
     const textFields = [
@@ -97,12 +97,9 @@ export const artworkService = {
     }
 
     try {
-      const response = await api.post(`/user/dashboard/upload`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await api.post(`/user/dashboard/upload`, formData);
       return response.data;
+      
     } catch (error) {
       console.error("Upload failed:", error.response?.data?.detail || error.message);
       throw error;
@@ -143,7 +140,7 @@ export const artworkService = {
 
   getExploreArtworks: async (page = 1, limit = 100) => {
     try {
-      const response = await api.get("/explore", {
+      const response = await api.get("/explore/", {
         params: { page, limit }
       })
       return response.data.data || []

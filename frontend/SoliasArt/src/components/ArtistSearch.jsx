@@ -12,7 +12,7 @@ export const ArtistSearch = () => {
 
     const fetchArtists = async () => {
         try {
-            const response = await api.get("/artists");
+            const response = await api.get("/artists/");
             setArtists(response.data);
         } catch (error) {
             console.error("Error fetching artists:", error);
