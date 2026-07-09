@@ -8,7 +8,7 @@ import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
 import './index.css';
 import Test from './pages/test.jsx';
 
-import ARViewer from './pages/ARViewer.jsx';
+
 import MobilePreview from './pages/MobilePreview.jsx';
 
 import Layout from './components/Layout';
@@ -138,7 +138,7 @@ function App() {
         {/* Public routes — accessible without login */}
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/ar" element={<ARViewer />} />
+        
         <Route path="/preview" element={<MobilePreview />} />
 
         {/* Protected routes — require authentication */}
