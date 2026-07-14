@@ -57,7 +57,7 @@ const SignupPage = () => {
 
             const data = response.data;
 
-            alert(`Registration Successful!\n\nPlease check your email inbox for a verification link to activate your account.`);
+            alert(`Registration Successful!\n\nPlease check your email inbox or spam for a verification link to activate your account.`);
 
             setFormData({
                 first_name: '',
