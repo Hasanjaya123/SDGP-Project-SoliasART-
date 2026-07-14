@@ -64,7 +64,7 @@ def login(user_credentials: schemas.UserLogin, db: Session = Depends(get_db)):
     
     #check if email is verified
     if not user.is_verified:
-        raise HTTPException(status_code=403, detail="Email not verified. Please check your inbox or spam on on your Email provider.")
+        raise HTTPException(status_code=403, detail="Email not verified. Please check your inbox or spam on your Email provider.")
     
     #create token
     access_token = utils.create_access_token(
