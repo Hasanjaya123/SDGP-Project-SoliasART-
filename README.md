@@ -1,71 +1,57 @@
-# 🎨 SoliasArt: The Digital Canvas for Sri Lanka
+# SoliasArt: Social commerce platform for Sri Lankan Artists
 
-> **Connect. Discover. Monetize.**
-> *Bridging the gap between hidden Sri Lankan talent and the global art world.*
-
----
-
-## 🌟 The Vision
-
-Sri Lanka is home to a vibrant tapestry of creative talent—from the dynamic street artists of Colombo to traditional artisans in Kandy and emerging digital creators nationwide. Yet, much of this talent remains **invisible** to the world.
-
-**SoliasArt** is the first integrated **Social Media + Art Store** ecosystem designed specifically for Sri Lanka. We are solving the "starving artist" problem by building a digital home where discovery is effortless, and monetization is accessible to everyone.
-
-### 🚩 The Problem
-* **For Artists:** No central platform to showcase work, high barriers to entry in physical galleries, and difficulty handling logistics/shipping.
-* **For Buyers:** No trusted way to discover authentic Sri Lankan art, verify originality, or purchase securely from abroad.
-
-### 🚀 Our Solution
-We are building a dual-engine platform:
-1.  **Social Community:** A rich profile system for artists to share their stories, "work-in-progress" videos, and build a following. Includes a **Street Art Map** to preserve and geo-tag public art.
-2.  **Global Marketplace:** A seamless e-commerce store offering original art sales, commissions, and a **Print-on-Demand (POD)** service that turns digital designs into sellable merchandise without upfront costs.
+ 
+*Bridging the gap between hidden Sri Lankan talent and the global art world.*
 
 ---
 
-## ✨ Key Features
+## Summary
 
-### 🎨 For Artists (The Creators)
-* **Rich Profiles:** Showcase your portfolio, bio, and artistic journey.
-* **Multi-Channel Sales:** Sell Originals, accept Commissions, or use POD (Print-on-Demand).
-* **Logistics Solved:** Automated shipping calculations for local (PickMe/Domex) and international (DHL) delivery.
-* **Verified Badge:** Gain trust with a verification system for authentic creators.
+Sri Lanka is home to a vibrant tapestry of creative talent, from the dynamic street artists of Colombo to traditional artisans and emerging digital creators nationwide. Yet, without a centralized digital infrastructure, much of this talent remains inaccessible to the global market.
 
-### 🛍️ For Buyers (The Collectors)
-* **Discovery Engine:** Find art by style, medium, or region (e.g., "Galle Fort Watercolor").
-* **Street Art Map:** Explore an interactive map of Sri Lanka's best public murals.
-* **AR Preview:** Visualize how a painting will look on your wall using Augmented Reality.
-* **Secure & Trusted:** Multi-currency payment gateway and Digital Certificates of Authenticity (COA).
+SoliasArt is an integrated social commerce ecosystem designed specifically for Sri Lanka. We engineered a platform that solves the "starving artist" problem by providing a digital space where discovery is intuitive and monetization is highly accessible, empowering local creators to scale their audience internationally.
+
+## The Challenge
+
+* **For Creators:** Artists face high barriers to entry in physical galleries, lack a dedicated platform to showcase their portfolios, and struggle with the logistics of international shipping and secure payments.
+* **For Collectors:** Global buyers lack a trusted, centralized environment to discover authentic Sri Lankan art, verify its originality, and purchase it with confidence regarding scale, aesthetic fit, and secure transaction handling.
+
+## The Platform
+
+SoliasArt operates as a dual-engine ecosystem, combining the engagement of a social network with the reliability of a modern e-commerce marketplace:
+
+**1. The Social Community**  
+A dedicated space for artists to build a following. Creators can maintain rich profiles, share the stories behind their artwork, and document their creative process. The platform also includes an interactive, GPS-enabled Art Map to geo-tag and preserve public street art across the island.
+
+**2. The Global Marketplace**  
+A seamless commerce engine facilitating original art sales and custom commission requests. The platform handles the end-to-end buyer journey, providing escrow-style security and automated logistics calculations for both local and international delivery.
+
+## Core Capabilities
+
+### Empowering Artists
+* **Rich Portfolios:** Dedicated professional profiles to showcase artwork, artist biographies, and career milestones.
+* **Streamlined Commerce:** Tools to list original pieces, accept structured commission requests, and leverage Print-on-Demand (POD) services for zero-upfront-cost merchandise.
+* **Verified Authenticity:** A strict verification system to establish trust, complete with Digital Certificates of Authenticity for sold pieces.
+* **Real-Time Analytics:** A comprehensive dashboard providing artists with insights into their revenue, store views, and active inventory.
+
+### Enhancing Buyer Confidence
+* **Semantic Smart Search:** An AI-powered discovery engine that understands the context, style, and color palette of search queries, allowing users to find exactly what they are looking for.
+* **Augmented Reality (AR) Previews:** An automated 2D-to-3D visualization tool that allows collectors to project true-to-scale digital versions of paintings onto their own walls via their mobile devices before purchasing.
+* **Secure Transactions:** Integrated payment gateways processing secure local and international transactions with advanced cryptographic verification.
+
+## Technical Architecture
+
+The platform was built using a high-performance, modern technology stack designed for scalability and heavy machine learning workloads:
+
+* **Frontend:** React.js (Single Page Application)
+* **Backend:** Python / FastAPI
+* **Database:** PostgreSQL
+* **Machine Learning & AI:** PyTorch and OpenAI CLIP (for semantic search capabilities)
+* **Media & 3D Processing:** ImageKit CDN (for payload optimization) and `trimesh` (for automated spatial model generation)
+* **Mapping Integration:** Location-based API for the interactive Art Map
+* **Payments:** PayHere Gateway (Secure LKR and international processing)
 
 ---
 
-## 🛠️ Tech Stack (Proposed)
-
-* **Frontend:** React.js
-* **Backend:** Python(FastAPI)
-* **Database:**  PostgreSQL 
-* **Maps:** Google Maps API / Mapbox (for the Street Art Map)
-* **Payments:** Stripe / PayHere (Local SL Gateway integration)
-* **Cloud/Storage:** Imaekit
-
----
-
-## 🗺️ Roadmap
-
-- [ ] **Phase 1: MVP Core** - User Auth, Artist Profiles, Basic Uploads.
-- [ ] **Phase 2: Commerce** - Cart, Checkout, Local Payment Gateway Integration.
-- [ ] **Phase 3: Discovery** - Street Art Map, Advanced Filtering.
-- [ ] **Phase 4: Advanced** - Print-on-Demand Integration, AR Preview, International Shipping.
-
----
-
-
-## 📞 Contact & Support
-
-**Email:** [danith.20231509@iit.ac.lk]
-
----
-
-<p align="center">
-  <i>Built with ❤️ for the Art of Sri Lanka.</i>
-</p>
-
+**Contact & Support**  
+Email: soliasartsrilanka@gmail.com
