@@ -1,10 +1,13 @@
 import axios from "axios";
+import { attachAxiosInterceptor } from "../services/networkInterceptor";
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
 const api = axios.create({
     baseURL: BASE_URL,
 });
+
+attachAxiosInterceptor(api);
 
 export const getFeed = (page = 1, userId = null) => {
     const params = { page, page_size: 10 }

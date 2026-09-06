@@ -4,6 +4,7 @@ import UploadArtPage from './pages/ArtUpload'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import SignupPage from './pages/SignupPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
+import ServiceUnavailable from './pages/ServiceUnavailable.jsx';
 import ArtistOnboardingPage from './pages/ArtistOnboardingPage.jsx';
 import './index.css';
 import Test from './pages/test.jsx';
@@ -136,6 +137,8 @@ function App() {
         <Route path="/home"></Route>
 
         {/* Public routes — accessible without login */}
+        <Route path="/service-unavailable" element={<ServiceUnavailable />} />
+        <Route path="/maintenance" element={<ServiceUnavailable />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/ar" element={<ARViewer />} />
