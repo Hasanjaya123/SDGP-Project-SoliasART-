@@ -88,7 +88,7 @@ export default function ServiceUnavailable() {
           {/* Placeholders for contact and status page */}
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-2 border-t border-slate-100 dark:border-slate-800/80 text-xs">
             <a
-              href="mailto:{{CONTACT_EMAIL}}"
+              href="soliasartsrilanka@gmail.com"
               className="inline-flex items-center gap-1.5 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
               title="Contact Support"
             >
@@ -99,7 +99,7 @@ export default function ServiceUnavailable() {
             <span className="text-slate-300 dark:text-slate-700 hidden sm:inline" aria-hidden="true">•</span>
 
             <a
-              href="{{STATUS_PAGE_URL}}"
+              href="https://landing.soliasart.com"
               className="inline-flex items-center gap-1.5 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
               title="System Status Page"
             >
