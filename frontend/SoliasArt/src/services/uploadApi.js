@@ -1,10 +1,13 @@
 import axios from 'axios';
+import { attachAxiosInterceptor } from './networkInterceptor';
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
 });
+
+attachAxiosInterceptor(api);
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
